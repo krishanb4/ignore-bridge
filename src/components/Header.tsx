@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import MainNetwork from "@/components/MainNetwork";
 import { useState, useEffect, useRef } from "react";
-import BuyModel from "./BuyModel";
+import MobileNetworks from "./MobileNetworks";
 
 const Header: React.FC = () => {
   const [isModelopen, openModel] = useState(false);
@@ -26,140 +26,148 @@ const Header: React.FC = () => {
     };
   }, [isNetworkListOpen, isModelopen]);
   return (
-    <header
-      ref={componentRef}
-      className="lg:border-transparent bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]"
-    >
-      <div className="mx-auto flex items-center max-w-full w-full h-[56px]">
-        <div className="grid grid-cols-2 items-center w-full mx-auto z-[101] px-4">
-          <div className="flex items-center sm:gap-2">
-            <Link
-              className="flex flex-row items-center sm:pl-2 sm:pr-6"
-              href="/"
-            >
-              <div className="block md:hidden w-7 h-7 sm:w-[115px] sm:h-[37px]">
-                <Image
-                  src="/images/4logo.png"
-                  alt=""
-                  width={800}
-                  height={800}
-                />
-              </div>
-              <div className="hidden md:block w-7 h-7 sm:w-[115px] sm:h-[37px]">
-                <Image
-                  src="/images/logo_name.png"
-                  alt=""
-                  width={800}
-                  height={800}
-                />
-              </div>
-            </Link>
-            <div className="relative" data-headlessui-state="">
-              <button
-                className="btn flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-white hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 text-gray-700 hover:text-gray-800 active:text-gray-900 dark:text-slate-200 hover:dark:text-slate-100 active:dark:text-slate-50 px-4 h-[38px] rounded-xl text-base font-semibold"
-                aria-haspopup="menu"
-                aria-expanded="false"
-                data-headlessui-state=""
-                type="button"
+    <>
+      <header
+        ref={componentRef}
+        className="lg:border-transparent bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]"
+      >
+        <div className="mx-auto flex items-center max-w-full w-full h-[56px]">
+          <div className="grid grid-cols-2 items-center w-full mx-auto z-[101] px-4">
+            <div className="flex items-center sm:gap-2">
+              <Link
+                className="flex flex-row items-center sm:pl-2 sm:pr-6"
+                href="/"
               >
-                Transactions
-              </button>
-            </div>
-            <div
-              className="hidden md:flex justify-center gap-2 relative h-[38px]"
-              ref={componentRef}
-            >
-              <button
-                aria-expanded="true"
-                aria-haspopup="true"
-                type="button"
-                onClick={() => openModel(!isModelopen)}
-              >
-                <span className="btn flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-white hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 text-gray-700 hover:text-gray-800 active:text-gray-900 dark:text-slate-200 hover:dark:text-slate-100 active:dark:text-slate-50 px-4 h-[38px] rounded-xl text-base font-semibold">
-                  Buy 4TOKEN
-                </span>
-              </button>
-              {isModelopen && (
-                <div
-                  className="absolute top-10 right-0 z-10 mt-2 w-56 dark:text-white origin-top-right rounded-md bg-white dark:bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                  role="menu"
-                  aria-orientation="vertical"
-                  tabIndex={-1}
-                >
-                  <div className="py-1" role="none">
-                    <a
-                      href="#"
-                      className="text-gray-700 block px-4 py-2 text-sm dark:text-white"
-                      role="menuitem"
-                      tabIndex={-1}
-                      id="menu-item-0"
-                    >
-                      Buy on PancakeSwap
-                    </a>
-                    <a
-                      href="#"
-                      className="text-gray-700 block px-4 py-2 text-sm dark:text-white"
-                      role="menuitem"
-                      tabIndex={-1}
-                      id="menu-item-1"
-                    >
-                      Buy on LFG Swap
-                    </a>
-                  </div>
+                <div className="block md:hidden w-7 h-7 sm:w-[115px] sm:h-[37px]">
+                  <Image
+                    src="/images/4logo.png"
+                    alt=""
+                    width={800}
+                    height={800}
+                  />
                 </div>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <div className="flex gap-2 transform scale-100 opacity-100">
-              <div data-headlessui-state="" ref={componentRef}>
+                <div className="hidden md:block w-7 h-7 sm:w-[115px] sm:h-[37px]">
+                  <Image
+                    src="/images/logo_name.png"
+                    alt=""
+                    width={800}
+                    height={800}
+                  />
+                </div>
+              </Link>
+              <div className="relative" data-headlessui-state="">
                 <button
-                  className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
+                  className="btn flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-white hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 text-gray-700 hover:text-gray-800 active:text-gray-900 dark:text-slate-200 hover:dark:text-slate-100 active:dark:text-slate-50 px-4 h-[38px] rounded-xl text-base font-semibold"
+                  aria-haspopup="menu"
                   aria-expanded="false"
                   data-headlessui-state=""
                   type="button"
-                  id="headlessui-popover-button-:r1m:"
-                  onClick={() => openNetworkList(!isNetworkListOpen)}
                 >
-                  <Image src="/images/core.png" alt="" width={30} height={30} />
-
-                  <div className="hidden xl:block">Core Chain</div>
-
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    width="24"
-                    height="24"
-                    className="transition-all rotate-0 hidden sm:block"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
+                  Transactions
                 </button>
-                {isNetworkListOpen ? <MainNetwork /> : ""}
               </div>
-              <div data-headlessui-state="">
+              <div
+                className="hidden md:flex justify-center gap-2 relative h-[38px]"
+                ref={componentRef}
+              >
                 <button
-                  className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
-                  aria-expanded="false"
-                  data-headlessui-state=""
+                  aria-expanded="true"
+                  aria-haspopup="true"
                   type="button"
-                  id="headlessui-popover-button-:r1i:"
+                  onClick={() => openModel(!isModelopen)}
                 >
-                  <span className="hidden md:block">Connect Wallet</span>
-                  <span className="block md:hidden">Connect</span>
+                  <span className="btn flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-white hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 text-gray-700 hover:text-gray-800 active:text-gray-900 dark:text-slate-200 hover:dark:text-slate-100 active:dark:text-slate-50 px-4 h-[38px] rounded-xl text-base font-semibold">
+                    Buy 4TOKEN
+                  </span>
                 </button>
+                {isModelopen && (
+                  <div
+                    className="absolute top-10 right-0 z-10 mt-2 w-56 dark:text-white origin-top-right rounded-md bg-white dark:bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    role="menu"
+                    aria-orientation="vertical"
+                    tabIndex={-1}
+                  >
+                    <div className="py-1" role="none">
+                      <a
+                        href="#"
+                        className="text-gray-700 block px-4 py-2 text-sm dark:text-white hover:bg-[#bec9d2]"
+                        role="menuitem"
+                        tabIndex={-1}
+                        id="menu-item-0"
+                      >
+                        Buy on PancakeSwap
+                      </a>
+                      <a
+                        href="#"
+                        className="text-gray-700 block px-4 py-2 text-sm dark:text-white hover:bg-[#bec9d2]"
+                        role="menuitem"
+                        tabIndex={-1}
+                        id="menu-item-1"
+                      >
+                        Buy on LFG Swap
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <div className="flex gap-2 transform scale-100 opacity-100">
+                <div data-headlessui-state="" ref={componentRef}>
+                  <button
+                    className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
+                    aria-expanded="false"
+                    data-headlessui-state=""
+                    type="button"
+                    id="headlessui-popover-button-:r1m:"
+                    onClick={() => openNetworkList(!isNetworkListOpen)}
+                  >
+                    <Image
+                      src="/images/core.png"
+                      alt=""
+                      width={30}
+                      height={30}
+                    />
+
+                    <div className="hidden xl:block">Core Chain</div>
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                      width="24"
+                      height="24"
+                      className="transition-all rotate-0 hidden sm:block"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </button>
+                  {isNetworkListOpen ? <MainNetwork /> : ""}
+                </div>
+                <div data-headlessui-state="">
+                  <button
+                    className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
+                    aria-expanded="false"
+                    data-headlessui-state=""
+                    type="button"
+                    id="headlessui-popover-button-:r1i:"
+                  >
+                    <span className="hidden md:block">Connect Wallet</span>
+                    <span className="block md:hidden">Connect</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+      {isNetworkListOpen ? <MobileNetworks /> : ""}
+    </>
   );
 };
 
