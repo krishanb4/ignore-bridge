@@ -3,13 +3,33 @@ import Link from "next/link";
 import MainNetwork from "@/components/MainNetwork";
 import { useState, useEffect, useRef } from "react";
 import BuyModel from "./BuyModel";
-function Header() {
-  const [isModelopen, openModel] = useState(false);
-  const dropdownRef = useRef(null);
-  const [isNetworkListOpen, openNetworkList] = useState(false);
 
+const Header: React.FC = () => {
+  const [isModelopen, openModel] = useState(false);
+  const componentRef = useRef<HTMLDivElement>(null);
+  const [isNetworkListOpen, openNetworkList] = useState(false);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        componentRef.current &&
+        !componentRef.current.contains(event.target as Node)
+      ) {
+        openModel(false); // Update state to indicate mouse click on empty space
+        openNetworkList(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside); // Add event listener to document
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside); // Remove event listener on component unmount
+    };
+  }, [isNetworkListOpen, isModelopen]);
   return (
-    <header className="lg:border-transparent bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]">
+    <header
+      ref={componentRef}
+      className="lg:border-transparent bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]"
+    >
       <div className="mx-auto flex items-center max-w-full w-full h-[56px]">
         <div className="grid grid-cols-2 items-center w-full mx-auto z-[101] px-4">
           <div className="flex items-center sm:gap-2">
@@ -45,7 +65,10 @@ function Header() {
                 Transactions
               </button>
             </div>
-            <div className="hidden md:flex justify-center gap-2 relative h-[38px]">
+            <div
+              className="hidden md:flex justify-center gap-2 relative h-[38px]"
+              ref={componentRef}
+            >
               <button
                 aria-expanded="true"
                 aria-haspopup="true"
@@ -58,7 +81,6 @@ function Header() {
               </button>
               {isModelopen && (
                 <div
-                  ref={dropdownRef}
                   className="absolute top-10 right-0 z-10 mt-2 w-56 dark:text-white origin-top-right rounded-md bg-white dark:bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   role="menu"
                   aria-orientation="vertical"
@@ -90,7 +112,7 @@ function Header() {
           </div>
           <div className="flex items-center justify-end gap-2">
             <div className="flex gap-2 transform scale-100 opacity-100">
-              <div data-headlessui-state="">
+              <div data-headlessui-state="" ref={componentRef}>
                 <button
                   className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
                   aria-expanded="false"
@@ -139,6 +161,6 @@ function Header() {
       </div>
     </header>
   );
-}
+};
 
 export default Header;
