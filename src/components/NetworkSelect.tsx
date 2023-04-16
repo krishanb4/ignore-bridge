@@ -1,7 +1,7 @@
 import Image from "next/image";
 function NetworkSelect() {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl mb-4">
+    <div className="bg-white dark:bg-slate-900 rounded-xl mb-4 dark:text-white">
       <div className="flex flex-col border-[2px] border-[#02ad02] bg-gradient-to-r from-blue/[0.15] to-pink/[0.15] hover:from-blue/20 hover:to-pink/20 saturate-[2] dark:saturate-[1] px-4 py-3 rounded-xl">
         <div className="flex gap-3 items-center">
           <svg

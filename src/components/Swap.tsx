@@ -5,6 +5,7 @@ import To from "./To";
 import SwitchArrow from "./SwitchArrow";
 import SwapButton from "./SwapButton";
 import Image from "next/image";
+import LayerZero from "@/components/LayerZero";
 function Swap() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -21,13 +22,20 @@ function Swap() {
     };
     darkModeMediaQuery.addListener(handleDarkModeChange);
 
+    if (localStorage.getItem("theme") === "dark") {
+      setIsDarkMode(true);
+      console.log(isDarkMode);
+    }
+    if (localStorage.getItem("theme") === "light") {
+      setIsDarkMode(false);
+    }
     // Clean up event listener on unmount
     return () => {
-      darkModeMediaQuery.removeListener(handleDarkModeChange);
+      darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
     };
-  }, []);
+  }, [isDarkMode]);
   return (
-    <div className="p-4 mx-auto mt-16 mb-[86px] flex flex-col gap-4 w-full max-w-[520px]">
+    <div className="p-4 mx-auto mt-16 mb-[86px] text-black dark:text-white flex flex-col gap-4 w-full max-w-[520px]">
       <div className="flex flex-col gap-4">
         <div>
           <NetworkSelect />
@@ -36,25 +44,9 @@ function Swap() {
           <To />
           <SwapButton />
           <div className="text-center flex items-center justify-center m-8">
-            <p>Powered By</p>
+            <p className="dark:text-white mr-[15px]">Powered By</p>
             <a href="https://layerzero.network/" target="_blank">
-              {isDarkMode ? (
-                <Image
-                  src="/images/layerZero.svg"
-                  className="ml-3 svgImage"
-                  alt="layerzero_logo"
-                  width="100"
-                  height="300"
-                />
-              ) : (
-                <Image
-                  src="/images/layerZero.svg"
-                  className="ml-3 svgImage"
-                  alt="layerzero_logo"
-                  width="100"
-                  height="300"
-                />
-              )}
+              <LayerZero />
             </a>
           </div>
         </div>

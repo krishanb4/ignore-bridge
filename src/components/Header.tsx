@@ -25,11 +25,12 @@ const Header: React.FC = () => {
       document.removeEventListener("click", handleClickOutside); // Remove event listener on component unmount
     };
   }, [isNetworkListOpen, isModelopen]);
+
   return (
     <>
       <header
         ref={componentRef}
-        className="lg:border-transparent bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]"
+        className="lg:border-transparent text-black dark:text-white bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]"
       >
         <div className="mx-auto flex items-center max-w-full w-full h-[56px]">
           <div className="grid grid-cols-2 items-center w-full mx-auto z-[101] px-4">
@@ -115,7 +116,7 @@ const Header: React.FC = () => {
               <div className="flex gap-2 transform scale-100 opacity-100">
                 <div data-headlessui-state="" ref={componentRef}>
                   <button
-                    className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
+                    className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:text-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
                     aria-expanded="false"
                     data-headlessui-state=""
                     type="button"
@@ -151,7 +152,7 @@ const Header: React.FC = () => {
                 </div>
                 <div data-headlessui-state="">
                   <button
-                    className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
+                    className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all dark:text-white bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
                     aria-expanded="false"
                     data-headlessui-state=""
                     type="button"

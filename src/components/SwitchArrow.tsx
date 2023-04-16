@@ -13,9 +13,10 @@ function SwitchArrow() {
             strokeWidth="3"
             stroke="currentColor"
             aria-hidden="true"
-            className="w-4 h-4 text-blue"
+            className="w-4 h-4 text-blue fill-current dark:text-white"
           >
             <path
+              className="fill-current dark:text-white"
               strokeLinecap="round"
               strokeLinejoin="round"
               d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"

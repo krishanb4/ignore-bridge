@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Header from "@/components/Header";
 import Swap from "@/components/Swap";
+import Theme from "@/components/Theme";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       </Head>
       <Header />
       <Swap />
+      <Theme />
     </>
   );
 }
