@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ToData from "./ToData";
 import Image from "next/image";
 
 function ToInput() {
-  const [input, setInput] = useState(0);
+  const [inputValue, setInputValue] = useState("");
+  useEffect(() => {
+    console.log(inputValue);
+  }, [inputValue]);
   return (
     <>
       <div className="relative flex items-center gap-4">
@@ -22,8 +25,8 @@ function ToInput() {
           maxLength={79}
           className="text-gray-900 dark:text-slate-50 text-left border-none focus:outline-none focus:ring-0 p-0 bg-transparent w-full truncate font-medium without-ring !text-3xl py-1"
           testdata-id="undefined-input"
-          value=""
-          onChange={() => setInput(1)}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
         />
         <button
           id="undefined-button"

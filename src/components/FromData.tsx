@@ -1,10 +1,61 @@
-function FromData() {
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import { useAccount, useBalance, useNetwork } from "wagmi";
+import { tokens } from "@/config/constants/addresses";
+import { ethers } from "ethers";
+
+interface ReceiverComponentProps {
+  onDataReceived: (tokenbalance: string) => void; // Define the callback function prop
+}
+
+const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
+  const { chain } = useNetwork();
+  const { address, isConnected } = useAccount();
+  const [integerPart, setIntegerPart] = useState("0");
+  const [fractionalPart, setFractionalPart] = useState("00");
+  const [tokenbalance, setTokenBalance] = useState("");
+  const { data, isError, isLoading } = useBalance({
+    address: address,
+    token: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+  const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (chain?.id == 56) {
+      const erc20Address = ethers.utils.getAddress(tokens.USDT.bsc);
+      setTokenAddress(erc20Address);
+    } else if (chain?.id == 1116) {
+      const erc20Address = ethers.utils.getAddress(tokens.USDT.core);
+      setTokenAddress(erc20Address);
+    }
+
+    if (!isLoading) {
+      const tokenB = data?.formatted || "";
+      setTokenBalance(tokenB);
+      const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
+      const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
+
+      setIntegerPart(integerPart.toString());
+      const fPart = fractionalPart.toString();
+      setFractionalPart(fPart.substring(2));
+    }
+  }, [chain?.id, tokenAddress, address, data, isLoading]);
+  const handleDataInput = () => {
+    console.log(tokenbalance);
+
+    onDataReceived(tokenbalance);
+  };
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
       <p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
         $ 0.<span className="text-sm font-semibold">00</span>
       </p>
       <button
+        onClick={() => handleDataInput()}
         data-testid="undefined-balance-button"
         type="button"
         className="font-medium flex gap-1.5 items-center py-1 text-blue hover:text-blue-600 active:text-blue-700 dark:text-slate-400 hover:dark:text-slate-300 px-2 rounded-md"
@@ -22,11 +73,12 @@ function FromData() {
           ></path>
         </svg>
         <span className="text-lg">
-          0.<span className="text-sm font-semibold">00</span>
+          {integerPart}.
+          <span className="text-sm font-semibold">{fractionalPart}</span>
         </span>
       </button>
     </div>
   );
-}
+};
 
 export default FromData;

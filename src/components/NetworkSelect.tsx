@@ -1,5 +1,56 @@
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 function NetworkSelect() {
+  const { switchNetwork } = useSwitchNetwork();
+  const { chain } = useNetwork();
+
+  const [chainDetails, setChainDetails] = useState([
+    {
+      id: 1116,
+      symbol: "core",
+      name: "Core Chain",
+    },
+    {
+      id: 56,
+      symbol: "bsc",
+      name: "BSC Chain",
+    },
+  ]);
+  const [switchNetworkId, setSwitchNetworkId] = useState(56);
+  useEffect(() => {
+    if (chain) {
+      setChainDetails(
+        chain.id == 56
+          ? [
+              {
+                id: 56,
+                symbol: "bsc",
+                name: "BSC Chain",
+              },
+              {
+                id: 1116,
+                symbol: "core",
+                name: "Core Chain",
+              },
+            ]
+          : [
+              {
+                id: 1116,
+                symbol: "core",
+                name: "Core Chain",
+              },
+              {
+                id: 56,
+                symbol: "bsc",
+                name: "BSC Chain",
+              },
+            ]
+      );
+
+      setSwitchNetworkId(chain.id == 56 ? 1116 : 56);
+    }
+  }, [chain]);
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl mb-4 dark:text-white">
       <div className="flex flex-col border-[2px] border-[#02ad02] bg-gradient-to-r from-blue/[0.15] to-pink/[0.15] hover:from-blue/20 hover:to-pink/20 saturate-[2] dark:saturate-[1] px-4 py-3 rounded-xl">
@@ -82,27 +133,12 @@ function NetworkSelect() {
               Swap tokens from one network to another.
             </span>
           </div>
-          {/* <div className="flex justify-end flex-grow">
-            <button
-              className="bg-blue items-center relative inline-flex flex-shrink-0 rounded-full cursor-pointer ease-in-out duration-200 h-[30px] w-[48px]"
-              id="headlessui-switch-:r11:"
-              role="switch"
-              type="button"
-              tabIndex={0}
-              aria-checked="true"
-              data-headlessui-state="checked"
-            >
-              <span
-                id=""
-                className="translate-x-[20px] bg-white transition-transform pointer-events-none p-1 rounded-full ease-in-out duration-200 inline-flex items-center justify-center h-[26px] w-[26px]"
-              ></span>
-            </button>
-          </div> */}
         </div>
         <div className="pt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center justify-center">
               <button
+                onClick={() => switchNetwork?.(switchNetworkId)}
                 type="button"
                 className="z-10 group hover:bg-white/30 hover:dark:bg-white/[0.16] p-2 border-white transition-all rounded-full cursor-pointer"
               >
@@ -141,50 +177,14 @@ function NetworkSelect() {
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-1 overflow-hidden">
                         <Image
-                          src="/images/core.png"
+                          src={`/images/${chainDetails[0].symbol}.png`}
                           alt=""
                           width="20"
                           height="20"
                         />
-                        {/* <svg
-                          viewBox="0 0 128 128"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="32"
-                          height="32"
-                          className="dark:text-white text-gray-700"
-                        >
-                          <path
-                            d="M63.993 24v29.573l24.99 11.169L63.993 24Z"
-                            fill="currentColor"
-                            fillOpacity="0.602"
-                          ></path>
-                          <path
-                            d="M63.993 24 39 64.742l24.993-11.17V24Z"
-                            fill="currentColor"
-                          ></path>
-                          <path
-                            d="M63.993 83.906V104L89 69.396l-25.007 14.51Z"
-                            fill="currentColor"
-                            fillOpacity="0.602"
-                          ></path>
-                          <path
-                            d="M63.993 104V83.902L39 69.396 63.993 104Z"
-                            fill="currentColor"
-                          ></path>
-                          <path
-                            d="m63.993 79.255 24.99-14.513-24.99-11.162v25.675Z"
-                            fill="currentColor"
-                            fillOpacity="0.2"
-                          ></path>
-                          <path
-                            d="m39 64.742 24.993 14.513V53.58L39 64.742Z"
-                            fill="currentColor"
-                            fillOpacity="0.602"
-                          ></path>
-                        </svg> */}
+
                         <span className="w-full text-left truncate">
-                          Core Chain
+                          {chainDetails[0].name}
                         </span>
                       </div>
                       <div className="min-w-4 min-h-4">
@@ -224,37 +224,14 @@ function NetworkSelect() {
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center justify-start gap-1 overflow-hidden">
                         <Image
-                          src="/images/bsc.png"
+                          src={`/images/${chainDetails[1].symbol}.png`}
                           alt=""
                           width="20"
                           height="20"
                         />
-                        {/* <svg
-                          viewBox="0 0 128 128"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="32"
-                          height="32"
-                        >
-                          <path
-                            d="m74.58 60.53 6.657-11.295 17.941 27.944.009 5.362-.059-36.903a2.778 2.778 0 0 0-1.285-2.215L65.54 24.844a2.847 2.847 0 0 0-2.468.012c-.1.05-.196.106-.29.167l-.112.071-31.354 18.17-.122.054a2.77 2.77 0 0 0-1.62 2.36l.049 30.073 16.712-25.902c2.104-3.435 6.688-4.541 10.943-4.481l4.994.129-29.428 47.195 3.469 1.997 29.782-49.145 13.163-.048L49.554 95.88l12.38 7.125 1.48.851a2.846 2.846 0 0 0 1.994.039l32.755-18.982-6.266 3.629L74.58 60.529Zm2.54 36.576L64.618 77.484l7.631-12.95 16.42 25.88-11.549 6.692Z"
-                            fill="#2D374B"
-                          ></path>
-                          <path
-                            d="M64.618 77.484 77.12 97.106l11.55-6.693-16.42-25.88-7.632 12.95ZM99.189 82.541l-.009-5.36L81.24 49.235l-6.66 11.293 17.32 28.011 6.265-3.629a2.777 2.777 0 0 0 1.025-2.02v-.35Z"
-                            fill="#28A0F0"
-                          ></path>
-                          <path
-                            d="m24.003 87.599 8.844 5.096L62.275 45.5l-4.994-.129c-4.255-.06-8.84 1.046-10.943 4.48L29.626 75.755l-5.62 8.638v3.21l-.003-.003ZM79.26 45.5l-13.163.047-29.781 49.145 10.41 5.994 2.83-4.802L79.26 45.5Z"
-                            fill="#fff"
-                          ></path>
-                          <path
-                            d="M104.734 45.432a8.39 8.39 0 0 0-3.936-6.74l-32.725-18.82a8.512 8.512 0 0 0-7.508 0c-.273.138-31.824 18.437-31.824 18.437-.438.21-.857.459-1.253.741A8.32 8.32 0 0 0 24 45.416V84.39l5.62-8.638-.044-30.071a2.792 2.792 0 0 1 1.157-2.09c.149-.107 32.238-18.681 32.34-18.732a2.847 2.847 0 0 1 2.468-.012l32.302 18.58a2.778 2.778 0 0 1 1.285 2.215v37.252a2.712 2.712 0 0 1-.966 2.021l-6.265 3.629-3.23 1.873-11.55 6.693-11.712 6.788a2.835 2.835 0 0 1-1.994-.039l-13.857-7.97-2.83 4.8 12.453 7.17c.412.234.779.442 1.08.611.466.259.784.436.896.491a8.104 8.104 0 0 0 3.306.68 8.326 8.326 0 0 0 3.049-.574l34.019-19.7a8.317 8.317 0 0 0 3.205-6.266l.002-37.67Z"
-                            fill="#96BEDC"
-                          ></path>
-                        </svg> */}
+
                         <span className="w-full text-left truncate">
-                          BSC Chain
+                          {chainDetails[1].name}
                         </span>
                       </div>
                       <div className="min-w-4 min-h-4">

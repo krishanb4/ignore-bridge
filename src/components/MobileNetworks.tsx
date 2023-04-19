@@ -1,5 +1,11 @@
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useNetwork, useSwitchNetwork } from "wagmi";
+
 function MobileNetworks() {
+  const { chains, error, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
+
   return (
     <div
       className="relative z-[1080] md:hidden "
@@ -33,7 +39,7 @@ function MobileNetworks() {
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    stroke-width="2"
+                    strokeWidth="2"
                     stroke="currentColor"
                     aria-hidden="true"
                     width="24"
@@ -63,7 +69,10 @@ function MobileNetworks() {
                   />
                 </div> */}
                 <div className="h-[calc(100%-44px)] scroll overflow-auto py-3">
-                  <button className="w-full group hover:bg-white hover:dark:bg-slate-800 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]">
+                  <button
+                    onClick={() => switchNetwork?.(1116)}
+                    className="w-full group hover:bg-white hover:dark:bg-slate-800 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]"
+                  >
                     <div className="flex items-center gap-2">
                       <Image
                         src="/images/core.png"
@@ -76,7 +85,10 @@ function MobileNetworks() {
                       </p>
                     </div>
                   </button>
-                  <button className="w-full group hover:bg-white hover:dark:bg-slate-800 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]">
+                  <button
+                    onClick={() => switchNetwork?.(56)}
+                    className="w-full group hover:bg-white hover:dark:bg-slate-800 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]"
+                  >
                     <div className="flex items-center gap-2">
                       <Image
                         src="/images/bsc.png"

@@ -3,9 +3,13 @@ import NetworkSelect from "@/components/NetworkSelect";
 import From from "./From";
 import To from "./To";
 import SwitchArrow from "./SwitchArrow";
-import SwapButton from "./SwapButton";
+// import SwapButton from "./SwapButton";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import LayerZero from "@/components/LayerZero";
+const SwapButton = dynamic(() => import("./SwapButton"), {
+  ssr: false,
+});
 function Swap() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -24,7 +28,6 @@ function Swap() {
 
     if (localStorage.getItem("theme") === "dark") {
       setIsDarkMode(true);
-      console.log(isDarkMode);
     }
     if (localStorage.getItem("theme") === "light") {
       setIsDarkMode(false);

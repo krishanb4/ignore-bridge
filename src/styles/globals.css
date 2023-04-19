@@ -55,6 +55,10 @@ body {
     background-size: auto;
 }
 
+w3m-modal {
+    z-index: 99999999;
+}
+
 a {
     color: inherit;
     text-decoration: none;

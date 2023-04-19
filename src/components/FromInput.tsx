@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FromData from "./FromData";
 import Image from "next/image";
+import { useAccount, useBalance, useNetwork } from "wagmi";
+import { tokens } from "@/config/constants/addresses";
+import { ethers } from "ethers";
+
 function FromInput() {
-  const [input, setInput] = useState(0);
+  const [inputValue, setInputValue] = useState("");
+  const handleDataReceived = (data: string) => {
+    setInputValue(data); // Update state with received data
+  };
   return (
     <>
       <div className="relative flex items-center gap-4">
@@ -14,15 +21,15 @@ function FromInput() {
           spellCheck="false"
           autoComplete="new-password"
           type="text"
-          pattern="^[0-9]*[.,]?[0-9]*$"
+          pattern="^(?!^\.+$)(?!^$)(?!^0\.0?$)(?!^0?$)\d+(\.\d{1,2})?$"
           placeholder="0"
           min="0"
           minLength={1}
           maxLength={79}
           className="text-gray-900 dark:text-slate-50 text-left border-none focus:outline-none focus:ring-0 p-0 bg-transparent w-full truncate font-medium without-ring !text-3xl py-1"
           testdata-id="undefined-input"
-          value=""
-          onChange={() => setInput(1)}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
         />
         <button
           id="undefined-button"
@@ -69,7 +76,7 @@ function FromInput() {
           </svg>
         </button>
       </div>
-      <FromData />
+      <FromData onDataReceived={handleDataReceived} />
     </>
   );
 }

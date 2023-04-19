@@ -3,6 +3,8 @@ import Link from "next/link";
 import MainNetwork from "@/components/MainNetwork";
 import { useState, useEffect, useRef } from "react";
 import MobileNetworks from "./MobileNetworks";
+import { Web3Button } from "@web3modal/react";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 
 const Header: React.FC = () => {
   const [isModelopen, openModel] = useState(false);
@@ -25,16 +27,34 @@ const Header: React.FC = () => {
       document.removeEventListener("click", handleClickOutside); // Remove event listener on component unmount
     };
   }, [isNetworkListOpen, isModelopen]);
+  const { chain } = useNetwork();
+  const [currentNetwork, setCurrentNetwork] = useState("");
+  const [currentNetworkImage, setCurrentNetworkImage] = useState("");
+  const { chains, error, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
+  useEffect(() => {
+    if (chain?.id === 56) {
+      setCurrentNetwork("BSC Chain");
+      setCurrentNetworkImage("bsc");
+    } else if (chain?.id === 1116) {
+      setCurrentNetwork("Core Chain");
+      setCurrentNetworkImage("core");
+    } else {
+      setCurrentNetworkImage("error");
+      setCurrentNetwork("");
+    }
+    console.log(error);
+  }, [chain, error]);
 
   return (
     <>
       <header
         ref={componentRef}
-        className="lg:border-transparent text-black dark:text-white bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1070] transition-all h-[56px]"
+        className="lg:border-transparent text-black dark:text-white bg-gray-100 dark:bg-slate-900 border-gray-300/70 dark:border-slate-200/5 border-b sticky flex items-center top-0 z-[1] transition-all h-[56px]"
       >
         <div className="mx-auto flex items-center max-w-full w-full h-[56px]">
           <div className="grid grid-cols-2 items-center w-full mx-auto z-[101] px-4">
-            <div className="flex items-center sm:gap-2">
+            <div className="flex items-center sm:gap-1">
               <Link
                 className="flex flex-row items-center sm:pl-2 sm:pr-6"
                 href="/"
@@ -56,7 +76,7 @@ const Header: React.FC = () => {
                   />
                 </div>
               </Link>
-              <div className="relative" data-headlessui-state="">
+              <div className="relative hidden md:flex" data-headlessui-state="">
                 <button
                   className="btn flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-white hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 text-gray-700 hover:text-gray-800 active:text-gray-900 dark:text-slate-200 hover:dark:text-slate-100 active:dark:text-slate-50 px-4 h-[38px] rounded-xl text-base font-semibold"
                   aria-haspopup="menu"
@@ -114,7 +134,11 @@ const Header: React.FC = () => {
             </div>
             <div className="flex items-center justify-end gap-2">
               <div className="flex gap-2 transform scale-100 opacity-100">
-                <div data-headlessui-state="" ref={componentRef}>
+                <div
+                  data-headlessui-state=""
+                  ref={componentRef}
+                  className="w-[62px] sm:w-auto md:w-auto"
+                >
                   <button
                     className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:text-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
                     aria-expanded="false"
@@ -124,13 +148,14 @@ const Header: React.FC = () => {
                     onClick={() => openNetworkList(!isNetworkListOpen)}
                   >
                     <Image
-                      src="/images/core.png"
+                      src={`/images/${currentNetworkImage}.png`}
                       alt=""
+                      className="max-w-auto"
                       width={30}
                       height={30}
                     />
 
-                    <div className="hidden xl:block">Core Chain</div>
+                    <div className="hidden xl:block">{currentNetwork}</div>
 
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +176,9 @@ const Header: React.FC = () => {
                   {isNetworkListOpen ? <MainNetwork /> : ""}
                 </div>
                 <div data-headlessui-state="">
-                  <button
+                  <Web3Button />
+                  {/* <button
+                    onClick={() => connect()}
                     className="btn  flex items-center justify-center gap-2 cursor-pointer transition-all dark:text-white bg-white dark:bg-slate-600/10 hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 px-4 h-[38px] rounded-xl text-base font-semibold !"
                     aria-expanded="false"
                     data-headlessui-state=""
@@ -160,7 +187,7 @@ const Header: React.FC = () => {
                   >
                     <span className="hidden md:block">Connect Wallet</span>
                     <span className="block md:hidden">Connect</span>
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

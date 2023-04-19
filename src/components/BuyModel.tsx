@@ -23,7 +23,7 @@ function BuyModel() {
               aria-hidden="true"
               width="24"
               height="24"
-              stroke-width="5"
+              strokeWidth="5"
               role="none"
             >
               <path
@@ -64,7 +64,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
@@ -97,7 +97,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
@@ -138,7 +138,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
@@ -171,7 +171,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
@@ -212,7 +212,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
@@ -245,7 +245,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
@@ -278,7 +278,7 @@ function BuyModel() {
                     aria-hidden="true"
                     width="24"
                     height="24"
-                    stroke-width="5"
+                    strokeWidth="5"
                     className="text-blue"
                   >
                     <path
