@@ -182,12 +182,12 @@ function SwapButton() {
         ? "dark"
         : "default";
       if (theme === "default") {
-        toast.error("Failed to approve tokens: " + error, {
+        toast.error("Failed to send tokens: " + error, {
           theme: "light",
         });
       } else {
         console.log("dark");
-        toast.error("Failed to approve tokens: " + error, {
+        toast.error("Failed to send tokens: " + error, {
           theme: "dark",
         });
       }
