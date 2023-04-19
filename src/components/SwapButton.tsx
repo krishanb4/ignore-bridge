@@ -166,7 +166,7 @@ function SwapButton() {
         },
       });
     }
-  }, [tokenAddressSwap]);
+  }, [tokenAddressSwap, address, toAddress]);
   console.log(args);
   const { config, error } = usePrepareContractWrite({
     address: "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213",
@@ -194,13 +194,15 @@ function SwapButton() {
       setSwaping(false);
     },
     onSuccess(data) {
-      console.log("Success", data);
+      console.log("Success", data.hash);
       setSwaping(false);
       toast.success("Transactin successfully send 👌");
     },
   });
   const [swaping, setSwaping] = useState(false);
   async function Swap() {
+    console.log(chain);
+
     if (chain?.id === 56) {
       setTokenAddressSwap(tokens.USDT.bsc);
       setContractAddressSwap(bscContractAddress);
@@ -208,17 +210,23 @@ function SwapButton() {
       setTokenAddressSwap(tokens.USDT.core);
       setContractAddressSwap(coreContractAddress);
     }
-    setSwaping(true);
-    write?.();
+    console.log("before call write");
+    if (tokenAddressSwap && toAddress) {
+      console.log(args);
+      write?.();
+      setSwaping(true);
+    } else {
+      console.log("no calling swap");
+    }
+
+    console.log("after call write");
   }
 
   const HanddleFunctions = () => {
     if (chain?.id === 56 || chain?.id === 1116) {
       if (isConnected) {
-        if (approveBalance > 0) {
-          if (swaping) {
-            return;
-          } else {
+        if (approveBalance > 1) {
+          if (!swaping) {
             Swap();
           }
         } else {
@@ -238,8 +246,12 @@ function SwapButton() {
   const [buttonText, setButtonText] = useState("");
   useEffect(() => {
     if (chain?.id === 56 || chain?.id === 1116) {
-      if (approveBalance > 0) {
-        setButtonText("Swap");
+      if (approveBalance > 1) {
+        if (swaping) {
+          setButtonText("Swaping");
+        } else {
+          setButtonText("Swap");
+        }
       } else {
         if (approving) {
           setButtonText("Approving");
@@ -252,7 +264,7 @@ function SwapButton() {
     } else {
       setButtonText("Switch Network");
     }
-  }, [approving, chain, isConnected, approveBalance]);
+  }, [approving, chain, isConnected, approveBalance, swaping, buttonText]);
   return (
     <div className="pt-4">
       <div className="relative w-full" data-headlessui-state="">
