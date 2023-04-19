@@ -14,16 +14,17 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   const [integerPart, setIntegerPart] = useState("0");
   const [fractionalPart, setFractionalPart] = useState("00");
   const [tokenbalance, setTokenBalance] = useState("");
+  const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
+    undefined
+  );
   const { data, isError, isLoading } = useBalance({
     address: address,
-    token: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    token: tokenAddress,
     onError(error) {
       console.log("Error", error);
     },
   });
-  const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
-    undefined
-  );
+
   useEffect(() => {
     if (chain?.id == 56) {
       const erc20Address = ethers.utils.getAddress(tokens.USDT.bsc);

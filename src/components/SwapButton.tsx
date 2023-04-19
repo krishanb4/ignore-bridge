@@ -145,12 +145,12 @@ function SwapButton() {
   const [args, setArgs] = useState({} as SwapArgs);
   const [contractAddressSwap, setContractAddressSwap] = useState("");
   const [tokenAddressSwap, setTokenAddressSwap] = useState("");
-  const toAddress = "user_address";
+  const toAddress = address;
 
   const adapterParams = "0x";
   useEffect(() => {
     const callParams = {
-      refundAddress: "user_address",
+      refundAddress: address,
       zroPaymentAddress: "0x0000000000000000000000000000000000000000",
     };
     if (tokenAddressSwap && toAddress) {
