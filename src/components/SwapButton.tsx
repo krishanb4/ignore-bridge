@@ -174,7 +174,32 @@ function SwapButton() {
     functionName: "bridge",
     args: Object.values(args),
   });
-  const { data, isLoading, isSuccess, write } = useContractWrite(config);
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(error) {
+      console.log("Error", error);
+      const theme = document.documentElement.classList.contains("dark")
+        ? "dark"
+        : "default";
+      if (theme === "default") {
+        toast.error("Failed to approve tokens: " + error, {
+          theme: "light",
+        });
+      } else {
+        console.log("dark");
+        toast.error("Failed to approve tokens: " + error, {
+          theme: "dark",
+        });
+      }
+      setSwaping(false);
+    },
+    onSuccess(data) {
+      console.log("Success", data);
+      setSwaping(false);
+      toast.success("Transactin successfully send 👌");
+    },
+  });
+  const [swaping, setSwaping] = useState(false);
   async function Swap() {
     if (chain?.id === 56) {
       setTokenAddressSwap(tokens.USDT.bsc);
@@ -183,7 +208,7 @@ function SwapButton() {
       setTokenAddressSwap(tokens.USDT.core);
       setContractAddressSwap(coreContractAddress);
     }
-
+    setSwaping(true);
     write?.();
   }
 
@@ -191,7 +216,11 @@ function SwapButton() {
     if (chain?.id === 56 || chain?.id === 1116) {
       if (isConnected) {
         if (approveBalance > 0) {
-          Swap();
+          if (swaping) {
+            return;
+          } else {
+            Swap();
+          }
         } else {
           if (approving) {
             return;
@@ -230,17 +259,17 @@ function SwapButton() {
         <button
           onClick={() => HanddleFunctions()}
           className={`btn w-full flex items-center justify-center gap-2 cursor-pointer transition-all bg-[#02ad02] ${
-            approving
+            swaping || approving
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           }   text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
           aria-expanded="false"
           data-headlessui-state=""
-          disabled={approving}
+          disabled={swaping || approving}
           type="button"
           id="headlessui-popover-button-:r1e:"
         >
-          {approving ? (
+          {swaping || approving ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="m-0 bg-transparent block antialiased"
