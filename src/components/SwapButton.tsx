@@ -142,7 +142,8 @@ function SwapButton() {
   }, [chain, tokenAddress, tokenSpender, userAddress]);
 
   const [args, setArgs] = useState({} as SwapArgs);
-  const [contractAddressSwap, setContractAddressSwap] = useState("");
+  const [contractAddressSwap, setContractAddressSwap] =
+    useState<`0x${string}`>();
   const [tokenAddressSwap, setTokenAddressSwap] = useState("");
   const toAddress = address;
   const adapterParams = "0x";
@@ -225,7 +226,7 @@ function SwapButton() {
   });
 
   const { config, error } = usePrepareContractWrite({
-    address: "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213",
+    address: contractAddressSwap,
     abi: bridgeABI,
     functionName: "bridge",
     args: Object.values(args),
@@ -257,9 +258,7 @@ function SwapButton() {
     },
   });
 
-  async function Swap() {
-    console.log(chain);
-
+  useEffect(() => {
     if (chain?.id === 56) {
       setTokenAddressSwap(tokens.USDT.bsc);
       setContractAddressSwap(bscContractAddress);
@@ -267,6 +266,11 @@ function SwapButton() {
       setTokenAddressSwap(tokens.USDT.core);
       setContractAddressSwap(coreContractAddress);
     }
+  }, [chain?.id]);
+
+  async function Swap() {
+    console.log(chain);
+
     console.log("before call write");
     if (tokenAddressSwap && toAddress) {
       console.log(args);
