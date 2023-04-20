@@ -171,7 +171,7 @@ function SwapButton() {
   const HanddleFunctions = () => {
     if (chain?.id === 56 || chain?.id === 1116) {
       if (isConnected) {
-        if (approveBalance > 1) {
+        if (approveBalance > 0) {
           if (!swaping) {
             Swap();
           }
@@ -192,7 +192,7 @@ function SwapButton() {
   const [buttonText, setButtonText] = useState("");
   useEffect(() => {
     if (chain?.id === 56 || chain?.id === 1116) {
-      if (approveBalance > 1) {
+      if (approveBalance > 0) {
         if (swaping) {
           setButtonText("Swaping");
         } else {
