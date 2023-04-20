@@ -15,7 +15,6 @@ import {
   approve,
   ApprovalResult,
   checkApprovedBalance,
-  WriteFunction,
 } from "../utils/callFunctions";
 import TokenABI from "@/config/abi/bscUSDT.json";
 import bridgeABI from "@/config/abi/bridgeABI.json";
@@ -146,8 +145,9 @@ function SwapButton() {
   const [contractAddressSwap, setContractAddressSwap] = useState("");
   const [tokenAddressSwap, setTokenAddressSwap] = useState("");
   const toAddress = address;
-
   const adapterParams = "0x";
+  const [swaping, setSwaping] = useState(false);
+
   useEffect(() => {
     const callParams = {
       refundAddress: address,
@@ -166,61 +166,7 @@ function SwapButton() {
         },
       });
     }
-  }, [tokenAddressSwap, address, toAddress]);
-  console.log(args);
-  const { config, error } = usePrepareContractWrite({
-    address: "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213",
-    abi: bridgeABI,
-    functionName: "bridge",
-    args: Object.values(args),
-  });
-  const { data, isLoading, isSuccess, write } = useContractWrite({
-    ...config,
-    onError(error) {
-      console.log("Error", error);
-      const theme = document.documentElement.classList.contains("dark")
-        ? "dark"
-        : "default";
-      if (theme === "default") {
-        toast.error("Failed to send tokens: " + error, {
-          theme: "light",
-        });
-      } else {
-        console.log("dark");
-        toast.error("Failed to send tokens: " + error, {
-          theme: "dark",
-        });
-      }
-      setSwaping(false);
-    },
-    onSuccess(data) {
-      console.log("Success", data.hash);
-      setSwaping(false);
-      toast.success("Transactin successfully send 👌");
-    },
-  });
-  const [swaping, setSwaping] = useState(false);
-  async function Swap() {
-    console.log(chain);
-
-    if (chain?.id === 56) {
-      setTokenAddressSwap(tokens.USDT.bsc);
-      setContractAddressSwap(bscContractAddress);
-    } else if (chain?.id === 1116) {
-      setTokenAddressSwap(tokens.USDT.core);
-      setContractAddressSwap(coreContractAddress);
-    }
-    console.log("before call write");
-    if (tokenAddressSwap && toAddress) {
-      console.log(args);
-      write?.();
-      setSwaping(true);
-    } else {
-      console.log("no calling swap");
-    }
-
-    console.log("after call write");
-  }
+  }, [tokenAddressSwap, address, toAddress, chain]);
 
   const HanddleFunctions = () => {
     if (chain?.id === 56 || chain?.id === 1116) {
@@ -265,6 +211,71 @@ function SwapButton() {
       setButtonText("Switch Network");
     }
   }, [approving, chain, isConnected, approveBalance, swaping, buttonText]);
+  const [prepareContract, setPrepareContract] = useState("");
+  console.log(`contract ${tokenSpender}`);
+  useEffect(() => {
+    function getContract() {
+      if (chain?.id === 56) {
+        setPrepareContract(tokens.USDT.bsc);
+      } else if (chain?.id === 1116) {
+        setPrepareContract(tokens.USDT.core);
+      }
+    }
+    getContract();
+  });
+  const { config, error } = usePrepareContractWrite({
+    address: ethers.utils.getAddress(prepareContract),
+    abi: bridgeABI,
+    functionName: "bridge",
+    args: Object.values(args),
+  });
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    ...config,
+    onError(error) {
+      console.log("Error", error);
+      const theme = document.documentElement.classList.contains("dark")
+        ? "dark"
+        : "default";
+      if (theme === "default") {
+        toast.error("Failed to send tokens: " + error, {
+          theme: "light",
+        });
+      } else {
+        console.log("dark");
+        toast.error("Failed to send tokens: " + error, {
+          theme: "dark",
+        });
+      }
+      setSwaping(false);
+    },
+    onSuccess(data) {
+      console.log("Success", data.hash);
+      setSwaping(false);
+      toast.success("Transactin successfully send 👌");
+    },
+  });
+
+  async function Swap() {
+    console.log(chain);
+
+    if (chain?.id === 56) {
+      setTokenAddressSwap(tokens.USDT.bsc);
+      setContractAddressSwap(bscContractAddress);
+    } else if (chain?.id === 1116) {
+      setTokenAddressSwap(tokens.USDT.core);
+      setContractAddressSwap(coreContractAddress);
+    }
+    console.log("before call write");
+    if (tokenAddressSwap && toAddress) {
+      console.log(args);
+      write?.();
+      setSwaping(true);
+    } else {
+      console.log("no calling swap");
+    }
+
+    console.log("after call write");
+  }
   return (
     <div className="pt-4">
       <div className="relative w-full" data-headlessui-state="">

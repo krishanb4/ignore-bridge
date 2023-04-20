@@ -1,6 +1,7 @@
 import { ethers, BigNumber } from "ethers";
 import { getProvider } from "@wagmi/core";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
+import bridgeABI from "@/config/abi/bridgeABI.json";
 export interface ApprovalResult {
   txHash: string;
   status: "mined" | "failed";
@@ -86,9 +87,38 @@ type SwapArgs = {
   to: string;
   callParams: {};
   adapterParams: "0x";
+  gassData: {};
 };
 
-export const WriteFunction = async (config: any) => {
-  const { write } = useContractWrite(config);
-  write?.();
+interface BridgeParams {
+  prepareContract: string;
+  args: SwapArgs;
+}
+
+interface UseBridgeReturnType {
+  bridge: any;
+  error: any;
+}
+
+export const useBridge = (
+  prepareContract: string,
+  args: SwapArgs
+): UseBridgeReturnType => {
+  const { config, error } = usePrepareContractWrite({
+    address: ethers.utils.getAddress(prepareContract),
+    abi: bridgeABI,
+    functionName: "bridge",
+    args: Object.values(args),
+  });
+
+  const bridge = async () => {
+    try {
+      const response = config.mode;
+      console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return { bridge, error };
 };
