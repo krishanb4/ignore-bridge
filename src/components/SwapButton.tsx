@@ -223,12 +223,14 @@ function SwapButton() {
     }
     getContract();
   });
+
   const { config, error } = usePrepareContractWrite({
-    address: ethers.utils.getAddress(prepareContract),
+    address: "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213",
     abi: bridgeABI,
     functionName: "bridge",
     args: Object.values(args),
   });
+
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
     onError(error) {
