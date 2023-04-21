@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Image from "next/image";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { tokens } from "@/config/constants/addresses";
 import { ethers } from "ethers";
-
+import { MyContext } from "./context";
 interface ReceiverComponentProps {
   onDataReceived: (tokenbalance: string) => void; // Define the callback function prop
 }
@@ -27,10 +27,10 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
 
   useEffect(() => {
     if (chain?.id == 56) {
-      const erc20Address = ethers.utils.getAddress(tokens.USDT.bsc);
+      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.bsc);
       setTokenAddress(erc20Address);
     } else if (chain?.id == 1116) {
-      const erc20Address = ethers.utils.getAddress(tokens.USDT.core);
+      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.core);
       setTokenAddress(erc20Address);
     }
 
@@ -45,9 +45,10 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
       setFractionalPart(fPart.substring(2));
     }
   }, [chain?.id, tokenAddress, address, data, isLoading]);
+  const context = useContext(MyContext);
   const handleDataInput = () => {
     console.log(tokenbalance);
-
+    context.setData(tokenbalance);
     onDataReceived(tokenbalance);
   };
   return (

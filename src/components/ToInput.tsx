@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ToData from "./ToData";
 import Image from "next/image";
+import { MyContext } from "./context";
 
 function ToInput() {
+  const context = React.useContext(MyContext);
   const [inputValue, setInputValue] = useState("");
   useEffect(() => {
+    setInputValue(context.data);
     console.log(inputValue);
-  }, [inputValue]);
+  }, [inputValue, context.data]);
   return (
     <>
       <div className="relative flex items-center gap-4">
@@ -27,6 +30,7 @@ function ToInput() {
           testdata-id="undefined-input"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          disabled
         />
         <button
           id="undefined-button"

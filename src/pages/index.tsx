@@ -2,8 +2,22 @@ import Head from "next/head";
 import Header from "@/components/Header";
 import Swap from "@/components/Swap";
 import Theme from "@/components/Theme";
+import { useNetwork, useSwitchNetwork } from "wagmi";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { chain } = useNetwork();
+  const { chains, error, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
+
+  useEffect(() => {
+    if (chain?.id == 56 || chain?.id == 1116) {
+      return;
+    } else {
+      switchNetwork?.(1116);
+    }
+  }, [chain?.id, switchNetwork]);
+
   return (
     <>
       <Head>
@@ -14,6 +28,7 @@ export default function Home() {
       </Head>
       <Header />
       <Swap />
+
       <Theme />
     </>
   );

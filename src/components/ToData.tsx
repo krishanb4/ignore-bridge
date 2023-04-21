@@ -1,4 +1,52 @@
-function FromData() {
+import { tokens } from "@/config/constants/addresses";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { useAccount, useBalance, useNetwork } from "wagmi";
+
+function ToData() {
+  const { chain } = useNetwork();
+  const { address, isConnected } = useAccount();
+  const [integerPart, setIntegerPart] = useState("0");
+  const [fractionalPart, setFractionalPart] = useState("00");
+  const [tokenbalance, setTokenBalance] = useState("");
+  const [chainID, setChainID] = useState(0);
+  const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
+    undefined
+  );
+  const { data, isError, isLoading } = useBalance({
+    address: address,
+    token: tokenAddress,
+    chainId: chainID,
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+
+  useEffect(() => {
+    if (chain?.id == 1116) {
+      setChainID(56);
+      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.bsc);
+      setTokenAddress(erc20Address);
+    } else if (chain?.id == 56) {
+      setChainID(1116);
+      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.core);
+      setTokenAddress(erc20Address);
+    }
+
+    if (!isLoading) {
+      const tokenB = data?.formatted || "";
+      setTokenBalance(tokenB);
+      console.log(tokenB);
+
+      const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
+      const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
+
+      setIntegerPart(integerPart.toString());
+      const fPart = fractionalPart.toString();
+      setFractionalPart(fPart.substring(2));
+    }
+  }, [chain?.id, tokenAddress, address, data, isLoading]);
+
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
       <p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
@@ -22,11 +70,12 @@ function FromData() {
           ></path>
         </svg>
         <span className="text-lg">
-          0.<span className="text-sm font-semibold">00</span>
+          {integerPart}.
+          <span className="text-sm font-semibold">{fractionalPart}</span>
         </span>
       </button>
     </div>
   );
 }
 
-export default FromData;
+export default ToData;

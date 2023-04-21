@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import MobileNetworks from "./MobileNetworks";
 import { Web3Button } from "@web3modal/react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
+import Transactions from "./Transactions";
 
 const Header: React.FC = () => {
   const [isModelopen, openModel] = useState(false);
@@ -45,6 +46,8 @@ const Header: React.FC = () => {
     }
     console.log(error);
   }, [chain, error]);
+  const [showModal, setShowModal] = useState(false);
+  console.log(showModal);
 
   return (
     <>
@@ -78,10 +81,8 @@ const Header: React.FC = () => {
               </Link>
               <div className="relative hidden md:flex" data-headlessui-state="">
                 <button
+                  onClick={() => setShowModal(true)}
                   className="btn flex items-center justify-center gap-2 cursor-pointer transition-all hover:bg-white hover:dark:bg-slate-600/20 active:dark:bg-slate-600/30 text-gray-700 hover:text-gray-800 active:text-gray-900 dark:text-slate-200 hover:dark:text-slate-100 active:dark:text-slate-50 px-4 h-[38px] rounded-xl text-base font-semibold"
-                  aria-haspopup="menu"
-                  aria-expanded="false"
-                  data-headlessui-state=""
                   type="button"
                 >
                   Transactions
@@ -125,7 +126,7 @@ const Header: React.FC = () => {
                         tabIndex={-1}
                         id="menu-item-1"
                       >
-                        Buy on LFG Swap
+                        Buy on ArcherSwap
                       </a>
                     </div>
                   </div>
@@ -193,7 +194,11 @@ const Header: React.FC = () => {
             </div>
           </div>
         </div>
+        {showModal ? (
+          <Transactions showModal={showModal} setShowModal={setShowModal} />
+        ) : null}
       </header>
+
       {isNetworkListOpen ? <MobileNetworks /> : ""}
     </>
   );

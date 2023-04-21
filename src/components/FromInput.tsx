@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FromData from "./FromData";
 import Image from "next/image";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { tokens } from "@/config/constants/addresses";
 import { ethers } from "ethers";
-
+import { MyContext } from "./context";
 function FromInput() {
+  const context = useContext(MyContext);
   const [inputValue, setInputValue] = useState("");
   const handleDataReceived = (data: string) => {
-    setInputValue(data); // Update state with received data
+    setInputValue(data);
+    console.log(data);
+    // Update state with received data
+    context.setData(inputValue);
   };
+  useEffect(() => {
+    context.setData(inputValue);
+  }, [inputValue, context]);
   return (
     <>
       <div className="relative flex items-center gap-4">

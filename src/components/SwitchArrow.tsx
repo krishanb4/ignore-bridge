@@ -1,9 +1,15 @@
+import { useNetwork, useSwitchNetwork } from "wagmi";
+
 function SwitchArrow() {
+  const { switchNetwork } = useSwitchNetwork();
+  const { chain } = useNetwork();
+
   return (
     <div className="left-0 right-0 mt-[-9px] mb-[-9px] flex items-center justify-center">
       <button
+        onClick={() => switchNetwork?.(chain?.id == 56 ? 1116 : 56)}
         type="button"
-        className="z-10 group bg-gray-100 hover:bg-gray-200 hover:dark:bg-slate-700 dark:bg-slate-900 p-2 border-white transition-all rounded-full cursor-pointer"
+        className=" group bg-gray-100 hover:bg-gray-200 hover:dark:bg-slate-700 dark:bg-slate-900 p-2 border-white transition-all rounded-full cursor-pointer"
       >
         <div className="transition-transform rotate-0 group-hover:rotate-180">
           <svg
