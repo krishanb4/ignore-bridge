@@ -94,6 +94,7 @@ function SwapButton() {
         success: "Tokens approved successfully 👌",
         error: "Failed to approve tokens",
       });
+
       setApproving(false);
     } catch (error) {
       const theme = document.documentElement.classList.contains("dark")
@@ -139,7 +140,7 @@ function SwapButton() {
             Number(chain?.id)
           );
           setapproveBalance(Number(approveBalance) / 10 ** 18);
-          console.log(Number(approveBalance) / 10 ** 18);
+          console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
         } catch (error) {
           console.log(error);
         }
@@ -167,19 +168,33 @@ function SwapButton() {
     const numberEntered = (Number(context.data) * 10 ** 18).toString();
     console.log(`entered ${numberEntered}`);
     if (tokenAddressSwap && toAddress) {
-      setArgs({
-        token: tokenAddressSwap,
-        amountLD: BigNumber.from(numberEntered),
-        to: toAddress,
-        callParams: callParams,
-        adapterParams: adapterParams,
-        gassData: {
-          gasLimit: 2200000,
-          value: ethers.utils.parseEther("0.44"),
-        },
-      });
+      if (chain?.id == 56) {
+        setArgs({
+          token: tokenAddressSwap,
+          amountLD: BigNumber.from(numberEntered),
+          to: toAddress,
+          callParams: callParams,
+          adapterParams: adapterParams,
+          gassData: {
+            gasLimit: 2200000,
+            value: ethers.utils.parseEther("0.03"),
+          },
+        });
+      } else if (chain?.id == 1116) {
+        setArgs({
+          token: tokenAddressSwap,
+          amountLD: BigNumber.from(numberEntered),
+          to: toAddress,
+          callParams: callParams,
+          adapterParams: adapterParams,
+          gassData: {
+            gasLimit: 2200000,
+            value: ethers.utils.parseEther("0.44"),
+          },
+        });
+      }
     }
-  }, [tokenAddressSwap, address, toAddress, chain, context.data]);
+  }, [tokenAddressSwap, address, toAddress, chain?.id, context.data]);
 
   const HanddleFunctions = () => {
     if (chain?.id === 56 || chain?.id === 1116) {

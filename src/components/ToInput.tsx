@@ -58,7 +58,7 @@ function ToInput() {
             </span>
           </div>
           4TOKEN
-          <svg
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -74,7 +74,7 @@ function ToInput() {
               strokeLinejoin="round"
               d="M19.5 8.25l-7.5 7.5-7.5-7.5"
             ></path>
-          </svg>
+          </svg> */}
         </button>
       </div>
       <ToData />
