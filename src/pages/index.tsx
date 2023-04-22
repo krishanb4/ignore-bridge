@@ -28,7 +28,6 @@ export default function Home() {
       </Head>
       <Header />
       <Swap />
-
       <Theme />
     </>
   );

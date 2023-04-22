@@ -18,6 +18,7 @@ import {
 } from "../utils/callFunctions";
 import TokenABI from "@/config/abi/bscUSDT.json";
 import bridgeABI from "@/config/abi/bridgeABI.json";
+import bscbridgeABI from "@/config/abi/bscbridgeABI.json";
 import {
   tokens,
   bscContractAddress,
@@ -27,6 +28,7 @@ import { ethers, BigNumber } from "ethers";
 import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
 import React from "react";
+import { useSelector } from "react-redux";
 
 function SwapButton() {
   const context = React.useContext(MyContext);
@@ -51,12 +53,53 @@ function SwapButton() {
   }, [account]);
   type SwapArgs = {
     token: string;
+    remoteChain: number;
+    amountLD: BigNumber;
+    to: string;
+    callParams: {};
+    unwrapWeth: boolean;
+    adapterParams: "0x";
+    gassData: {};
+  };
+
+  type SwapArgsCore = {
+    token: string;
     amountLD: BigNumber;
     to: string;
     callParams: {};
     adapterParams: "0x";
     gassData: {};
   };
+  async function checkApproveBalance() {
+    if (chain?.id === 56) {
+      setTokenAddress(tokens.IGNORE.bsc);
+      settokenSpender(bscContractAddress);
+    } else if (chain?.id === 1116) {
+      setTokenAddress(tokens.IGNORE.core);
+      settokenSpender(coreContractAddress);
+    }
+    const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
+    const spender = tokenSpender; // Replace with the spender's address
+    console.log({ tokenContractAddress, spender, userAddress, TokenABI });
+
+    if (tokenContractAddress && spender && userAddress && chain?.id) {
+      try {
+        const approveBalance = await checkApprovedBalance(
+          tokenContractAddress,
+          spender,
+          userAddress,
+          TokenABI,
+          Number(chain?.id)
+        );
+        setapproveBalance(Number(approveBalance) / 10 ** 18);
+        console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log("loading data .....");
+    }
+  }
 
   async function approveTokens() {
     if (chain?.id === 56) {
@@ -94,7 +137,7 @@ function SwapButton() {
         success: "Tokens approved successfully 👌",
         error: "Failed to approve tokens",
       });
-
+      checkApproveBalance();
       setApproving(false);
     } catch (error) {
       const theme = document.documentElement.classList.contains("dark")
@@ -131,6 +174,13 @@ function SwapButton() {
       console.log({ tokenContractAddress, spender, userAddress, TokenABI });
 
       if (tokenContractAddress && spender && userAddress && chain?.id) {
+        console.log("checl approve balance.....");
+        console.log(tokenContractAddress);
+        console.log(spender);
+        console.log(userAddress);
+        console.log(chain?.id);
+        console.log(TokenABI);
+
         try {
           const approveBalance = await checkApprovedBalance(
             tokenContractAddress,
@@ -152,6 +202,7 @@ function SwapButton() {
   }, [chain?.id, tokenAddress, tokenSpender, userAddress]);
 
   const [args, setArgs] = useState({} as SwapArgs);
+  const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
   const [contractAddressSwap, setContractAddressSwap] =
     useState<`0x${string}`>();
   const [tokenAddressSwap, setTokenAddressSwap] = useState("");
@@ -171,17 +222,19 @@ function SwapButton() {
       if (chain?.id == 56) {
         setArgs({
           token: tokenAddressSwap,
+          remoteChain: 153,
           amountLD: BigNumber.from(numberEntered),
           to: toAddress,
+          unwrapWeth: true,
           callParams: callParams,
           adapterParams: adapterParams,
           gassData: {
             gasLimit: 2200000,
-            value: ethers.utils.parseEther("0.03"),
+            value: ethers.utils.parseEther("0.001"),
           },
         });
       } else if (chain?.id == 1116) {
-        setArgs({
+        setArgsCore({
           token: tokenAddressSwap,
           amountLD: BigNumber.from(numberEntered),
           to: toAddress,
@@ -222,11 +275,26 @@ function SwapButton() {
     }
   };
   const [buttonText, setButtonText] = useState("");
+  interface AppState {
+    tokenbalance: string;
+  }
+  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
+
   useEffect(() => {
+    const tokenBalance = Object.values(tokenbalance)[0];
+
     if (chain?.id === 56 || chain?.id === 1116) {
       if (approveBalance > 4) {
-        if (Number(context.data) <= 0 || !context.data) {
-          setButtonText("Enter Amount");
+        if (
+          Number(context.data) <= 0 ||
+          !context.data ||
+          Number(context.data) > Number(tokenBalance)
+        ) {
+          {
+            Number(context.data) > Number(tokenBalance)
+              ? setButtonText("Enter Correct Amount")
+              : setButtonText("Enter Amount");
+          }
         } else {
           if (swaping) {
             setButtonText("Swaping");
@@ -254,25 +322,31 @@ function SwapButton() {
     swaping,
     buttonText,
     context.data,
+    tokenbalance,
   ]);
   const [prepareContract, setPrepareContract] = useState("");
+  const [contractABI, setContractABI] = useState<Array<any>>([]);
   console.log(`contract ${tokenSpender}`);
   useEffect(() => {
     function getContract() {
       if (chain?.id === 56) {
         setPrepareContract(tokens.IGNORE.bsc);
+        setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
       } else if (chain?.id === 1116) {
         setPrepareContract(tokens.IGNORE.core);
+        setContractABI((prevState) => [...prevState, ...bridgeABI]);
       }
     }
     getContract();
-  });
+  }, [chain?.id]);
 
   const { config, error } = usePrepareContractWrite({
     address: contractAddressSwap,
-    abi: bridgeABI,
+    abi: contractABI,
     functionName: "bridge",
-    args: Object.values(args),
+    args: Object.values(
+      chain?.id === 1116 ? argsCore : chain?.id === 56 ? args : ""
+    ),
   });
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
@@ -336,6 +410,10 @@ function SwapButton() {
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
             approveBalance > 4 && (Number(context.data) <= 0 || !context.data)
+              ? "opacity-40 overflow-hidden cursor-pointer"
+              : "hover:bg-[#187c18] active:bg-[#082908]"
+          } ${
+            Number(context.data) > Number(Object.values(tokenbalance)[0])
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           }   text-white px-6 h-[52px] rounded-xl text-base font-semibold`}

@@ -4,11 +4,14 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { tokens } from "@/config/constants/addresses";
 import { ethers } from "ethers";
 import { MyContext } from "./context";
+import { useDispatch } from "react-redux";
+import { setBalance } from "@/redux/actions";
 interface ReceiverComponentProps {
   onDataReceived: (tokenbalance: string) => void; // Define the callback function prop
 }
 
 const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
+  const dispatch = useDispatch();
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const [integerPart, setIntegerPart] = useState("0");
@@ -37,6 +40,9 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     if (!isLoading) {
       const tokenB = data?.formatted || "";
       setTokenBalance(tokenB);
+
+      dispatch(setBalance(Number(tokenB)));
+
       const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
       const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
 
@@ -44,7 +50,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
       const fPart = fractionalPart.toString();
       setFractionalPart(fPart.substring(2));
     }
-  }, [chain?.id, tokenAddress, address, data, isLoading]);
+  }, [chain?.id, tokenAddress, address, data, isLoading, dispatch]);
   const context = useContext(MyContext);
   const handleDataInput = () => {
     console.log(tokenbalance);

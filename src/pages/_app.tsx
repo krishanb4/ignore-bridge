@@ -10,6 +10,8 @@ import { chainlist } from "@/config/chains";
 import { Web3Modal } from "@web3modal/react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import store from "@/redux/store";
+import { Provider } from "react-redux";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID!;
 const { chains, provider } = configureChains(
@@ -28,11 +30,13 @@ const ethereumClient = new EthereumClient(wagmiClient, chains);
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <WagmiConfig client={wagmiClient}>
-        <Component {...pageProps} />
-        <ToastContainer />
-      </WagmiConfig>
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+      <Provider store={store}>
+        <WagmiConfig client={wagmiClient}>
+          <Component {...pageProps} />
+          <ToastContainer />
+        </WagmiConfig>
+        <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+      </Provider>
     </>
   );
 }

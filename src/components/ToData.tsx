@@ -36,6 +36,7 @@ function ToData() {
     if (!isLoading) {
       const tokenB = data?.formatted || "";
       setTokenBalance(tokenB);
+
       console.log(tokenB);
 
       const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part

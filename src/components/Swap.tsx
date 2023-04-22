@@ -7,6 +7,7 @@ import SwitchArrow from "./SwitchArrow";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import LayerZero from "@/components/LayerZero";
+import Instructions from "@/components/Instructions";
 const SwapButton = dynamic(() => import("./SwapButton"), {
   ssr: false,
 });
@@ -57,6 +58,7 @@ function Swap() {
             <SwitchArrow />
             <To />
             <SwapButton />
+            <Instructions />
             <div className="text-center flex items-center justify-center m-8">
               <p className="dark:text-white mr-[15px]">Powered By</p>
               <a href="https://layerzero.network/" target="_blank">
