@@ -1,11 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@layerzerolabs/scan-client";
+
+interface Transaction {
+  to: string;
+  from: string;
+  tx: string;
+}
 
 const Transactions = (props: any) => {
-  // const [showModal, setShowModal] = useState(false);
+  const client = createClient("mainnet");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  function getTxData(tx: string) {
+    client.getMessagesBySrcTxHash(tx).then((result) => {
+      console.log(result.messages);
+    });
+  }
+  async function getStatusForAllTransactions() {
+    const promises = transactions.map((transaction) => {
+      return getTxData(transaction.tx);
+    });
+
+    const results = await Promise.all(promises);
+    console.log(results);
+  }
+  getStatusForAllTransactions();
+  useEffect(() => {
+    const storedTransactions = localStorage.getItem("transactions");
+    if (storedTransactions !== null) {
+      setTransactions(JSON.parse(storedTransactions));
+    }
+  }, []);
   function handleButtonClick() {
     props.setShowModal(false);
     console.log(props);
   }
+
   return (
     <>
       <div className="justify-center  items-center dark:bg-[#1e293b82] flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
@@ -25,20 +55,58 @@ const Transactions = (props: any) => {
               </button>
             </div>
             {/*body*/}
-            <div className="relative p-6 flex-auto">
-              <ul>
-                <li>CORE --{">"} BSC</li>
-                <li>CORE --{">"} BSC</li>
-                <li>CORE --{">"} BSC</li>
-                <li>CORE --{">"} BSC</li>
-                <li>CORE --{">"} BSC</li>
-              </ul>
+            <div className="relative p-6 flex flex-auto">
+              <div>
+                {transactions.map((transaction) => (
+                  <div
+                    key={transaction.tx}
+                    className="bg-[#f0f8ff] dark:bg-black p-4 m-3"
+                  >
+                    <div className="grid grid-cols-3 gap-3 justify-item-start">
+                      <div className="justify-start">
+                        <span>{transaction.from}</span>{" "}
+                      </div>
+                      <div className="relative w-[6.5rem]  flex -ml-[31px]">
+                        <svg
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="coredao-bridge-11xpnbx h-[1.5rem] -rotate-90"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M7.5 11.7909L4.35554 8.64648L3.64844 9.35359L8.00199 13.7071L12.3555 9.35359L11.6484 8.64648L8.5 11.7949L8.5 2L7.5 2L7.5 11.7909Z"
+                            fill="currentColor"
+                          ></path>
+                        </svg>
+                      </div>
+                      <div className="-ml-[65px]">
+                        <span>{transaction.to}</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 justify-between">
+                      <div className="col-start-1 col-end-3">
+                        <a
+                          href={`https://layerzeroscan.com/tx/${transaction.tx}`}
+                          target="_blank"
+                        >
+                          LayerZero Scan
+                        </a>
+                      </div>
+                      <div className="col-end-7 col-span-2 text-[#02ad02]">
+                        DELIVERD
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
               <p className="my-4 text-slate-500 text-lg leading-relaxed"></p>
             </div>
             {/*footer*/}
-            <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+            <div className="flex items-center justify-end p-6 rounded-b">
               <button
-                className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                className="text-white bg-[#02ad02] font-bold uppercase px-6 py-2 text-sm outline-[#02ad02] focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
                 onClick={() => handleButtonClick()}
               >

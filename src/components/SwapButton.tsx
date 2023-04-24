@@ -29,8 +29,16 @@ import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
 import React from "react";
 import { useSelector } from "react-redux";
+import { createClient } from "@layerzerolabs/scan-client";
+
+interface Transaction {
+  to: string;
+  from: string;
+  tx: string;
+}
 
 function SwapButton() {
+  const client = createClient("mainnet");
   const context = React.useContext(MyContext);
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
@@ -137,6 +145,7 @@ function SwapButton() {
         success: "Tokens approved successfully 👌",
         error: "Failed to approve tokens",
       });
+
       checkApproveBalance();
       setApproving(false);
     } catch (error) {
@@ -171,16 +180,8 @@ function SwapButton() {
       }
       const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
       const spender = tokenSpender; // Replace with the spender's address
-      console.log({ tokenContractAddress, spender, userAddress, TokenABI });
 
       if (tokenContractAddress && spender && userAddress && chain?.id) {
-        console.log("checl approve balance.....");
-        console.log(tokenContractAddress);
-        console.log(spender);
-        console.log(userAddress);
-        console.log(chain?.id);
-        console.log(TokenABI);
-
         try {
           const approveBalance = await checkApprovedBalance(
             tokenContractAddress,
@@ -374,7 +375,63 @@ function SwapButton() {
       toast.success("Transaction successfully send 👌");
     },
   });
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  useEffect(() => {
+    const storedTransactions = localStorage.getItem("transactions");
+    if (storedTransactions !== null) {
+      setTransactions(JSON.parse(storedTransactions));
+    }
+  }, []);
+  console.log(transactions);
+  if (isSuccess) {
+    console.log(data?.hash);
+    if (data?.hash) {
+      const hash = data.hash.toString();
+      console.log(`hash from transaction ${hash}`);
+      if (chain?.id === 56) {
+        console.log("bsc to core");
+        const from = "BSC";
+        const to = "CORE";
+        const newTransaction = {
+          to: to,
+          from: from,
+          tx: hash,
+        };
 
+        const exists = transactions.some(
+          (transaction) => transaction.tx === newTransaction.tx
+        );
+
+        if (exists) {
+          console.log("Transaction already exists!");
+        } else {
+          setTransactions([...transactions, newTransaction]);
+        }
+      } else if (chain?.id === 1116) {
+        console.log("core to bsc");
+        const from = "CORE";
+        const to = "BSC";
+        const newTransaction = {
+          to: to,
+          from: from,
+          tx: hash,
+        };
+        console.log(transactions);
+
+        const txExists = transactions.some(
+          (transaction) => transaction.tx === newTransaction.tx
+        );
+        console.log(txExists);
+
+        if (txExists) {
+          console.log("Transaction already exists!");
+        } else {
+          transactions.push(newTransaction);
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+        }
+      }
+    }
+  }
   useEffect(() => {
     if (chain?.id === 56) {
       setTokenAddressSwap(tokens.IGNORE.bsc);
