@@ -308,7 +308,7 @@ function SwapButton() {
               setButtonText("Enter Correct Amount");
             }
           } else {
-            if (Number(context.data) < 4000) {
+            if (Number(context.data) < 4000 && Number(context.data) > 0) {
               setButtonText("Minimum brdge amount is 40000 4TOKEN");
             } else {
               setButtonText("Enter Amount");
