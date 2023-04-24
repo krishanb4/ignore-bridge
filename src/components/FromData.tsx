@@ -52,10 +52,13 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     }
   }, [chain?.id, tokenAddress, address, data, isLoading, dispatch]);
   const context = useContext(MyContext);
+  const decimals = 18;
   const handleDataInput = () => {
     console.log(tokenbalance);
-    context.setData(tokenbalance);
-    onDataReceived(tokenbalance);
+    const bigNumberValue = ethers.utils.parseUnits(tokenbalance, decimals);
+    const decimalValue = ethers.utils.formatUnits(bigNumberValue, decimals);
+    context.setData(decimalValue);
+    onDataReceived(decimalValue);
   };
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">

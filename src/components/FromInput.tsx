@@ -14,6 +14,14 @@ function FromInput() {
     // Update state with received data
     context.setData(inputValue);
   };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const regex = /^[0-9]*$/;
+    if (value === "" || regex.test(value)) {
+      setInputValue(value);
+    }
+  };
+
   useEffect(() => {
     context.setData(inputValue);
   }, [inputValue, context]);
@@ -28,7 +36,7 @@ function FromInput() {
           spellCheck="false"
           autoComplete="new-password"
           type="text"
-          pattern="^(?!^\.+$)(?!^$)(?!^0\.0?$)(?!^0?$)\d+(\.\d{1,2})?$"
+          pattern="^[0-9]*[.,]?[0-9]*$"
           placeholder="0"
           min="0"
           minLength={1}
@@ -36,7 +44,7 @@ function FromInput() {
           className="text-gray-900 dark:text-slate-50 text-left border-none focus:outline-none focus:ring-0 p-0 bg-transparent w-full truncate font-medium without-ring !text-3xl py-1"
           testdata-id="undefined-input"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleInputChange}
         />
         <button
           id="undefined-button"

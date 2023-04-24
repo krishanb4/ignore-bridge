@@ -217,35 +217,39 @@ function SwapButton() {
       zroPaymentAddress: "0x0000000000000000000000000000000000000000",
     };
 
-    const numberEntered = (Number(context.data) * 10 ** 18).toString();
-    console.log(`entered ${numberEntered}`);
-    if (tokenAddressSwap && toAddress) {
-      if (chain?.id == 56) {
-        setArgs({
-          token: tokenAddressSwap,
-          remoteChain: 153,
-          amountLD: BigNumber.from(numberEntered),
-          to: toAddress,
-          unwrapWeth: true,
-          callParams: callParams,
-          adapterParams: adapterParams,
-          gassData: {
-            gasLimit: 2200000,
-            value: ethers.utils.parseEther("0.001"),
-          },
-        });
-      } else if (chain?.id == 1116) {
-        setArgsCore({
-          token: tokenAddressSwap,
-          amountLD: BigNumber.from(numberEntered),
-          to: toAddress,
-          callParams: callParams,
-          adapterParams: adapterParams,
-          gassData: {
-            gasLimit: 2200000,
-            value: ethers.utils.parseEther("0.44"),
-          },
-        });
+    // const numberEntered = (Number(context.data) * 10 ** 18).toString();
+    const decimals = 18;
+    if (context.data) {
+      const numberEntered = ethers.utils.parseUnits(context.data, decimals);
+      console.log(`entered ${numberEntered}`);
+      if (tokenAddressSwap && toAddress) {
+        if (chain?.id == 56) {
+          setArgs({
+            token: tokenAddressSwap,
+            remoteChain: 153,
+            amountLD: numberEntered,
+            to: toAddress,
+            unwrapWeth: true,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 2200000,
+              value: ethers.utils.parseEther("0.001"),
+            },
+          });
+        } else if (chain?.id == 1116) {
+          setArgsCore({
+            token: tokenAddressSwap,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 2200000,
+              value: ethers.utils.parseEther("0.44"),
+            },
+          });
+        }
       }
     }
   }, [tokenAddressSwap, address, toAddress, chain?.id, context.data]);
