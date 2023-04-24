@@ -142,21 +142,15 @@ function NetworkSelect() {
                 type="button"
                 className="z-10 group hover:bg-white/30 hover:dark:bg-white/[0.16] p-2 border-white transition-all rounded-full cursor-pointer"
               >
-                <div className="transition-transform rotate-0 group-hover:rotate-180">
+                <div className="transition-transform rotate-90">
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
                     viewBox="0 0 24 24"
-                    strokeWidth="3"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                    className="w-4 h-4 text-blue"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-10 h-10"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                    ></path>
+                    <path d="M14 3L14 20L19 14.8629" stroke="currentColor" />
+                    <path d="M10 21L10 4L5 9.13712" stroke="currentColor" />
                   </svg>
                 </div>
               </button>

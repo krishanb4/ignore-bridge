@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useAccount,
   useConnect,
@@ -27,7 +27,6 @@ import {
 import { ethers, BigNumber } from "ethers";
 import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
-import React from "react";
 import { useSelector } from "react-redux";
 import { createClient } from "@layerzerolabs/scan-client";
 
@@ -119,7 +118,10 @@ function SwapButton() {
     }
     const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
     const spender = tokenSpender; // Replace with the spender's address
-    const amount = ethers.utils.parseUnits("100", 18); // Replace with the desired approval amount
+    const amount = ethers.utils.parseUnits(
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      18
+    ); // Replace with the desired approval amount
     const signer_from = signer; // Replace with a valid signer object, e.g. ethers.Wallet or ethers.providers.JsonRpcSigner
 
     try {
@@ -253,8 +255,9 @@ function SwapButton() {
       }
     }
   }, [tokenAddressSwap, address, toAddress, chain?.id, context.data]);
-
+  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const HanddleFunctions = () => {
+    const tokenBalance = Object.values(tokenbalance)[0];
     if (chain?.id === 56 || chain?.id === 1116) {
       if (isConnected) {
         if (approveBalance > 4) {
@@ -262,7 +265,11 @@ function SwapButton() {
             return;
           } else {
             if (!swaping) {
-              Swap();
+              if (Number(context.data) > 40000) {
+                if (Number(context.data) < Number(tokenBalance)) {
+                  Swap();
+                }
+              }
             }
           }
         } else {
@@ -283,7 +290,6 @@ function SwapButton() {
   interface AppState {
     tokenbalance: string;
   }
-  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
 
   useEffect(() => {
     const tokenBalance = Object.values(tokenbalance)[0];
@@ -295,16 +301,28 @@ function SwapButton() {
           !context.data ||
           Number(context.data) > Number(tokenBalance)
         ) {
-          {
-            Number(context.data) > Number(tokenBalance)
-              ? setButtonText("Enter Correct Amount")
-              : setButtonText("Enter Amount");
+          if (Number(context.data) > Number(tokenBalance)) {
+            if (Number(context.data) < 4000) {
+              setButtonText("Minimum brdge amount is 40000 4TOKEN");
+            } else {
+              setButtonText("Enter Correct Amount");
+            }
+          } else {
+            if (Number(context.data) < 4000) {
+              setButtonText("Minimum brdge amount is 40000 4TOKEN");
+            } else {
+              setButtonText("Enter Amount");
+            }
           }
         } else {
           if (swaping) {
             setButtonText("Swaping");
           } else {
-            setButtonText("Swap");
+            if (Number(context.data) < 4000) {
+              setButtonText("Minimum brdge amount is 40000 4TOKEN");
+            } else {
+              setButtonText("Swap");
+            }
           }
         }
       } else {
@@ -470,7 +488,10 @@ function SwapButton() {
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
-            approveBalance > 4 && (Number(context.data) <= 0 || !context.data)
+            approveBalance > 4 &&
+            (Number(context.data) <= 0 ||
+              !context.data ||
+              Number(context.data) < 4000)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
