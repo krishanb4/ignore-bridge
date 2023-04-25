@@ -265,8 +265,10 @@ function SwapButton() {
             return;
           } else {
             if (!swaping) {
-              if (Number(context.data) > 40000) {
-                if (Number(context.data) < Number(tokenBalance)) {
+              if (Number(context.data) >= 40000) {
+                if (Number(context.data) <= Number(tokenBalance)) {
+                  console.log("here.....");
+
                   Swap();
                 }
               }
