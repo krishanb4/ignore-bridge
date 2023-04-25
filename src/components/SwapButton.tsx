@@ -304,14 +304,14 @@ function SwapButton() {
           Number(context.data) > Number(tokenBalance)
         ) {
           if (Number(context.data) > Number(tokenBalance)) {
-            if (Number(context.data) < 4000) {
-              setButtonText("Minimum brdge amount is 40000 4TOKEN");
+            if (Number(context.data) < 40000) {
+              setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
               setButtonText("Enter Correct Amount");
             }
           } else {
-            if (Number(context.data) < 4000 && Number(context.data) > 0) {
-              setButtonText("Minimum brdge amount is 40000 4TOKEN");
+            if (Number(context.data) < 40000 && Number(context.data) > 0) {
+              setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
               setButtonText("Enter Amount");
             }
@@ -320,7 +320,7 @@ function SwapButton() {
           if (swaping) {
             setButtonText("Swaping");
           } else {
-            if (Number(context.data) < 4000) {
+            if (Number(context.data) < 40000) {
               setButtonText("Minimum brdge amount is 40000 4TOKEN");
             } else {
               setButtonText("Swap");
@@ -493,7 +493,7 @@ function SwapButton() {
             approveBalance > 4 &&
             (Number(context.data) <= 0 ||
               !context.data ||
-              Number(context.data) < 4000)
+              Number(context.data) < 40000)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
