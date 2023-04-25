@@ -9,7 +9,10 @@ const Instructions = () => {
           <li>LayerZero CORE to BSC bridge fee is 0.44 CORE + CORE gas fee</li>
           <li>LayerZero BSC to CORE bridge fee is 0.001 BNB + BNB gas fee</li>
           <li>Estimated Time of Crosschain Arrival is 4-10 min</li>
-          <li>Estimated Time of Crosschain Arrival is 4-10 min</li>
+          <li>
+            Estimated fees will be charged and excess will be returned back to
+            your wallet
+          </li>
         </ul>
       </div>
     </>
