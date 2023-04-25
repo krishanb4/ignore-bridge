@@ -119,7 +119,7 @@ function SwapButton() {
     const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
     const spender = tokenSpender; // Replace with the spender's address
     const amount = ethers.utils.parseUnits(
-      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "115792089237316195423570985008687907853269984665640564039457.584007913129639935",
       18
     ); // Replace with the desired approval amount
     const signer_from = signer; // Replace with a valid signer object, e.g. ethers.Wallet or ethers.providers.JsonRpcSigner
