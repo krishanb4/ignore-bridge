@@ -321,7 +321,7 @@ function SwapButton() {
             setButtonText("Swaping");
           } else {
             if (Number(context.data) < 40000) {
-              setButtonText("Minimum brdge amount is 40000 4TOKEN");
+              setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
               setButtonText("Swap");
             }
