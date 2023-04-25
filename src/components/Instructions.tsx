@@ -6,8 +6,8 @@ const Instructions = () => {
       <div className="dark:bg-[#545c5c] bg-[#b2c9dc] mt-[18px] pr-4 pt-4 pl-10 pb-4 rounded-[5px]">
         <ul className="list-disc">
           <li>Minimum Crosschain Amount is 40,000 4TOKEN</li>
-          <li>Layer Zero CORE to BSC bridge fee is 0.44 CORE + CORE gas fee</li>
-          <li>Layer Zero BSC to CORE bridge fee is 0.001 BNB + BNB gas fee</li>
+          <li>LayerZero CORE to BSC bridge fee is 0.44 CORE + CORE gas fee</li>
+          <li>LayerZero BSC to CORE bridge fee is 0.001 BNB + BNB gas fee</li>
           <li>Estimated Time of Crosschain Arrival is 4-10 min</li>
         </ul>
       </div>
