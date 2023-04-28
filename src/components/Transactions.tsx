@@ -116,7 +116,7 @@ const Transactions = (props: any) => {
                             ? "text-[#02ad02]"
                             : ""
                         } ${
-                          transaction.status == "PENDING"
+                          transaction.status == "INFLIGHT"
                             ? "text-[#5935a7]"
                             : ""
                         }`}

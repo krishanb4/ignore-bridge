@@ -235,7 +235,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 2200000,
+              // gasLimit: 2200000,
               value: ethers.utils.parseEther("0.001"),
             },
           });
@@ -247,7 +247,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 2200000,
+              // gasLimit: 2200000,
               value: ethers.utils.parseEther("0.44"),
             },
           });
@@ -260,7 +260,7 @@ function SwapButton() {
     const tokenBalance = Object.values(tokenbalance)[0];
     if (chain?.id === 56 || chain?.id === 1116) {
       if (isConnected) {
-        if (approveBalance > 4) {
+        if (approveBalance > 40000) {
           if (Number(context.data) <= 0 || !context.data) {
             return;
           } else {
@@ -297,7 +297,7 @@ function SwapButton() {
     const tokenBalance = Object.values(tokenbalance)[0];
 
     if (chain?.id === 56 || chain?.id === 1116) {
-      if (approveBalance > 4) {
+      if (approveBalance > 40000) {
         if (
           Number(context.data) <= 0 ||
           !context.data ||
@@ -489,7 +489,7 @@ function SwapButton() {
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
-            approveBalance > 4 &&
+            approveBalance > 40000 &&
             (Number(context.data) <= 0 ||
               !context.data ||
               Number(context.data) < 40000)
