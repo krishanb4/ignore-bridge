@@ -5,31 +5,45 @@ interface Transaction {
   to: string;
   from: string;
   tx: string;
+  status?: string;
 }
 
 const Transactions = (props: any) => {
   const client = createClient("mainnet");
+  const [txLoaded, setTxLoaded] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
   function getTxData(tx: string) {
-    client.getMessagesBySrcTxHash(tx).then((result) => {
-      console.log(result.messages);
+    return client.getMessagesBySrcTxHash(tx).then((result) => {
+      return result;
     });
   }
   async function getStatusForAllTransactions() {
+    const storedTransactions = localStorage.getItem("transactions");
+    console.log(storedTransactions);
+    let transactions: Transaction[] = [];
+    if (storedTransactions !== null) {
+      transactions = JSON.parse(storedTransactions);
+    }
     const promises = transactions.map((transaction) => {
       return getTxData(transaction.tx);
     });
 
-    const results = await Promise.all(promises);
+    const rawResults = await Promise.all(promises);
+    const results = rawResults.filter((res) => res.messages.length > 0);
     console.log(results);
+    const newTxs = transactions.map((transaction) => {
+      transaction.status =
+        results.filter((res) => res.messages[0].srcTxHash === transaction.tx)[0]
+          ?.messages[0].status || "FAILED";
+      return transaction;
+    });
+    return newTxs;
   }
-  getStatusForAllTransactions();
+
   useEffect(() => {
-    const storedTransactions = localStorage.getItem("transactions");
-    if (storedTransactions !== null) {
-      setTransactions(JSON.parse(storedTransactions));
-    }
+    getStatusForAllTransactions().then((res) => {
+      setTransactions(res);
+    });
   }, []);
   function handleButtonClick() {
     props.setShowModal(false);
@@ -94,8 +108,20 @@ const Transactions = (props: any) => {
                           LayerZero Scan
                         </a>
                       </div>
-                      <div className="col-end-7 col-span-2 text-[#02ad02]">
-                        DELIVERD
+                      <div
+                        className={`col-end-7 col-span-2 ${
+                          transaction.status == "FAILED" ? "text-[#ff0000]" : ""
+                        } ${
+                          transaction.status == "DELIVERED"
+                            ? "text-[#02ad02]"
+                            : ""
+                        } ${
+                          transaction.status == "PENDING"
+                            ? "text-[#5935a7]"
+                            : ""
+                        }`}
+                      >
+                        {transaction.status || ""}
                       </div>
                     </div>
                   </div>

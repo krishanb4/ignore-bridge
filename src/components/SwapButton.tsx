@@ -442,12 +442,11 @@ function SwapButton() {
         };
         console.log(transactions);
 
-        const txExists = transactions.some(
+        const txExists = transactions.filter(
           (transaction) => transaction.tx === newTransaction.tx
         );
-        console.log(txExists);
 
-        if (txExists) {
+        if (txExists.length > 0) {
           console.log("Transaction already exists!");
         } else {
           transactions.push(newTransaction);
