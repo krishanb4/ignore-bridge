@@ -323,7 +323,7 @@ function SwapButton() {
             if (Number(context.data) < 40000) {
               setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
-              setButtonText("Bridg");
+              setButtonText("Bridge");
             }
           }
         }

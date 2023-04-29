@@ -5,13 +5,15 @@ import {
   w3mProvider,
 } from "@web3modal/ethereum";
 import type { AppProps } from "next/app";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, useConnect, WagmiConfig } from "wagmi";
 import { chainlist } from "@/config/chains";
 import { Web3Modal } from "@web3modal/react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import store from "@/redux/store";
 import { Provider } from "react-redux";
+import { useEffect } from "react";
+import { InjectedConnector } from "wagmi/connectors/injected";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID!;
 const { chains, provider } = configureChains(

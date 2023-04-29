@@ -2,10 +2,12 @@ import Head from "next/head";
 import Header from "@/components/Header";
 import Swap from "@/components/Swap";
 import Theme from "@/components/Theme";
-import { useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useConnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { useEffect } from "react";
+import { InjectedConnector } from "wagmi/connectors/injected";
 
 export default function Home() {
+  const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const { chains, error, isLoading, pendingChainId, switchNetwork } =
     useSwitchNetwork();
@@ -17,6 +19,15 @@ export default function Home() {
       switchNetwork?.(1116);
     }
   }, [chain?.id, switchNetwork]);
+
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  useEffect(() => {
+    if (!isConnected) {
+      connect();
+    }
+  }, [isConnected, connect]);
 
   return (
     <>
