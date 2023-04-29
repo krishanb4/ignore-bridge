@@ -248,7 +248,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               // gasLimit: 2200000,
-              value: ethers.utils.parseEther("0.44"),
+              value: ethers.utils.parseEther("1"),
             },
           });
         }
@@ -318,12 +318,12 @@ function SwapButton() {
           }
         } else {
           if (swaping) {
-            setButtonText("Swaping");
+            setButtonText("Bridging");
           } else {
             if (Number(context.data) < 40000) {
               setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
-              setButtonText("Swap");
+              setButtonText("Bridg");
             }
           }
         }
@@ -396,7 +396,7 @@ function SwapButton() {
     onSuccess(data) {
       console.log("Success", data.hash);
       setSwaping(false);
-      toast.success("Transaction successfully send 👌");
+      toast.success("Transaction successfully sent 👌");
     },
   });
   const [transactions, setTransactions] = useState<Transaction[]>([]);

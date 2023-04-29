@@ -4,7 +4,14 @@ import { useNetwork, useSwitchNetwork } from "wagmi";
 function NetworkSelect() {
   const { switchNetwork } = useSwitchNetwork();
   const { chain } = useNetwork();
-
+  const [ChainName, setChainName] = useState([
+    {
+      name: "BSC",
+    },
+    {
+      name: "CORE",
+    },
+  ]);
   const [chainDetails, setChainDetails] = useState([
     {
       id: 1116,
@@ -17,9 +24,41 @@ function NetworkSelect() {
       name: "BSC Chain",
     },
   ]);
+  useEffect(() => {
+    if (chain?.id) {
+      if (chain?.id == 56) {
+        setChainName([
+          {
+            name: "BSC",
+          },
+          {
+            name: "CORE",
+          },
+        ]);
+      } else if (chain?.id == 1116) {
+        setChainName([
+          {
+            name: "CORE",
+          },
+          {
+            name: "BSC",
+          },
+        ]);
+      } else {
+        setChainName([
+          {
+            name: "A",
+          },
+          {
+            name: "B",
+          },
+        ]);
+      }
+    }
+  }, [chain?.id]);
   const [switchNetworkId, setSwitchNetworkId] = useState(56);
   useEffect(() => {
-    if (chain) {
+    if (chain?.id) {
       setChainDetails(
         chain.id == 56
           ? [
@@ -50,7 +89,7 @@ function NetworkSelect() {
 
       setSwitchNetworkId(chain.id == 56 ? 1116 : 56);
     }
-  }, [chain]);
+  }, [chain?.id]);
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl mb-4 dark:text-white">
       <div className="flex flex-col border-[2px] border-[#02ad02] bg-gradient-to-r from-blue/[0.15] to-pink/[0.15] hover:from-blue/20 hover:to-pink/20 saturate-[2] dark:saturate-[1] px-4 py-3 rounded-xl">
@@ -130,7 +169,8 @@ function NetworkSelect() {
               </div>
             </h1>
             <span className="font-medium text-sm text-gray-700 dark:text-slate-400">
-              Swap tokens from one network to another.
+              Bridge tokens from {ChainName[0].name} Network to{" "}
+              {ChainName[1].name} Network
             </span>
           </div>
         </div>
