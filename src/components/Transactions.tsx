@@ -19,7 +19,7 @@ const Transactions = (props: any) => {
   }
   async function getStatusForAllTransactions() {
     const storedTransactions = localStorage.getItem("transactions");
-    console.log(storedTransactions);
+    // console.log(storedTransactions);
     let transactions: Transaction[] = [];
     if (storedTransactions !== null) {
       transactions = JSON.parse(storedTransactions);
@@ -30,7 +30,7 @@ const Transactions = (props: any) => {
 
     const rawResults = await Promise.all(promises);
     const results = rawResults.filter((res) => res.messages.length > 0);
-    console.log(results);
+    // console.log(results);
     const newTxs = transactions.map((transaction) => {
       transaction.status =
         results.filter((res) => res.messages[0].srcTxHash === transaction.tx)[0]
@@ -47,7 +47,7 @@ const Transactions = (props: any) => {
   }, []);
   function handleButtonClick() {
     props.setShowModal(false);
-    console.log(props);
+    // console.log(props);
   }
 
   return (
@@ -70,7 +70,7 @@ const Transactions = (props: any) => {
             </div>
             {/*body*/}
             <div className="relative p-6 flex flex-auto">
-              <div>
+              <div className="h-96 overflow-y-scroll">
                 {transactions.map((transaction) => (
                   <div
                     key={transaction.tx}

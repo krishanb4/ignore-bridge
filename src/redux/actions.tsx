@@ -1,13 +1,21 @@
-export const SET_BALANCE = "SET_BALANCE";
+import * as types from "./actionConstants";
 
 interface SetBalanceAction {
-  type: typeof SET_BALANCE;
-  payload: number;
+  type: typeof types.SET_BALANCE;
+  payload: {
+    corebalance: number;
+    bscbalance: number;
+    enterAmount: string;
+  };
 }
 
 export type BalanceAction = SetBalanceAction;
 
-export const setBalance = (balance: number): SetBalanceAction => ({
-  type: SET_BALANCE,
+export const setBalance = (balance: {
+  corebalance: number;
+  bscbalance: number;
+  enterAmount: string;
+}): SetBalanceAction => ({
+  type: types.SET_BALANCE,
   payload: balance,
 });

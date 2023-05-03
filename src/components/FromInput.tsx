@@ -5,20 +5,38 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { tokens } from "@/config/constants/addresses";
 import { ethers } from "ethers";
 import { MyContext } from "./context";
+import * as types from "@/redux/actionConstants";
+import { useDispatch, useSelector } from "react-redux";
+
+interface AppState {
+  tokenbalance: string;
+}
+
 function FromInput() {
+  const dispatch = useDispatch();
   const context = useContext(MyContext);
   const [inputValue, setInputValue] = useState("");
   const handleDataReceived = (data: string) => {
     setInputValue(data);
-    console.log(data);
+    // console.log(data);
     // Update state with received data
     context.setData(inputValue);
   };
+  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const regex = /^[0-9]*$/;
     if (value === "" || regex.test(value)) {
       setInputValue(value);
+
+      dispatch({
+        type: types.SET_BALANCE,
+        payload: {
+          corebalance: Object.values(tokenbalance)[0],
+          bscbalance: Object.values(tokenbalance)[1],
+          enterAmount: value,
+        },
+      });
     }
   };
 

@@ -20,7 +20,7 @@ function MainNetwork() {
       setbuttonClassNameBSC("text-gray-500");
     }
 
-    console.log(chain?.id);
+    // console.log(chain?.id);
   }, [chain]);
 
   return (

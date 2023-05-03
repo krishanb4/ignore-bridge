@@ -8,7 +8,7 @@ function ToInput() {
   const [inputValue, setInputValue] = useState("");
   useEffect(() => {
     setInputValue(context.data);
-    console.log(inputValue);
+    // console.log(inputValue);
   }, [inputValue, context.data]);
   return (
     <>

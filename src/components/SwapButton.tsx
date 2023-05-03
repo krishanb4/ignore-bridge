@@ -36,6 +36,10 @@ interface Transaction {
   tx: string;
 }
 
+interface AppState {
+  tokenbalance: string;
+}
+
 function SwapButton() {
   const client = createClient("mainnet");
   const context = React.useContext(MyContext);
@@ -50,8 +54,24 @@ function SwapButton() {
   const [tokenAddress, setTokenAddress] = useState("");
   const [tokenSpender, settokenSpender] = useState("");
   const [userAddress, setUserAddress] = useState<`0x${string}` | string>("");
+  const [tokenBalance, setTokenBalance] = useState("");
   const account = getAccount();
+  const [dummyData, setDummyData] = useState("");
+  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
 
+  useEffect(() => {
+    setDummyData(Object.values(tokenbalance)[2]);
+  }, [tokenbalance]);
+
+  useEffect(() => {
+    if (chain?.id == 56) {
+      const tokenBalanceFrom = Object.values(tokenbalance)[1];
+      setTokenBalance(tokenBalanceFrom);
+    } else if (chain?.id == 1116) {
+      const tokenBalanceFrom = Object.values(tokenbalance)[0];
+      setTokenBalance(tokenBalanceFrom);
+    }
+  }, [chain?.id, tokenbalance]);
   useEffect(() => {
     if (account && account.address) {
       const erc20Address = ethers.utils.getAddress(account.address);
@@ -59,8 +79,8 @@ function SwapButton() {
     }
   }, [account]);
   type SwapArgs = {
-    token: string;
-    remoteChain: number;
+    localToken: string;
+    remoteChainId: number;
     amountLD: BigNumber;
     to: string;
     callParams: {};
@@ -87,7 +107,7 @@ function SwapButton() {
     }
     const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
     const spender = tokenSpender; // Replace with the spender's address
-    console.log({ tokenContractAddress, spender, userAddress, TokenABI });
+    // console.log({ tokenContractAddress, spender, userAddress, TokenABI });
 
     if (tokenContractAddress && spender && userAddress && chain?.id) {
       try {
@@ -99,12 +119,12 @@ function SwapButton() {
           Number(chain?.id)
         );
         setapproveBalance(Number(approveBalance) / 10 ** 18);
-        console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
+        // console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     } else {
-      console.log("loading data .....");
+      // console.log("loading data .....");
     }
   }
 
@@ -126,7 +146,7 @@ function SwapButton() {
 
     try {
       setApproving(true);
-      console.log(tokenAddress);
+      // console.log(tokenAddress);
 
       const approvalResult: ApprovalResult = await approve(
         tokenContractAddress,
@@ -136,8 +156,8 @@ function SwapButton() {
         signer_from
       );
 
-      console.log(`Transaction hash: ${approvalResult.txHash}`);
-      console.log(`Transaction status: ${approvalResult.status}`);
+      // console.log(`Transaction hash: ${approvalResult.txHash}`);
+      // console.log(`Transaction status: ${approvalResult.status}`);
       if (approvalResult.status == "mined") {
         setApproving(false);
       }
@@ -155,13 +175,13 @@ function SwapButton() {
         ? "dark"
         : "default";
       if (theme === "default") {
-        console.log("light");
+        // console.log("light");
 
         toast.error("Failed to approve tokens: " + error, {
           theme: "light",
         });
       } else {
-        console.log("dark");
+        // console.log("dark");
         toast.error("Failed to approve tokens: " + error, {
           theme: "dark",
         });
@@ -193,12 +213,9 @@ function SwapButton() {
             Number(chain?.id)
           );
           setapproveBalance(Number(approveBalance) / 10 ** 18);
-          console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
-        } catch (error) {
-          console.log(error);
-        }
+        } catch (error) {}
       } else {
-        console.log("loading data .....");
+        // nothing
       }
     }
     checkApproveBalance();
@@ -219,23 +236,23 @@ function SwapButton() {
       zroPaymentAddress: "0x0000000000000000000000000000000000000000",
     };
 
-    // const numberEntered = (Number(context.data) * 10 ** 18).toString();
     const decimals = 18;
-    if (context.data) {
-      const numberEntered = ethers.utils.parseUnits(context.data, decimals);
+    if (dummyData) {
+      const numberEntered = ethers.utils.parseUnits(dummyData, decimals);
       console.log(`entered ${numberEntered}`);
+
       if (tokenAddressSwap && toAddress) {
         if (chain?.id == 56) {
           setArgs({
-            token: tokenAddressSwap,
-            remoteChain: 153,
-            amountLD: numberEntered,
+            localToken: tokenAddressSwap,
+            remoteChainId: 153,
+            amountLD: BigNumber.from(numberEntered),
             to: toAddress,
             unwrapWeth: true,
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              // gasLimit: 2200000,
+              // gasLimit: 2400000,
               value: ethers.utils.parseEther("0.001"),
             },
           });
@@ -247,28 +264,25 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              // gasLimit: 2200000,
+              // gasLimit: 2400000,
               value: ethers.utils.parseEther("1"),
             },
           });
         }
       }
     }
-  }, [tokenAddressSwap, address, toAddress, chain?.id, context.data]);
-  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
+  }, [tokenAddressSwap, address, toAddress, chain?.id, dummyData]);
+
   const HanddleFunctions = () => {
-    const tokenBalance = Object.values(tokenbalance)[0];
     if (chain?.id === 56 || chain?.id === 1116) {
       if (isConnected) {
-        if (approveBalance > 40000) {
-          if (Number(context.data) <= 0 || !context.data) {
+        if (approveBalance >= 40000) {
+          if (Number(dummyData) <= 0 || !dummyData) {
             return;
           } else {
             if (!swaping) {
-              if (Number(context.data) >= 40000) {
-                if (Number(context.data) <= Number(tokenBalance)) {
-                  console.log("here.....");
-
+              if (Number(dummyData) >= 40000) {
+                if (Number(dummyData) <= Number(tokenBalance)) {
                   Swap();
                 }
               }
@@ -289,28 +303,26 @@ function SwapButton() {
     }
   };
   const [buttonText, setButtonText] = useState("");
-  interface AppState {
-    tokenbalance: string;
-  }
 
   useEffect(() => {
-    const tokenBalance = Object.values(tokenbalance)[0];
-
     if (chain?.id === 56 || chain?.id === 1116) {
-      if (approveBalance > 40000) {
+      if (approveBalance >= 40000) {
         if (
-          Number(context.data) <= 0 ||
-          !context.data ||
-          Number(context.data) > Number(tokenBalance)
+          Number(dummyData) <= 0 ||
+          !dummyData ||
+          Number(dummyData) > Number(tokenBalance)
         ) {
-          if (Number(context.data) > Number(tokenBalance)) {
-            if (Number(context.data) < 40000) {
-              setButtonText("Minimum bridge amount is 40000 4TOKEN");
-            } else {
-              setButtonText("Enter Correct Amount");
-            }
+          if (Number(dummyData) > Number(tokenBalance)) {
+            setButtonText("Enter Correct Amount");
+            // if (Number(dummyData) < 40000) {
+            //   // console.log(Number(dummyData));
+            //   setButtonText("Minimum bridge amount is 40000 4TOKEN ");
+            // } else {
+            //   // console.log(Number(dummyData));
+            //   setButtonText("Enter Correct Amount");
+            // }
           } else {
-            if (Number(context.data) < 40000 && Number(context.data) > 0) {
+            if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
               setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
               setButtonText("Enter Amount");
@@ -320,7 +332,7 @@ function SwapButton() {
           if (swaping) {
             setButtonText("Bridging");
           } else {
-            if (Number(context.data) < 40000) {
+            if (Number(dummyData) < 40000) {
               setButtonText("Minimum bridge amount is 40000 4TOKEN");
             } else {
               setButtonText("Bridge");
@@ -346,12 +358,13 @@ function SwapButton() {
     approveBalance,
     swaping,
     buttonText,
-    context.data,
+    dummyData,
     tokenbalance,
+    tokenBalance,
   ]);
   const [prepareContract, setPrepareContract] = useState("");
   const [contractABI, setContractABI] = useState<Array<any>>([]);
-  console.log(`contract ${tokenSpender}`);
+  // console.log(`contract ${tokenSpender}`);
   useEffect(() => {
     function getContract() {
       if (chain?.id === 56) {
@@ -373,11 +386,34 @@ function SwapButton() {
       chain?.id === 1116 ? argsCore : chain?.id === 56 ? args : ""
     ),
   });
+  // useEffect(() => {
+  //   if (swaping && error) {
+  //     // console.log(error);
+
+  //     const theme = document.documentElement.classList.contains("dark")
+  //       ? "dark"
+  //       : "default";
+  //     if (theme === "default") {
+  //       toast.error("Failed to send tokens: ", {
+  //         theme: "light",
+  //       });
+  //     } else {
+  //       // console.log("dark");
+  //       toast.error("Failed to send tokens: ", {
+  //         theme: "dark",
+  //       });
+  //     }
+  //     setSwaping(false);
+  //   }
+  // }, [error, swaping]);
+  // // console.log(error);
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
     onError(error) {
-      console.log("Error", error);
+      // console.log("Error", error);
+      // // console.log("swaping error ");
+
       const theme = document.documentElement.classList.contains("dark")
         ? "dark"
         : "default";
@@ -386,7 +422,7 @@ function SwapButton() {
           theme: "light",
         });
       } else {
-        console.log("dark");
+        // console.log("dark");
         toast.error("Failed to send tokens: " + error, {
           theme: "dark",
         });
@@ -394,7 +430,6 @@ function SwapButton() {
       setSwaping(false);
     },
     onSuccess(data) {
-      console.log("Success", data.hash);
       setSwaping(false);
       toast.success("Transaction successfully sent 👌");
     },
@@ -406,14 +441,12 @@ function SwapButton() {
       setTransactions(JSON.parse(storedTransactions));
     }
   }, []);
-  console.log(transactions);
+
   if (isSuccess) {
-    console.log(data?.hash);
     if (data?.hash) {
       const hash = data.hash.toString();
-      console.log(`hash from transaction ${hash}`);
-      if (chain?.id === 56) {
-        console.log("bsc to core");
+
+      if (chain?.id == 56) {
         const from = "BSC";
         const to = "CORE";
         const newTransaction = {
@@ -422,17 +455,22 @@ function SwapButton() {
           tx: hash,
         };
 
-        const exists = transactions.some(
+        // const exists = transactions.some(
+        //   (transaction) => transaction.tx === newTransaction.tx
+        // );
+
+        const txExists = transactions.filter(
           (transaction) => transaction.tx === newTransaction.tx
         );
 
-        if (exists) {
-          console.log("Transaction already exists!");
+        if (txExists.length > 0) {
+          // console.log("Transaction already exists!");
         } else {
-          setTransactions([...transactions, newTransaction]);
+          transactions.push(newTransaction);
+          localStorage.setItem("transactions", JSON.stringify(transactions));
         }
-      } else if (chain?.id === 1116) {
-        console.log("core to bsc");
+      } else if (chain?.id == 1116) {
+        // console.log("core to bsc");
         const from = "CORE";
         const to = "BSC";
         const newTransaction = {
@@ -440,14 +478,14 @@ function SwapButton() {
           from: from,
           tx: hash,
         };
-        console.log(transactions);
+        // console.log(transactions);
 
         const txExists = transactions.filter(
           (transaction) => transaction.tx === newTransaction.tx
         );
 
         if (txExists.length > 0) {
-          console.log("Transaction already exists!");
+          // console.log("Transaction already exists!");
         } else {
           transactions.push(newTransaction);
           localStorage.setItem("transactions", JSON.stringify(transactions));
@@ -466,18 +504,12 @@ function SwapButton() {
   }, [chain?.id]);
 
   async function Swap() {
-    console.log(chain);
-
-    console.log("before call write");
     if (tokenAddressSwap && toAddress) {
-      console.log(args);
       write?.();
       setSwaping(true);
     } else {
-      console.log("no calling swap");
+      // nothing
     }
-
-    console.log("after call write");
   }
   return (
     <div className="pt-4">
@@ -490,13 +522,11 @@ function SwapButton() {
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
             approveBalance > 40000 &&
-            (Number(context.data) <= 0 ||
-              !context.data ||
-              Number(context.data) < 40000)
+            (Number(dummyData) <= 0 || !dummyData || Number(dummyData) < 40000)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } ${
-            Number(context.data) > Number(Object.values(tokenbalance)[0])
+            Number(dummyData) > Number(tokenBalance)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           }   text-white px-6 h-[52px] rounded-xl text-base font-semibold`}

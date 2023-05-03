@@ -2,13 +2,13 @@ import { tokens } from "@/config/constants/addresses";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance, useNetwork } from "wagmi";
-
+import { AppDispatch } from "@/redux/store";
 function ToData() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const [integerPart, setIntegerPart] = useState("0");
   const [fractionalPart, setFractionalPart] = useState("00");
-  const [tokenbalance, setTokenBalance] = useState("");
+  const [tokenbalance, setTokenBalanceLocal] = useState("");
   const [chainID, setChainID] = useState(0);
   const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
     undefined
@@ -18,7 +18,7 @@ function ToData() {
     token: tokenAddress,
     chainId: chainID,
     onError(error) {
-      console.log("Error", error);
+      // console.log("Error", error);
     },
   });
 
@@ -35,9 +35,9 @@ function ToData() {
 
     if (!isLoading) {
       const tokenB = data?.formatted || "";
-      setTokenBalance(tokenB);
+      setTokenBalanceLocal(tokenB);
 
-      console.log(tokenB);
+      // console.log(tokenB);
 
       const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
       const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
@@ -80,3 +80,6 @@ function ToData() {
 }
 
 export default ToData;
+function dispatch(arg0: void) {
+  throw new Error("Function not implemented.");
+}

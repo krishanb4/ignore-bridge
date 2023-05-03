@@ -44,10 +44,10 @@ const Header: React.FC = () => {
       setCurrentNetworkImage("error");
       setCurrentNetwork("");
     }
-    console.log(error);
+    // console.log(error);
   }, [chain, error]);
   const [showModal, setShowModal] = useState(false);
-  console.log(showModal);
+  // console.log(showModal);
 
   return (
     <>

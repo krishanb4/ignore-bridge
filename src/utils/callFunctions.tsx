@@ -36,7 +36,7 @@ export async function approve(
     const signedTransaction = await signer.sendTransaction(transaction);
     const transactionReceipt = await signedTransaction.wait();
 
-    console.log(`Approved ${amount} tokens to spender ${spender}`);
+    // console.log(`Approved ${amount} tokens to spender ${spender}`);
     return {
       txHash: transactionReceipt.transactionHash,
       status: transactionReceipt.status === 1 ? "mined" : "failed",
@@ -114,7 +114,7 @@ export const useBridge = (
   const bridge = async () => {
     try {
       const response = config.mode;
-      console.log(response);
+      // console.log(response);
     } catch (err) {
       console.error(err);
     }

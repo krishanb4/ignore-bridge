@@ -4,8 +4,10 @@ import { useAccount, useBalance, useNetwork } from "wagmi";
 import { tokens } from "@/config/constants/addresses";
 import { ethers } from "ethers";
 import { MyContext } from "./context";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/redux/store";
 import { setBalance } from "@/redux/actions";
+import * as types from "@/redux/actionConstants";
 interface ReceiverComponentProps {
   onDataReceived: (tokenbalance: string) => void; // Define the callback function prop
 }
@@ -20,41 +22,138 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
     undefined
   );
+  const [tokenAddressOther, setTokenAddressOther] = useState<
+    `0x${string}` | undefined
+  >(undefined);
+  const [chainID, setChainID] = useState(0);
   const { data, isError, isLoading } = useBalance({
     address: address,
     token: tokenAddress,
     onError(error) {
-      console.log("Error", error);
+      // console.log("Error", error);
     },
   });
 
+  const tokendata = useBalance({
+    address: address,
+    token: tokenAddressOther,
+    chainId: chainID,
+    onSuccess(data) {
+      // console.log("Success", data);
+    },
+    onError(error) {
+      // console.log("Error", error);
+    },
+  });
+  interface AppState {
+    tokenbalance: string;
+  }
+  const tokenbalanceFrom = useSelector((state: AppState) => state.tokenbalance);
+  useEffect(() => {
+    if (chain?.id == 56) {
+      setChainID(1116);
+    } else if (chain?.id == 1116) {
+      setChainID(56);
+    }
+  }, [chain?.id]);
+  useEffect(() => {
+    if (chain?.id == 56) {
+      const erc20AddressOther = ethers.utils.getAddress(tokens.IGNORE.core);
+      setTokenAddressOther(erc20AddressOther);
+    } else if (chain?.id == 1116) {
+      const erc20AddressOther = ethers.utils.getAddress(tokens.IGNORE.bsc);
+      setTokenAddressOther(erc20AddressOther);
+    }
+  }, [chain?.id]);
   useEffect(() => {
     if (chain?.id == 56) {
       const erc20Address = ethers.utils.getAddress(tokens.IGNORE.bsc);
+
       setTokenAddress(erc20Address);
     } else if (chain?.id == 1116) {
       const erc20Address = ethers.utils.getAddress(tokens.IGNORE.core);
       setTokenAddress(erc20Address);
     }
-
+  }, [chain?.id]);
+  useEffect(() => {
     if (!isLoading) {
       const tokenB = data?.formatted || "";
       setTokenBalance(tokenB);
+      // console.log(tokenAddressOther);
 
-      dispatch(setBalance(Number(tokenB)));
-
-      const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
-      const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
-
-      setIntegerPart(integerPart.toString());
-      const fPart = fractionalPart.toString();
-      setFractionalPart(fPart.substring(2));
+      // console.log(tokendata.data?.formatted);
     }
-  }, [chain?.id, tokenAddress, address, data, isLoading, dispatch]);
+  }, [
+    data?.formatted,
+    isLoading,
+    tokenAddressOther,
+    tokendata.data?.formatted,
+  ]);
+  useEffect(() => {
+    if (chain?.id == 56) {
+      dispatch({
+        type: types.SET_BALANCE,
+        payload: {
+          corebalance: Number(tokendata.data?.formatted),
+          bscbalance: Number(tokenbalance),
+          enterAmount: "",
+        },
+      });
+    } else if (chain?.id == 1116) {
+      dispatch({
+        type: types.SET_BALANCE,
+        payload: {
+          corebalance: Number(tokenbalance),
+          bscbalance: Number(tokendata.data?.formatted),
+          enterAmount: "",
+        },
+      });
+    }
+  }, [chain?.id, dispatch, tokenbalance, tokendata.data?.formatted]);
+  useEffect(() => {
+    if (!isLoading) {
+      // dispatch(setBalance(Number(tokenB)));
+
+      if (chain?.id == 56) {
+        const integerPart = Math.floor(
+          Number(Object.values(tokenbalanceFrom)[1])
+        ); // Extract the integer part
+        const fractionalPart = (
+          Number(Object.values(tokenbalanceFrom)[1]) - integerPart
+        ).toFixed(6);
+
+        setIntegerPart(integerPart.toString());
+        const fPart = fractionalPart.toString();
+        setFractionalPart(fPart.substring(2));
+      } else if (chain?.id == 1116) {
+        const integerPart = Math.floor(
+          Number(Object.values(tokenbalanceFrom)[0])
+        ); // Extract the integer part
+        const fractionalPart = (
+          Number(Object.values(tokenbalanceFrom)[0]) - integerPart
+        ).toFixed(6);
+
+        setIntegerPart(integerPart.toString());
+        const fPart = fractionalPart.toString();
+        setFractionalPart(fPart.substring(2));
+      }
+    }
+  }, [
+    chain?.id,
+    tokenAddress,
+    address,
+    data,
+    isLoading,
+    dispatch,
+    tokenbalance,
+    tokenAddressOther,
+    tokendata.data?.formatted,
+    tokenbalanceFrom,
+  ]);
   const context = useContext(MyContext);
   const decimals = 18;
   const handleDataInput = () => {
-    console.log(tokenbalance);
+    // console.log(tokenbalance);
     const bigNumberValue = ethers.utils.parseUnits(tokenbalance, decimals);
     const decimalValue = ethers.utils.formatUnits(bigNumberValue, decimals);
     context.setData(decimalValue);
