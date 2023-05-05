@@ -29,6 +29,7 @@ import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
 import { useSelector } from "react-redux";
 import { createClient } from "@layerzerolabs/scan-client";
+import moment from "moment";
 
 interface Transaction {
   to: string;
@@ -453,6 +454,7 @@ function SwapButton() {
           to: to,
           from: from,
           tx: hash,
+          time: moment().format("DD-MM-YYYY hh:mm:ss"),
         };
 
         // const exists = transactions.some(
@@ -477,6 +479,7 @@ function SwapButton() {
           to: to,
           from: from,
           tx: hash,
+          time: moment().format("DD-MM-YYYY hh:mm:ss"),
         };
         // console.log(transactions);
 

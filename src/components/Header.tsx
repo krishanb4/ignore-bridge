@@ -48,6 +48,10 @@ const Header: React.FC = () => {
   }, [chain, error]);
   const [showModal, setShowModal] = useState(false);
   // console.log(showModal);
+  const timestamp = 1683194498878;
+  const date = new Date(timestamp).toLocaleString();
+
+  console.log(date);
 
   return (
     <>
@@ -102,6 +106,7 @@ const Header: React.FC = () => {
                     Buy 4TOKEN
                   </span>
                 </button>
+
                 {isModelopen && (
                   <div
                     className="absolute top-10 right-0 z-10 mt-2 w-56 dark:text-white origin-top-right rounded-md bg-white dark:bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -111,20 +116,22 @@ const Header: React.FC = () => {
                   >
                     <div className="py-1" role="none">
                       <a
-                        href="#"
+                        href="https://pancakeswap.finance/swap"
                         className="text-gray-700 block px-4 py-2 text-sm dark:text-white hover:bg-[#bec9d2]"
                         role="menuitem"
                         tabIndex={-1}
                         id="menu-item-0"
+                        target="_blank"
                       >
                         Buy on PancakeSwap
                       </a>
                       <a
-                        href="#"
+                        href="https://exchange.archerswap.finance/swap"
                         className="text-gray-700 block px-4 py-2 text-sm dark:text-white hover:bg-[#bec9d2]"
                         role="menuitem"
                         tabIndex={-1}
                         id="menu-item-1"
+                        target="_blank"
                       >
                         Buy on ArcherSwap
                       </a>
