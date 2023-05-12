@@ -34,7 +34,10 @@ const Header: React.FC = () => {
   const { chains, error, isLoading, pendingChainId, switchNetwork } =
     useSwitchNetwork();
   useEffect(() => {
-    if (chain?.id === 56) {
+    if (chain?.id === 1) {
+      setCurrentNetwork("Ethereum");
+      setCurrentNetworkImage("eth");
+    } else if (chain?.id === 56) {
       setCurrentNetwork("BSC Chain");
       setCurrentNetworkImage("bsc");
     } else if (chain?.id === 1116) {
@@ -47,11 +50,6 @@ const Header: React.FC = () => {
     // console.log(error);
   }, [chain, error]);
   const [showModal, setShowModal] = useState(false);
-  // console.log(showModal);
-  const timestamp = 1683194498878;
-  const date = new Date(timestamp).toLocaleString();
-
-  console.log(date);
 
   return (
     <>

@@ -13,10 +13,12 @@ export default function Home() {
     useSwitchNetwork();
 
   useEffect(() => {
-    if (chain?.id == 56 || chain?.id == 1116) {
+    if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
       return;
     } else {
-      switchNetwork?.(1116);
+      console.log(chain?.id);
+
+      switchNetwork?.(1);
     }
   }, [chain?.id, switchNetwork]);
 

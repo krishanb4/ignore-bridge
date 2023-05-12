@@ -9,7 +9,7 @@ export interface ApprovalResult {
 
 export async function approve(
   tokenContractAddress: string,
-  spender: string,
+  spender: string | undefined,
   TokenABI: any,
   amount: ethers.BigNumber,
   signer: any

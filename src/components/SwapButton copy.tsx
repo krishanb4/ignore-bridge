@@ -19,9 +19,12 @@ import {
 import TokenABI from "@/config/abi/bscUSDT.json";
 import bridgeABI from "@/config/abi/bridgeABI.json";
 import bscbridgeABI from "@/config/abi/bscbridgeABI.json";
-import AddressRoute, {
-  TokenAddressRoute,
-} from "@/config/constants/bridgeRoute";
+import {
+  tokens,
+  bscContractAddress,
+  coreContractAddress,
+  ethContractAddress,
+} from "@/config/constants/addresses";
 import { ethers, BigNumber } from "ethers";
 import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
@@ -35,34 +38,10 @@ interface Transaction {
   tx: string;
 }
 
-interface ChainRoute {
-  to: string;
-  from: string;
-}
-
 interface AppState {
-  tokenbalance: {
-    bscbalance: number;
-    corebalance: number;
-    enterAmount: string;
-    ethbalance: number;
-  };
-  chains: {
-    firstChain: {
-      id: number;
-      name: string;
-      symbol: string;
-    };
-    secondChain: {
-      id: number;
-      name: string;
-      symbol: string;
-    };
-  };
+  tokenbalance: string;
+  chains: {};
 }
-type TokenBalanceList = {
-  [key: string]: number;
-};
 
 function SwapButton() {
   const client = createClient("mainnet");
@@ -75,59 +54,32 @@ function SwapButton() {
     connector: new InjectedConnector(),
   });
   const [approving, setApproving] = useState(false);
-  // const [tokenAddress, setTokenAddress] = useState("");
-  // const [tokenSpender, settokenSpender] = useState("");
+  const [tokenAddress, setTokenAddress] = useState("");
+  const [tokenSpender, settokenSpender] = useState("");
   const [userAddress, setUserAddress] = useState<`0x${string}` | string>("");
-
+  const [tokenBalance, setTokenBalance] = useState("");
   const account = getAccount();
   const [dummyData, setDummyData] = useState("");
-  // v1.1
-  const [tokenBalance, setTokenBalance] = useState(0);
   const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const chaindetails = useSelector((state: AppState) => state.chains);
-  const [bridgeRoute, setBridgeRoute] = useState({
-    from: "ETH",
-    to: "BSC",
-  });
-
-  const [tokenBalanceList, setTokenBalanceList] = useState<TokenBalanceList>({
-    ETH: 0,
-    BSC: 0,
-    CORE: 0,
-  });
-  const [routeContractAddress, setRouteContractAddress] =
-    useState<`0x${string}`>();
-  const [routeTokenAddress, setRouteTokenAddress] = useState<`0x${string}`>();
 
   useEffect(() => {
-    const eth_balance = tokenbalance.ethbalance;
-    const bsc_balance = tokenbalance.bscbalance;
-    const core_balance = tokenbalance.corebalance;
-    setTokenBalanceList({
-      ETH: eth_balance,
-      BSC: bsc_balance,
-      CORE: core_balance,
-    });
+    setDummyData(Object.values(tokenbalance)[2]);
+    console.log(`token balance: ${Object.values(tokenbalance)}`);
   }, [tokenbalance, chaindetails]);
 
   useEffect(() => {
-    const balance = tokenbalance.enterAmount;
-    const balan_to = balance;
-    setDummyData(balan_to);
-  }, [tokenbalance]);
-  useEffect(() => {
-    const balance = tokenBalanceList[bridgeRoute.from];
-    const balan_to = balance;
-    setTokenBalance(balan_to);
-  }, [tokenBalanceList, bridgeRoute.from]);
-
-  useEffect(() => {
-    setBridgeRoute({
-      from: chaindetails.firstChain.symbol,
-      to: chaindetails.secondChain.symbol,
-    });
-  }, [chaindetails.firstChain.symbol, chaindetails.secondChain.symbol]);
-
+    if (chain?.id == 1) {
+      const tokenBalanceFrom = Object.values(tokenbalance)[2];
+      setTokenBalance(tokenBalanceFrom);
+    } else if (chain?.id == 56) {
+      const tokenBalanceFrom = Object.values(tokenbalance)[1];
+      setTokenBalance(tokenBalanceFrom);
+    } else if (chain?.id == 1116) {
+      const tokenBalanceFrom = Object.values(tokenbalance)[0];
+      setTokenBalance(tokenBalanceFrom);
+    }
+  }, [chain?.id, tokenbalance]);
   useEffect(() => {
     if (account && account.address) {
       const erc20Address = ethers.utils.getAddress(account.address);
@@ -153,66 +105,85 @@ function SwapButton() {
     adapterParams: "0x";
     gassData: {};
   };
-  useEffect(() => {
-    const From_To = bridgeRoute.from + "_" + bridgeRoute.to;
-
-    const route_address = AddressRoute(From_To);
-    setRouteContractAddress(route_address);
-    console.log(route_address);
-  }, [bridgeRoute.from, bridgeRoute.to]);
-  useEffect(() => {
-    const From = bridgeRoute.from;
-
-    const token_address = TokenAddressRoute(From);
-    setRouteTokenAddress(token_address);
-    console.log(token_address);
-  }, [bridgeRoute.from]);
   async function checkApproveBalance() {
-    if (routeTokenAddress && routeContractAddress && userAddress && chain?.id) {
+    if (chain?.id === 1) {
+      setTokenAddress(tokens.IGNORE.eth);
+      settokenSpender(ethContractAddress);
+    } else if (chain?.id === 56) {
+      setTokenAddress(tokens.IGNORE.bsc);
+      settokenSpender(bscContractAddress);
+    } else if (chain?.id === 1116) {
+      setTokenAddress(tokens.IGNORE.core);
+      settokenSpender(coreContractAddress);
+    }
+    const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
+    const spender = tokenSpender; // Replace with the spender's address
+    // console.log({ tokenContractAddress, spender, userAddress, TokenABI });
+
+    if (tokenContractAddress && spender && userAddress && chain?.id) {
       try {
         const approveBalance = await checkApprovedBalance(
-          routeTokenAddress,
-          routeContractAddress,
+          tokenContractAddress,
+          spender,
           userAddress,
           TokenABI,
           Number(chain?.id)
         );
         setapproveBalance(Number(approveBalance) / 10 ** 18);
+        // console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     } else {
-      console.log("data not available yet...");
+      // console.log("loading data .....");
     }
   }
 
   async function approveTokens() {
+    if (chain?.id === 1) {
+      setTokenAddress(tokens.IGNORE.eth);
+      settokenSpender(ethContractAddress);
+    } else if (chain?.id === 56) {
+      setTokenAddress(tokens.IGNORE.bsc);
+      settokenSpender(bscContractAddress);
+    } else if (chain?.id === 1116) {
+      setTokenAddress(tokens.IGNORE.core);
+      settokenSpender(coreContractAddress);
+    }
+    const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
+    const spender = tokenSpender; // Replace with the spender's address
     const amount = ethers.utils.parseUnits(
-      "115792089237316195423570985008687907853269984665640564039457",
+      "115792089237316195423570985008687907853269984665640564039457.584007913129639935",
       18
-    );
-    const signer_from = signer;
+    ); // Replace with the desired approval amount
+    const signer_from = signer; // Replace with a valid signer object, e.g. ethers.Wallet or ethers.providers.JsonRpcSigner
+
     try {
       setApproving(true);
-      if (routeTokenAddress && routeContractAddress) {
-        const approvalResult: ApprovalResult = await approve(
-          routeTokenAddress,
-          routeContractAddress,
-          TokenABI,
-          amount,
-          signer_from
-        );
-        if (approvalResult.status == "mined") {
-          setApproving(false);
-        }
-        await toast.promise(Promise.resolve(), {
-          pending: "Approving tokens...",
-          success: "Tokens approved successfully 👌",
-          error: "Failed to approve tokens",
-        });
-        checkApproveBalance();
+      // console.log(tokenAddress);
+
+      const approvalResult: ApprovalResult = await approve(
+        tokenContractAddress,
+        spender,
+        TokenABI,
+        amount,
+        signer_from
+      );
+
+      // console.log(`Transaction hash: ${approvalResult.txHash}`);
+      // console.log(`Transaction status: ${approvalResult.status}`);
+      if (approvalResult.status == "mined") {
         setApproving(false);
       }
+
+      await toast.promise(Promise.resolve(), {
+        pending: "Approving tokens...",
+        success: "Tokens approved successfully 👌",
+        error: "Failed to approve tokens",
+      });
+
+      checkApproveBalance();
+      setApproving(false);
     } catch (error) {
       const theme = document.documentElement.classList.contains("dark")
         ? "dark"
@@ -236,16 +207,24 @@ function SwapButton() {
   const [approveBalance, setapproveBalance] = useState(0);
   useEffect(() => {
     async function checkApproveBalance() {
-      if (
-        routeTokenAddress &&
-        routeContractAddress &&
-        userAddress &&
-        chain?.id
-      ) {
+      if (chain?.id === 1) {
+        setTokenAddress(tokens.IGNORE.eth);
+        settokenSpender(ethContractAddress);
+      } else if (chain?.id === 56) {
+        setTokenAddress(tokens.IGNORE.bsc);
+        settokenSpender(bscContractAddress);
+      } else if (chain?.id === 1116) {
+        setTokenAddress(tokens.IGNORE.core);
+        settokenSpender(coreContractAddress);
+      }
+      const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
+      const spender = tokenSpender; // Replace with the spender's address
+
+      if (tokenContractAddress && spender && userAddress && chain?.id) {
         try {
           const approveBalance = await checkApprovedBalance(
-            routeTokenAddress,
-            routeContractAddress,
+            tokenContractAddress,
+            spender,
             userAddress,
             TokenABI,
             Number(chain?.id)
@@ -257,7 +236,7 @@ function SwapButton() {
       }
     }
     checkApproveBalance();
-  }, [chain?.id, userAddress, routeTokenAddress, routeContractAddress]);
+  }, [chain?.id, tokenAddress, tokenSpender, userAddress]);
 
   const [args, setArgs] = useState({} as SwapArgs);
   const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
@@ -276,10 +255,7 @@ function SwapButton() {
 
     const decimals = 18;
     if (dummyData) {
-      const numberEntered = ethers.utils.parseUnits(
-        dummyData.toString(),
-        decimals
-      );
+      const numberEntered = ethers.utils.parseUnits(dummyData, decimals);
       console.log(`entered ${numberEntered}`);
 
       if (tokenAddressSwap && toAddress) {
@@ -396,17 +372,23 @@ function SwapButton() {
     tokenbalance,
     tokenBalance,
   ]);
-  // const [prepareContract, setPrepareContract] = useState("");
+  const [prepareContract, setPrepareContract] = useState("");
   const [contractABI, setContractABI] = useState<Array<any>>([]);
 
   useEffect(() => {
-    if (chain?.id === 1) {
-      setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
-    } else if (chain?.id === 56) {
-      setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
-    } else if (chain?.id === 1116) {
-      setContractABI((prevState) => [...prevState, ...bridgeABI]);
+    function getContract() {
+      if (chain?.id === 1) {
+        setPrepareContract(tokens.IGNORE.eth);
+        setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
+      } else if (chain?.id === 56) {
+        setPrepareContract(tokens.IGNORE.bsc);
+        setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
+      } else if (chain?.id === 1116) {
+        setPrepareContract(tokens.IGNORE.core);
+        setContractABI((prevState) => [...prevState, ...bridgeABI]);
+      }
     }
+    getContract();
   }, [chain?.id]);
 
   let argsToUse;
@@ -422,15 +404,39 @@ function SwapButton() {
   }
 
   const { config, error } = usePrepareContractWrite({
-    address: routeContractAddress,
+    address: contractAddressSwap,
     abi: contractABI,
     functionName: "bridge",
     args: Object.values(argsToUse),
   });
+  // useEffect(() => {
+  //   if (swaping && error) {
+  //     // console.log(error);
+
+  //     const theme = document.documentElement.classList.contains("dark")
+  //       ? "dark"
+  //       : "default";
+  //     if (theme === "default") {
+  //       toast.error("Failed to send tokens: ", {
+  //         theme: "light",
+  //       });
+  //     } else {
+  //       // console.log("dark");
+  //       toast.error("Failed to send tokens: ", {
+  //         theme: "dark",
+  //       });
+  //     }
+  //     setSwaping(false);
+  //   }
+  // }, [error, swaping]);
+  // // console.log(error);
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
     onError(error) {
+      // console.log("Error", error);
+      // // console.log("swaping error ");
+
       const theme = document.documentElement.classList.contains("dark")
         ? "dark"
         : "default";
@@ -462,35 +468,68 @@ function SwapButton() {
   if (isSuccess) {
     if (data?.hash) {
       const hash = data.hash.toString();
-      const from = bridgeRoute.from;
-      const to = bridgeRoute.to;
-      const newTransaction = {
-        to: to,
-        from: from,
-        tx: hash,
-        time: moment().format("DD-MM-YYYY hh:mm:ss"),
-      };
-      // console.log(transactions);
 
-      const txExists = transactions.filter(
-        (transaction) => transaction.tx === newTransaction.tx
-      );
+      if (chain?.id == 56) {
+        const from = "BSC";
+        const to = "CORE";
+        const newTransaction = {
+          to: to,
+          from: from,
+          tx: hash,
+          time: moment().format("DD-MM-YYYY hh:mm:ss"),
+        };
 
-      if (txExists.length > 0) {
-        // console.log("Transaction already exists!");
-      } else {
-        transactions.push(newTransaction);
-        localStorage.setItem("transactions", JSON.stringify(transactions));
+        const txExists = transactions.filter(
+          (transaction) => transaction.tx === newTransaction.tx
+        );
+
+        if (txExists.length > 0) {
+          // console.log("Transaction already exists!");
+        } else {
+          transactions.push(newTransaction);
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+        }
+      } else if (chain?.id == 1116) {
+        // console.log("core to bsc");
+        const from = "CORE";
+        const to = "BSC";
+        const newTransaction = {
+          to: to,
+          from: from,
+          tx: hash,
+          time: moment().format("DD-MM-YYYY hh:mm:ss"),
+        };
+        // console.log(transactions);
+
+        const txExists = transactions.filter(
+          (transaction) => transaction.tx === newTransaction.tx
+        );
+
+        if (txExists.length > 0) {
+          // console.log("Transaction already exists!");
+        } else {
+          transactions.push(newTransaction);
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+        }
       }
     }
   }
+  useEffect(() => {
+    if (chain?.id === 56) {
+      setTokenAddressSwap(tokens.IGNORE.bsc);
+      setContractAddressSwap(bscContractAddress);
+    } else if (chain?.id === 1116) {
+      setTokenAddressSwap(tokens.IGNORE.core);
+      setContractAddressSwap(coreContractAddress);
+    }
+  }, [chain?.id]);
 
   async function Swap() {
-    if (routeContractAddress && toAddress) {
+    if (tokenAddressSwap && toAddress) {
       write?.();
       setSwaping(true);
     } else {
-      console.log("data not ready yet...");
+      // nothing
     }
   }
   return (

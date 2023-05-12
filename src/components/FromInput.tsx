@@ -9,7 +9,12 @@ import * as types from "@/redux/actionConstants";
 import { useDispatch, useSelector } from "react-redux";
 
 interface AppState {
-  tokenbalance: string;
+  tokenbalance: {
+    corebalance: number;
+    bscbalance: number;
+    ethbalance: number;
+    enterAmount: string;
+  };
 }
 
 function FromInput() {
@@ -32,8 +37,9 @@ function FromInput() {
       dispatch({
         type: types.SET_BALANCE,
         payload: {
-          corebalance: Object.values(tokenbalance)[0],
-          bscbalance: Object.values(tokenbalance)[1],
+          corebalance: tokenbalance.corebalance,
+          bscbalance: tokenbalance.bscbalance,
+          ethbalance: tokenbalance.ethbalance,
           enterAmount: value,
         },
       });

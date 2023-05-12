@@ -4,12 +4,14 @@ import * as types from "./actionConstants";
 export interface BalanceState {
   corebalance: number;
   bscbalance: number;
+  ethbalance: number;
   enterAmount: string;
 }
 
 const initialState: BalanceState = {
   corebalance: 0,
   bscbalance: 0,
+  ethbalance: 0,
   enterAmount: "",
 };
 
@@ -30,6 +32,7 @@ const balanceReducer: Reducer<BalanceState, BalanceAction | AnyAction> = (
         ...state,
         corebalance: action.payload.corebalance,
         bscbalance: action.payload.bscbalance,
+        ethbalance: action.payload.ethbalance,
         enterAmount: action.payload.enterAmount,
       };
     default:
