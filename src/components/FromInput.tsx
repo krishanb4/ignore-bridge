@@ -19,13 +19,9 @@ interface AppState {
 
 function FromInput() {
   const dispatch = useDispatch();
-  const context = useContext(MyContext);
   const [inputValue, setInputValue] = useState("");
   const handleDataReceived = (data: string) => {
     setInputValue(data);
-    // console.log(data);
-    // Update state with received data
-    context.setData(inputValue);
   };
   const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,8 +43,9 @@ function FromInput() {
   };
 
   useEffect(() => {
-    context.setData(inputValue);
-  }, [inputValue, context]);
+    setInputValue(tokenbalance.enterAmount);
+  }, [setInputValue, tokenbalance.enterAmount]);
+
   return (
     <>
       <div className="relative flex items-center gap-4">

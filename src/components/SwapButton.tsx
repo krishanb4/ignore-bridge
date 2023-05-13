@@ -65,8 +65,6 @@ type TokenBalanceList = {
 };
 
 function SwapButton() {
-  const client = createClient("mainnet");
-  const context = React.useContext(MyContext);
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { data: signer } = useSigner();
@@ -75,8 +73,6 @@ function SwapButton() {
     connector: new InjectedConnector(),
   });
   const [approving, setApproving] = useState(false);
-  // const [tokenAddress, setTokenAddress] = useState("");
-  // const [tokenSpender, settokenSpender] = useState("");
   const [userAddress, setUserAddress] = useState<`0x${string}` | string>("");
 
   const account = getAccount();
@@ -218,13 +214,10 @@ function SwapButton() {
         ? "dark"
         : "default";
       if (theme === "default") {
-        // console.log("light");
-
         toast.error("Failed to approve tokens: " + error, {
           theme: "light",
         });
       } else {
-        // console.log("dark");
         toast.error("Failed to approve tokens: " + error, {
           theme: "dark",
         });
@@ -258,6 +251,7 @@ function SwapButton() {
     }
     checkApproveBalance();
   }, [chain?.id, userAddress, routeTokenAddress, routeContractAddress]);
+  console.log(approveBalance);
 
   const [args, setArgs] = useState({} as SwapArgs);
   const [argsCore, setArgsCore] = useState({} as SwapArgsCore);

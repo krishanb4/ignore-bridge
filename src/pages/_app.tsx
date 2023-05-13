@@ -14,10 +14,11 @@ import store from "@/redux/store";
 import { Provider } from "react-redux";
 import { useEffect } from "react";
 import { InjectedConnector } from "wagmi/connectors/injected";
+import { mainnet, bsc } from "wagmi/chains";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID!;
 const { chains, provider } = configureChains(
-  [chainlist.coreDAO, chainlist.bscChain],
+  [mainnet, bsc, chainlist.coreDAO],
   [w3mProvider({ projectId })]
 );
 
