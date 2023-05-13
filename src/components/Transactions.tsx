@@ -71,70 +71,78 @@ const Transactions = (props: any) => {
             </div>
             {/*body*/}
             <div className="relative p-6 flex flex-auto">
-              <div className="h-96 overflow-y-scroll">
-                {transactions
-                  .slice()
-                  .reverse()
-                  .map((transaction) => (
-                    <div
-                      key={transaction.tx}
-                      className="bg-[#f0f8ff] dark:bg-black p-4 m-3"
-                    >
-                      <div className="grid grid-cols-3 gap-3 justify-item-start">
-                        <div className="justify-start">
-                          <span>{transaction.from}</span>{" "}
+              <div
+                className={`h-96 ${
+                  transactions.length > 0 ? "overflow-y-scroll" : ""
+                }`}
+              >
+                {transactions.length > 0 ? (
+                  transactions
+                    .slice()
+                    .reverse()
+                    .map((transaction) => (
+                      <div
+                        key={transaction.tx}
+                        className="bg-[#f0f8ff] dark:bg-black p-4 m-3"
+                      >
+                        <div className="grid grid-cols-3 gap-3 justify-item-start">
+                          <div className="justify-start">
+                            <span>{transaction.from}</span>{" "}
+                          </div>
+                          <div className="relative w-[6.5rem]  flex -ml-[31px]">
+                            <svg
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="coredao-bridge-11xpnbx h-[1.5rem] -rotate-90"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M7.5 11.7909L4.35554 8.64648L3.64844 9.35359L8.00199 13.7071L12.3555 9.35359L11.6484 8.64648L8.5 11.7949L8.5 2L7.5 2L7.5 11.7909Z"
+                                fill="currentColor"
+                              ></path>
+                            </svg>
+                          </div>
+                          <div className="-ml-[65px]">
+                            <span>{transaction.to}</span>
+                          </div>
+                          <div className="text-sm text-[#008000]">
+                            {transaction.time ? transaction.time : "TIME ERROR"}
+                          </div>
                         </div>
-                        <div className="relative w-[6.5rem]  flex -ml-[31px]">
-                          <svg
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="coredao-bridge-11xpnbx h-[1.5rem] -rotate-90"
+                        <div className="grid grid-cols-2 gap-4 justify-between">
+                          <div className="col-start-1 col-end-3">
+                            <a
+                              href={`https://layerzeroscan.com/tx/${transaction.tx}`}
+                              target="_blank"
+                            >
+                              LayerZero Scan
+                            </a>
+                          </div>
+                          <div
+                            className={`col-end-7 col-span-2 ${
+                              transaction.status == "FAILED"
+                                ? "text-[#ff0000]"
+                                : ""
+                            } ${
+                              transaction.status == "DELIVERED"
+                                ? "text-[#02ad02]"
+                                : ""
+                            } ${
+                              transaction.status == "INFLIGHT"
+                                ? "text-[#5935a7]"
+                                : ""
+                            }`}
                           >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M7.5 11.7909L4.35554 8.64648L3.64844 9.35359L8.00199 13.7071L12.3555 9.35359L11.6484 8.64648L8.5 11.7949L8.5 2L7.5 2L7.5 11.7909Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
-                        </div>
-                        <div className="-ml-[65px]">
-                          <span>{transaction.to}</span>
-                        </div>
-                        <div className="text-sm text-[#008000]">
-                          {transaction.time ? transaction.time : "TIME ERROR"}
+                            {transaction.status || ""}
+                          </div>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 justify-between">
-                        <div className="col-start-1 col-end-3">
-                          <a
-                            href={`https://layerzeroscan.com/tx/${transaction.tx}`}
-                            target="_blank"
-                          >
-                            LayerZero Scan
-                          </a>
-                        </div>
-                        <div
-                          className={`col-end-7 col-span-2 ${
-                            transaction.status == "FAILED"
-                              ? "text-[#ff0000]"
-                              : ""
-                          } ${
-                            transaction.status == "DELIVERED"
-                              ? "text-[#02ad02]"
-                              : ""
-                          } ${
-                            transaction.status == "INFLIGHT"
-                              ? "text-[#5935a7]"
-                              : ""
-                          }`}
-                        >
-                          {transaction.status || ""}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                ) : (
+                  <div>No transactions available.</div>
+                )}
               </div>
               <p className="my-4 text-slate-500 text-lg leading-relaxed"></p>
             </div>
