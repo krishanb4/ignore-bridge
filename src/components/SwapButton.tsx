@@ -340,44 +340,48 @@ function SwapButton() {
   const [buttonText, setButtonText] = useState("");
 
   useEffect(() => {
-    if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
-      if (approveBalance >= 40000) {
-        if (
-          Number(dummyData) <= 0 ||
-          !dummyData ||
-          Number(dummyData) > Number(tokenBalance)
-        ) {
-          if (Number(dummyData) > Number(tokenBalance)) {
-            setButtonText("Enter Correct Amount");
-          } else {
-            if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
-              setButtonText("Minimum bridge amount is 40000 4TOKEN");
+    if (isConnected) {
+      if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
+        if (approveBalance >= 40000) {
+          if (
+            Number(dummyData) <= 0 ||
+            !dummyData ||
+            Number(dummyData) > Number(tokenBalance)
+          ) {
+            if (Number(dummyData) > Number(tokenBalance)) {
+              setButtonText("Enter Correct Amount");
             } else {
-              setButtonText("Enter Amount");
+              if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
+                setButtonText("Minimum bridge amount is 40000 4TOKEN");
+              } else {
+                setButtonText("Enter Amount");
+              }
+            }
+          } else {
+            if (swaping) {
+              setButtonText("Bridging");
+            } else {
+              if (Number(dummyData) < 40000) {
+                setButtonText("Minimum bridge amount is 40000 4TOKEN");
+              } else {
+                setButtonText("Bridge");
+              }
             }
           }
         } else {
-          if (swaping) {
-            setButtonText("Bridging");
+          if (approving) {
+            setButtonText("Approving");
+          } else if (isConnected) {
+            setButtonText("Approve");
           } else {
-            if (Number(dummyData) < 40000) {
-              setButtonText("Minimum bridge amount is 40000 4TOKEN");
-            } else {
-              setButtonText("Bridge");
-            }
-          }
+            setButtonText("Connect Wallet");
+          } // Extracted into an independent statement
         }
       } else {
-        if (approving) {
-          setButtonText("Approving");
-        } else if (isConnected) {
-          setButtonText("Approve");
-        } else {
-          setButtonText("Connect Wallet");
-        } // Extracted into an independent statement
+        setButtonText("Switch Network");
       }
     } else {
-      setButtonText("Switch Network");
+      setButtonText("Connect Wallet");
     }
   }, [
     approving,
