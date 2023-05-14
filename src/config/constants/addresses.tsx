@@ -1,6 +1,6 @@
 //for 4TOKEN
-export const bscContractAddress = "0x212957B1Cd421E5b75A9F309F0B24Fa73053FFFB";
-export const coreContractAddress = "0x2348520cba8e3b918676e94523077c12a1ed4126";
+export const bscContractAddress = "0xcB2b1388fb085a4dA13941f8f8102eE63Cc9aA69";
+export const coreContractAddress = "0xC30f55e8D083260Df710A29E89AC7BbB21f42CCD";
 
 //for USDT
 //export const bscContractAddress = "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213";
@@ -23,7 +23,7 @@ export const tokens: Tokens = {
     core: "0x148a24e5c355455268B4d04823770280dD023267",
   },
   IGNORE: {
-    bsc: "0xfbfA6c3CF32B426B0d37CA9129b9919977f81b7F",
+    bsc: "0x2b1463665e230eDa65459Cf836D24B041a2947C3",
     core: "0x98564E70c7fCC6d947fFE6d9EfeD5ba68b306F2E",
   },
 };
