@@ -254,7 +254,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               // gasLimit: 2400000,
-              value: ethers.utils.parseEther("0.001"),
+              value: ethers.utils.parseEther("0.003"),
             },
           });
         } else if (chain?.id == 1116) {
