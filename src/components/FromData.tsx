@@ -30,6 +30,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   const { data, isError, isLoading } = useBalance({
     address: address,
     token: tokenAddress,
+    watch: true,
     onError(error) {
       // console.log("Error", error);
     },
@@ -38,6 +39,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     address: address,
     token: ethers.utils.getAddress(tokenData.ETH),
     chainId: 1,
+    watch: true,
     onSuccess(data) {
       console.log("Success", data);
     },
@@ -50,6 +52,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     address: address,
     token: ethers.utils.getAddress(tokenData.BSC),
     chainId: 56,
+    watch: true,
     onSuccess(data) {
       console.log("Success", data);
     },
@@ -61,6 +64,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     address: address,
     token: ethers.utils.getAddress(tokenData.CORE),
     chainId: 1116,
+    watch: true,
     onSuccess(data) {
       console.log("Success", data);
     },
