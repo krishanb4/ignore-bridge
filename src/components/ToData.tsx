@@ -17,6 +17,7 @@ function ToData() {
     address: address,
     token: tokenAddress,
     chainId: chainID,
+    watch: true,
     onError(error) {
       // console.log("Error", error);
     },

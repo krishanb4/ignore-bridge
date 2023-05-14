@@ -29,6 +29,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   const { data, isError, isLoading } = useBalance({
     address: address,
     token: tokenAddress,
+    watch: true,
     onError(error) {
       // console.log("Error", error);
     },
@@ -38,6 +39,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     address: address,
     token: tokenAddressOther,
     chainId: chainID,
+    watch: true,
     onSuccess(data) {
       // console.log("Success", data);
     },
@@ -158,6 +160,25 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     const decimalValue = ethers.utils.formatUnits(bigNumberValue, decimals);
     context.setData(decimalValue);
     onDataReceived(decimalValue);
+    if (chain?.id == 56) {
+      dispatch({
+        type: types.SET_BALANCE,
+        payload: {
+          corebalance: Number(tokendata.data?.formatted),
+          bscbalance: Number(tokenbalance),
+          enterAmount: decimalValue,
+        },
+      });
+    } else if (chain?.id == 1116) {
+      dispatch({
+        type: types.SET_BALANCE,
+        payload: {
+          corebalance: Number(tokenbalance),
+          bscbalance: Number(tokendata.data?.formatted),
+          enterAmount: decimalValue,
+        },
+      });
+    }
   };
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
