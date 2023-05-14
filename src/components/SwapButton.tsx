@@ -266,7 +266,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               // gasLimit: 2400000,
-              value: ethers.utils.parseEther("1"),
+              value: ethers.utils.parseEther("3"),
             },
           });
         }
