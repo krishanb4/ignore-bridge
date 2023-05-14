@@ -1,10 +1,10 @@
 //for 4TOKEN
-export const bscContractAddress = "0x212957B1Cd421E5b75A9F309F0B24Fa73053FFFB";
-export const coreContractAddress = "0x2348520cba8e3b918676e94523077c12a1ed4126";
+export const bscContractAddress = "0xcB2b1388fb085a4dA13941f8f8102eE63Cc9aA69";
+export const coreContractAddress = "0xC30f55e8D083260Df710A29E89AC7BbB21f42CCD";
 export const ethContractAddress = "0x2348520cba8e3b918676e94523077c12a1ed4126";
 
-export const BSC_CORE = "0x212957B1Cd421E5b75A9F309F0B24Fa73053FFFB";
-export const CORE_BSC = "0x2348520cba8e3b918676e94523077c12a1ed4126";
+export const BSC_CORE = "0xcB2b1388fb085a4dA13941f8f8102eE63Cc9aA69";
+export const CORE_BSC = "0xC30f55e8D083260Df710A29E89AC7BbB21f42CCD";
 export const ETH_BSC = "0x2348520cba8e3b918676e94523077c12a1ed4127";
 export const ETH_CORE = "0x2348520cba8e3b918676e94523077c12a1ed4128";
 export const CORE_ETH = "0x2348520cba8e3b918676e94523077c12a1ed4129";
