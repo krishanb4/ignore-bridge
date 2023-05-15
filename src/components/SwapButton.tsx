@@ -86,7 +86,7 @@ function SwapButton() {
     to: string;
     callParams: {};
     unwrapWeth: boolean;
-    adapterParams: "0x";
+    adapterParams: string;
     gassData: {};
   };
 
@@ -95,7 +95,7 @@ function SwapButton() {
     amountLD: BigNumber;
     to: string;
     callParams: {};
-    adapterParams: "0x";
+    adapterParams: string;
     gassData: {};
   };
   async function checkApproveBalance() {
@@ -228,7 +228,10 @@ function SwapButton() {
     useState<`0x${string}`>();
   const [tokenAddressSwap, setTokenAddressSwap] = useState("");
   const toAddress = address;
-  const adapterParams = "0x";
+  const adapterParams = ethers.utils.solidityPack(
+    ["uint16", "uint256"],
+    [1, 900000]
+  );
   const [swaping, setSwaping] = useState(false);
 
   useEffect(() => {
