@@ -253,7 +253,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 500000,
+              // gasLimit: 500000,
               value: ethers.utils.parseEther("0.003"),
             },
           });
@@ -265,7 +265,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 500000,
+              // gasLimit: 500000,
               value: ethers.utils.parseEther("3"),
             },
           });
