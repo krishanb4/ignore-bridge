@@ -70,8 +70,6 @@ function SwapButton() {
     watch: true,
   });
 
-  console.log(MIN_NATIVE_BALANCE);
-
   useEffect(() => {
     setDummyData(Object.values(tokenbalance)[2]);
   }, [tokenbalance]);
@@ -266,7 +264,7 @@ function SwapButton() {
     const decimals = 18;
     if (dummyData) {
       const numberEntered = ethers.utils.parseUnits(dummyData, decimals);
-      console.log(`entered ${numberEntered}`);
+      // console.log(`entered ${numberEntered}`);
 
       if (tokenAddressSwap && toAddress) {
         if (chain?.id == 56) {

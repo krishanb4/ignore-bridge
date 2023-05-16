@@ -51,7 +51,7 @@ const Header: React.FC = () => {
   const timestamp = 1683194498878;
   const date = new Date(timestamp).toLocaleString();
 
-  console.log(date);
+  //  console.log(date);
 
   return (
     <>
