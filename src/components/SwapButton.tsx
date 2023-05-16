@@ -67,6 +67,7 @@ function SwapButton() {
 
   const native_balance = useBalance({
     address: address,
+    watch: true,
   });
 
   console.log(MIN_NATIVE_BALANCE);
