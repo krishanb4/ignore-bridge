@@ -23,7 +23,7 @@ export const tokens: Tokens = {
     core: "0x148a24e5c355455268B4d04823770280dD023267",
   },
   IGNORE: {
-    bsc: "0x2b1463665e230eDa65459Cf836D24B041a2947C3",
+    bsc: "0xDA29B33B7AF3B17e88037b237c548C2c07C0C57D",
     core: "0x98564E70c7fCC6d947fFE6d9EfeD5ba68b306F2E",
   },
 };
