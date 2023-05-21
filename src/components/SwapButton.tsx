@@ -137,7 +137,7 @@ function SwapButton() {
     to: string;
     callParams: {};
     unwrapWeth: boolean;
-    adapterParams: "0x";
+    adapterParams: string;
     gassData: {};
   };
 
@@ -146,7 +146,7 @@ function SwapButton() {
     amountLD: BigNumber;
     to: string;
     callParams: {};
-    adapterParams: "0x";
+    adapterParams: string;
     gassData: {};
   };
   useEffect(() => {
@@ -259,7 +259,10 @@ function SwapButton() {
     useState<`0x${string}`>();
   const [tokenAddressSwap, setTokenAddressSwap] = useState("");
   const toAddress = address;
-  const adapterParams = "0x";
+  const adapterParams = ethers.utils.solidityPack(
+    ["uint16", "uint256"],
+    [1, 900000]
+  );
   const [swaping, setSwaping] = useState(false);
 
   useEffect(() => {
@@ -287,8 +290,8 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              // gasLimit: 2400000,
-              value: ethers.utils.parseEther("0.001"),
+              gasLimit: 900000,
+              value: ethers.utils.parseEther("0.003"),
             },
           });
         } else if (chain?.id == 1116) {
@@ -299,14 +302,21 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              // gasLimit: 2400000,
+              gasLimit: 900000,
               value: ethers.utils.parseEther("1"),
             },
           });
         }
       }
     }
-  }, [tokenAddressSwap, address, toAddress, chain?.id, dummyData]);
+  }, [
+    tokenAddressSwap,
+    address,
+    toAddress,
+    chain?.id,
+    dummyData,
+    adapterParams,
+  ]);
 
   const HanddleFunctions = () => {
     if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
@@ -407,24 +417,30 @@ function SwapButton() {
     }
   }, [chain?.id]);
 
-  let argsToUse;
+  const [argsToUse, setArgsToUse] = useState({} as SwapArgs | SwapArgsCore);
 
-  if (chain?.id === 1) {
-    argsToUse = args;
-  } else if (chain?.id === 1116) {
-    argsToUse = argsCore;
-  } else if (chain?.id === 56) {
-    argsToUse = args;
-  } else {
-    argsToUse = "";
-  }
+  useEffect(() => {
+    if (chain?.id === 1) {
+      setArgsToUse(args);
+    } else if (chain?.id === 1116) {
+      setArgsToUse(argsCore);
+    } else if (chain?.id === 56) {
+      setArgsToUse(args);
+    } else {
+      // setArgsToUse("");
+    }
+  }, [chain?.id, args, argsCore]);
+
+  console.log(Object.values(argsToUse));
 
   const { config, error } = usePrepareContractWrite({
     address: routeContractAddress,
     abi: contractABI,
     functionName: "bridge",
-    args: Object.values(argsToUse),
+    args: Object.values(args),
   });
+
+  console.log(argsToUse);
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
@@ -449,6 +465,9 @@ function SwapButton() {
       toast.success("Transaction successfully sent 👌");
     },
   });
+  console.log(isLoading);
+  console.log(data);
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   useEffect(() => {
     const storedTransactions = localStorage.getItem("transactions");

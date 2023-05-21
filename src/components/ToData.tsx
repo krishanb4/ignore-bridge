@@ -47,9 +47,10 @@ function ToData() {
   const { data, isError, isLoading } = useBalance({
     address: address,
     token: token_address,
+    watch: true,
     chainId: chainsdata.secondChain.id,
     onSuccess(data) {
-      console.log("Success", data);
+      // console.log("Success", data);
     },
     onError(error) {
       console.log("Error", error);

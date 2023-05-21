@@ -132,7 +132,7 @@ function NetworkSelect() {
 
   function SwitchChains() {
     setSecondtNetwork(currentNetwork);
-    setSecondtNetwork(secondtNetwork);
+    setCurrentNetwork(secondtNetwork);
     setSecondChain(currentChain);
     setCurrentChain(secondChain);
   }

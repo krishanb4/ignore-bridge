@@ -41,7 +41,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     chainId: 1,
     watch: true,
     onSuccess(data) {
-      console.log("Success", data);
+      // console.log("Success", data);
     },
     onError(error) {
       console.log("Error", error);
@@ -54,7 +54,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     chainId: 56,
     watch: true,
     onSuccess(data) {
-      console.log("Success", data);
+      //console.log("Success", data);
     },
     onError(error) {
       console.log("Error", error);
@@ -66,7 +66,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     chainId: 1116,
     watch: true,
     onSuccess(data) {
-      console.log("Success", data);
+      // console.log("Success", data);
     },
     onError(error) {
       console.log("Error", error);
@@ -94,7 +94,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   }
   const tokenbalanceFrom = useSelector((state: AppState) => state.tokenbalance);
   const chainsdata = useSelector((state: AppState) => state.chains);
-  console.log(chainsdata);
+  // console.log(chainsdata);
 
   useEffect(() => {
     if (chain?.id == 1) {
