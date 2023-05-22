@@ -35,7 +35,7 @@ const Transactions = (props: any) => {
     const newTxs = transactions.map((transaction) => {
       transaction.status =
         results.filter((res) => res.messages[0].srcTxHash === transaction.tx)[0]
-          ?.messages[0].status || "FAILED";
+          ?.messages[0].status || "PROCESSING";
       return transaction;
     });
     return newTxs;
@@ -122,6 +122,10 @@ const Transactions = (props: any) => {
                           </div>
                           <div
                             className={`col-end-7 col-span-2 ${
+                              transaction.status == "PROCESSING"
+                                ? "text-[#4aa7e1]"
+                                : ""
+                            } ${
                               transaction.status == "FAILED"
                                 ? "text-[#ff0000]"
                                 : ""

@@ -1,7 +1,7 @@
 import { ethers, BigNumber } from "ethers";
 import { getProvider } from "@wagmi/core";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
-import bridgeABI from "@/config/abi/bridgeABI.json";
+import tokeneABI from "@/config/abi/tokenABI.json";
 export interface ApprovalResult {
   txHash: string;
   status: "mined" | "failed";
@@ -36,7 +36,6 @@ export async function approve(
     const signedTransaction = await signer.sendTransaction(transaction);
     const transactionReceipt = await signedTransaction.wait();
 
-    // console.log(`Approved ${amount} tokens to spender ${spender}`);
     return {
       txHash: transactionReceipt.transactionHash,
       status: transactionReceipt.status === 1 ? "mined" : "failed",
@@ -55,8 +54,6 @@ export const checkApprovedBalance = async (
   chainId: number
 ) => {
   try {
-    // Create ethers provider
-    // const provider = new ethers.providers.Web3Provider(window.ethereum);
     const provider = getProvider({
       chainId: chainId,
     });
@@ -100,25 +97,25 @@ interface UseBridgeReturnType {
   error: any;
 }
 
-export const useBridge = (
-  prepareContract: string,
-  args: SwapArgs
-): UseBridgeReturnType => {
-  const { config, error } = usePrepareContractWrite({
-    address: ethers.utils.getAddress(prepareContract),
-    abi: bridgeABI,
-    functionName: "bridge",
-    args: Object.values(args),
-  });
+// export const useBridge = (
+//   prepareContract: string,
+//   args: SwapArgs
+// ): UseBridgeReturnType => {
+//   const { config, error } = usePrepareContractWrite({
+//     address: ethers.utils.getAddress(prepareContract),
+//     abi: bridgeABI,
+//     functionName: "bridge",
+//     args: Object.values(args),
+//   });
 
-  const bridge = async () => {
-    try {
-      const response = config.mode;
-      // console.log(response);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+//   const bridge = async () => {
+//     try {
+//       const response = config.mode;
+//       // console.log(response);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
 
-  return { bridge, error };
-};
+//   return { bridge, error };
+// };

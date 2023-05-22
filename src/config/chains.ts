@@ -36,7 +36,7 @@ export const chainlist = {
     },
     rpcUrls: {
       public: { http: ["https://bsc-dataseed1.binance.org/"] },
-      default: { http: ["https://rpc.coredao.org"] },
+      default: { http: ["https://bsc-dataseed2.binance.org/"] },
     },
     blockExplorers: {
       etherscan: { name: "BscScan", url: "https://bscscan.com" },

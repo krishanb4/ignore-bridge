@@ -52,6 +52,7 @@ function NetworkSelect() {
       logo: <CoreLogo />,
     },
   ];
+
   const [currentChain, setCurrentChain] = useState({
     id: 1,
     symbol: "eth",
@@ -64,6 +65,18 @@ function NetworkSelect() {
     name: "Binance Smart Chain",
     logo: <BscLogo />,
   });
+  useEffect(() => {
+    if (chain?.id == 1) {
+      setCurrentChain(NetworkList[0]);
+      setSecondChain(NetworkList[1]);
+    } else if (chain?.id == 56) {
+      setCurrentChain(NetworkList[1]);
+      setSecondChain(NetworkList[0]);
+    } else if (chain?.id == 1116) {
+      setCurrentChain(NetworkList[2]);
+      setSecondChain(NetworkList[0]);
+    }
+  }, []);
   const [currentNetwork, setCurrentNetwork] = useState(0);
   const [secondtNetwork, setSecondtNetwork] = useState(0);
   useEffect(() => {
@@ -84,6 +97,8 @@ function NetworkSelect() {
     });
   }, [secondChain, currentChain, dispatch]);
   useEffect(() => {
+    console.log(chain?.id, currentChain.id);
+
     if (chain?.id !== currentChain.id) {
       switchNetwork?.(currentChain.id);
     }
@@ -126,9 +141,6 @@ function NetworkSelect() {
       });
     }
   }
-  useEffect(() => {
-    console.log(currentChain);
-  }, [currentChain]);
 
   function SwitchChains() {
     setSecondtNetwork(currentNetwork);

@@ -1,0 +1,47 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amountLD",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "address payable",
+                        "name": "refundAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "zroPaymentAddress",
+                        "type": "address"
+                    }
+                ],
+                "internalType": "struct LzLib.CallParams",
+                "name": "callParams",
+                "type": "tuple"
+            },
+            {
+                "internalType": "bytes",
+                "name": "adapterParams",
+                "type": "bytes"
+            }
+        ],
+        "name": "bridge",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+]

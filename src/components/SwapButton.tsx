@@ -16,9 +16,13 @@ import {
   ApprovalResult,
   checkApprovedBalance,
 } from "../utils/callFunctions";
-import TokenABI from "@/config/abi/bscUSDT.json";
-import bridgeABI from "@/config/abi/bridgeABI.json";
-import bscbridgeABI from "@/config/abi/bscbridgeABI.json";
+import bsccoreABI from "@/config/abi/bsc-coreABI.json";
+import bscethABI from "@/config/abi/bsc-ethABI.json";
+import ethcoreABI from "@/config/abi/eth-coreABI.json";
+import ethbscABI from "@/config/abi/eth-bscABI.json";
+import corebscABI from "@/config/abi/core-bscABI.json";
+import coreethABI from "@/config/abi/core-ethABI.json";
+import TokenABI from "@/config/abi/tokenABI.json";
 import AddressRoute, {
   TokenAddressRoute,
 } from "@/config/constants/bridgeRoute";
@@ -131,24 +135,17 @@ function SwapButton() {
     }
   }, [account]);
   type SwapArgs = {
-    localToken: string;
-    remoteChainId: number;
+    localToken?: string;
+    token?: string;
+    remoteChainId?: number;
     amountLD: BigNumber;
     to: string;
+    unwrapWeth?: boolean;
     callParams: {};
-    unwrapWeth: boolean;
     adapterParams: string;
     gassData: {};
   };
 
-  type SwapArgsCore = {
-    token: string;
-    amountLD: BigNumber;
-    to: string;
-    callParams: {};
-    adapterParams: string;
-    gassData: {};
-  };
   useEffect(() => {
     const From_To = bridgeRoute.from + "_" + bridgeRoute.to;
 
@@ -158,7 +155,6 @@ function SwapButton() {
   }, [bridgeRoute.from, bridgeRoute.to]);
   useEffect(() => {
     const From = bridgeRoute.from;
-
     const token_address = TokenAddressRoute(From);
     setRouteTokenAddress(token_address);
     console.log(token_address);
@@ -254,10 +250,10 @@ function SwapButton() {
   console.log(approveBalance);
 
   const [args, setArgs] = useState({} as SwapArgs);
-  const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
-  const [contractAddressSwap, setContractAddressSwap] =
-    useState<`0x${string}`>();
-  const [tokenAddressSwap, setTokenAddressSwap] = useState("");
+  // const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
+  // const [contractAddressSwap, setContractAddressSwap] =
+  //   useState<`0x${string}`>();
+  // const [tokenAddressSwap, setTokenAddressSwap] = useState("");
   const toAddress = address;
   const adapterParams = ethers.utils.solidityPack(
     ["uint16", "uint256"],
@@ -278,11 +274,40 @@ function SwapButton() {
         decimals
       );
       console.log(`entered ${numberEntered}`);
-
-      if (tokenAddressSwap && toAddress) {
-        if (chain?.id == 1 || chain?.id == 56) {
+      console.log(`tokenaddressswap: ${routeTokenAddress}`);
+      console.log(`toAddress: ${toAddress}`);
+      if (routeTokenAddress && toAddress) {
+        if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
           setArgs({
-            localToken: tokenAddressSwap,
+            localToken: routeTokenAddress,
+            remoteChainId: 102,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            unwrapWeth: true,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther("0.04"),
+            },
+          });
+        } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+          setArgs({
+            token: routeTokenAddress,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther("0.4"),
+            },
+          });
+        } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
+          console.log("here bsc to core");
+          console.log(routeTokenAddress);
+          setArgs({
+            localToken: routeTokenAddress,
             remoteChainId: 153,
             amountLD: BigNumber.from(numberEntered),
             to: toAddress,
@@ -294,32 +319,60 @@ function SwapButton() {
               value: ethers.utils.parseEther("0.003"),
             },
           });
-        } else if (chain?.id == 1116) {
-          setArgsCore({
-            token: tokenAddressSwap,
+        } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
+          setArgs({
+            token: routeTokenAddress,
+            remoteChainId: 153,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            unwrapWeth: true,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther("0.003"),
+            },
+          });
+        } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
+          setArgs({
+            token: routeTokenAddress,
             amountLD: BigNumber.from(numberEntered),
             to: toAddress,
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("1"),
+              value: ethers.utils.parseEther("70"),
+            },
+          });
+        } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
+          setArgs({
+            token: routeTokenAddress,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther("3"),
             },
           });
         }
       }
     }
   }, [
-    tokenAddressSwap,
+    routeTokenAddress,
     address,
     toAddress,
     chain?.id,
     dummyData,
     adapterParams,
+    bridgeRoute.from,
+    bridgeRoute.to,
   ]);
 
   const HanddleFunctions = () => {
-    if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
+    if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
       if (isConnected) {
         if (approveBalance >= 40000) {
           if (Number(dummyData) <= 0 || !dummyData) {
@@ -328,6 +381,8 @@ function SwapButton() {
             if (!swaping) {
               if (Number(dummyData) >= 40000) {
                 if (Number(dummyData) <= Number(tokenBalance)) {
+                  console.log("swaping");
+
                   Swap();
                 }
               }
@@ -404,34 +459,47 @@ function SwapButton() {
     tokenbalance,
     tokenBalance,
   ]);
-  // const [prepareContract, setPrepareContract] = useState("");
+
   const [contractABI, setContractABI] = useState<Array<any>>([]);
 
   useEffect(() => {
-    if (chain?.id === 1) {
-      setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
-    } else if (chain?.id === 56) {
-      setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
-    } else if (chain?.id === 1116) {
-      setContractABI((prevState) => [...prevState, ...bridgeABI]);
+    function getContract() {
+      if (
+        chaindetails.firstChain.id == 56 &&
+        chaindetails.secondChain.id == 1
+      ) {
+        setContractABI((prevState) => [...prevState, ...bscethABI]);
+      } else if (
+        chaindetails.firstChain.id == 1116 &&
+        chaindetails.secondChain.id == 1
+      ) {
+        setContractABI((prevState) => [...prevState, ...coreethABI]);
+      } else if (
+        chaindetails.firstChain.id == 1 &&
+        chaindetails.secondChain.id == 56
+      ) {
+        setContractABI((prevState) => [...prevState, ...ethbscABI]);
+      } else if (
+        chaindetails.firstChain.id == 1116 &&
+        chaindetails.secondChain.id == 56
+      ) {
+        setContractABI((prevState) => [...prevState, ...corebscABI]);
+      } else if (
+        chaindetails.firstChain.id == 56 &&
+        chaindetails.secondChain.id == 1116
+      ) {
+        setContractABI((prevState) => [...prevState, ...bsccoreABI]);
+      } else if (
+        chaindetails.firstChain.id == 1 &&
+        chaindetails.secondChain.id == 1116
+      ) {
+        setContractABI((prevState) => [...prevState, ...ethcoreABI]);
+      }
     }
-  }, [chain?.id]);
+    getContract();
+  }, [chain?.id, chaindetails.firstChain.id, chaindetails.secondChain.id]);
 
-  const [argsToUse, setArgsToUse] = useState({} as SwapArgs | SwapArgsCore);
-
-  useEffect(() => {
-    if (chain?.id === 1) {
-      setArgsToUse(args);
-    } else if (chain?.id === 1116) {
-      setArgsToUse(argsCore);
-    } else if (chain?.id === 56) {
-      setArgsToUse(args);
-    } else {
-      // setArgsToUse("");
-    }
-  }, [chain?.id, args, argsCore]);
-
-  console.log(Object.values(argsToUse));
+  console.log(args);
 
   const { config, error } = usePrepareContractWrite({
     address: routeContractAddress,
@@ -440,7 +508,7 @@ function SwapButton() {
     args: Object.values(args),
   });
 
-  console.log(argsToUse);
+  console.log(args);
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
@@ -453,7 +521,6 @@ function SwapButton() {
           theme: "light",
         });
       } else {
-        // console.log("dark");
         toast.error("Failed to send tokens: " + error, {
           theme: "dark",
         });
@@ -465,8 +532,7 @@ function SwapButton() {
       toast.success("Transaction successfully sent 👌");
     },
   });
-  console.log(isLoading);
-  console.log(data);
+  //console.log(data);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   useEffect(() => {
