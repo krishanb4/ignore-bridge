@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useAccount,
   useConnect,
@@ -7,6 +7,7 @@ import {
   useNetwork,
   usePrepareContractWrite,
   useContractWrite,
+  useBalance,
 } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { toast } from "react-toastify";
@@ -29,7 +30,7 @@ import AddressRoute, {
 import { ethers, BigNumber } from "ethers";
 import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { createClient } from "@layerzerolabs/scan-client";
 import moment from "moment";
 
@@ -62,6 +63,18 @@ interface AppState {
       name: string;
       symbol: string;
     };
+  };
+}
+interface ChainTypes {
+  firstChain: {
+    id: number;
+    name: string;
+    symbol: string;
+  };
+  secondChain: {
+    id: number;
+    name: string;
+    symbol: string;
   };
 }
 type TokenBalanceList = {
@@ -98,7 +111,14 @@ function SwapButton() {
   const [routeContractAddress, setRouteContractAddress] =
     useState<`0x${string}`>();
   const [routeTokenAddress, setRouteTokenAddress] = useState<`0x${string}`>();
-
+  const [usernativeBalance, setUsernativeBalance] = useState(0);
+  const native_balance = useBalance({
+    address: address,
+    watch: true,
+  });
+  useEffect(() => {
+    setUsernativeBalance(Number(native_balance.data?.formatted));
+  }, [native_balance.data?.formatted]);
   useEffect(() => {
     const eth_balance = tokenbalance.ethbalance;
     const bsc_balance = tokenbalance.bscbalance;
@@ -260,6 +280,38 @@ function SwapButton() {
     [1, 900000]
   );
   const [swaping, setSwaping] = useState(false);
+  const [requiredFee, setRequiredFee] = useState(0);
+
+  useEffect(() => {
+    if (chaindetails.firstChain.id == 56 && chaindetails.secondChain.id == 1) {
+      setRequiredFee(0.15);
+    } else if (
+      chaindetails.firstChain.id == 1116 &&
+      chaindetails.secondChain.id == 1
+    ) {
+      setRequiredFee(70);
+    } else if (
+      chaindetails.firstChain.id == 1 &&
+      chaindetails.secondChain.id == 56
+    ) {
+      setRequiredFee(0.01);
+    } else if (
+      chaindetails.firstChain.id == 1116 &&
+      chaindetails.secondChain.id == 56
+    ) {
+      setRequiredFee(3);
+    } else if (
+      chaindetails.firstChain.id == 56 &&
+      chaindetails.secondChain.id == 1116
+    ) {
+      setRequiredFee(0.003);
+    } else if (
+      chaindetails.firstChain.id == 1 &&
+      chaindetails.secondChain.id == 1116
+    ) {
+      setRequiredFee(0.01);
+    }
+  }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
 
   useEffect(() => {
     const callParams = {
@@ -288,7 +340,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.04"),
+              value: ethers.utils.parseEther("0.01"),
             },
           });
         } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
@@ -300,7 +352,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.4"),
+              value: ethers.utils.parseEther("0.15"),
             },
           });
         } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
@@ -330,7 +382,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.003"),
+              value: ethers.utils.parseEther("0.01"),
             },
           });
         } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
@@ -375,18 +427,22 @@ function SwapButton() {
     if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
       if (isConnected) {
         if (approveBalance >= 40000) {
-          if (Number(dummyData) <= 0 || !dummyData) {
-            return;
-          } else {
-            if (!swaping) {
-              if (Number(dummyData) >= 40000) {
-                if (Number(dummyData) <= Number(tokenBalance)) {
-                  console.log("swaping");
+          if (usernativeBalance >= requiredFee) {
+            if (Number(dummyData) <= 0 || !dummyData) {
+              return;
+            } else {
+              if (!swaping) {
+                if (Number(dummyData) >= 40000) {
+                  if (Number(dummyData) <= Number(tokenBalance)) {
+                    console.log("swaping");
 
-                  Swap();
+                    Swap();
+                  }
                 }
               }
             }
+          } else {
+            return;
           }
         } else {
           if (approving) {
@@ -408,30 +464,34 @@ function SwapButton() {
     if (isConnected) {
       if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
         if (approveBalance >= 40000) {
-          if (
-            Number(dummyData) <= 0 ||
-            !dummyData ||
-            Number(dummyData) > Number(tokenBalance)
-          ) {
-            if (Number(dummyData) > Number(tokenBalance)) {
-              setButtonText("Enter Correct Amount");
-            } else {
-              if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
-                setButtonText("Minimum bridge amount is 40000 4TOKEN");
+          if (usernativeBalance >= requiredFee) {
+            if (
+              Number(dummyData) <= 0 ||
+              !dummyData ||
+              Number(dummyData) > Number(tokenBalance)
+            ) {
+              if (Number(dummyData) > Number(tokenBalance)) {
+                setButtonText("Enter Correct Amount");
               } else {
-                setButtonText("Enter Amount");
+                if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
+                  setButtonText("Minimum bridge amount is 40000 4TOKEN");
+                } else {
+                  setButtonText("Enter Amount");
+                }
+              }
+            } else {
+              if (swaping) {
+                setButtonText("Bridging");
+              } else {
+                if (Number(dummyData) < 40000) {
+                  setButtonText("Minimum bridge amount is 40000 4TOKEN");
+                } else {
+                  setButtonText("Bridge");
+                }
               }
             }
           } else {
-            if (swaping) {
-              setButtonText("Bridging");
-            } else {
-              if (Number(dummyData) < 40000) {
-                setButtonText("Minimum bridge amount is 40000 4TOKEN");
-              } else {
-                setButtonText("Bridge");
-              }
-            }
+            setButtonText("Not Enough Native for gas fee");
           }
         } else {
           if (approving) {
@@ -458,6 +518,8 @@ function SwapButton() {
     dummyData,
     tokenbalance,
     tokenBalance,
+    usernativeBalance,
+    requiredFee,
   ]);
 
   const [contractABI, setContractABI] = useState<Array<any>>([]);
@@ -497,7 +559,7 @@ function SwapButton() {
       }
     }
     getContract();
-  }, [chain?.id, chaindetails.firstChain.id, chaindetails.secondChain.id]);
+  }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
 
   console.log(args);
 
@@ -594,7 +656,12 @@ function SwapButton() {
             Number(dummyData) > Number(tokenBalance)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
-          }   text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
+          } 
+          ${
+            usernativeBalance <= requiredFee
+              ? "opacity-40 overflow-hidden cursor-pointer"
+              : "hover:bg-[#187c18] active:bg-[#082908]"
+          }  text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
           aria-expanded="false"
           data-headlessui-state=""
           disabled={swaping || approving}
