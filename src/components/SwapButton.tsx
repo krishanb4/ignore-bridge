@@ -561,7 +561,7 @@ function SwapButton() {
     getContract();
   }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
 
-  console.log(args);
+  // console.log(args);
 
   const { config, error } = usePrepareContractWrite({
     address: routeContractAddress,
@@ -570,7 +570,7 @@ function SwapButton() {
     args: Object.values(args),
   });
 
-  console.log(args);
+  // console.log(args);
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,

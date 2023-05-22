@@ -6,6 +6,7 @@ import { AppDispatch } from "@/redux/store";
 import { useSelector } from "react-redux";
 import * as addresses from "@/config/constants/addresses";
 import { TokenAddressRoute } from "@/config/constants/bridgeRoute";
+import axios from "axios";
 interface AppState {
   tokenbalance: {
     corebalance: number;
@@ -41,7 +42,7 @@ function ToData() {
   );
 
   const chainsdata = useSelector((state: AppState) => state.chains);
-
+  const tokenbalanceFrom = useSelector((state: AppState) => state.tokenbalance);
   const token_address = TokenAddressRoute(chainsdata.secondChain.symbol);
 
   const { data, isError, isLoading } = useBalance({
@@ -69,11 +70,34 @@ function ToData() {
       setFractionalPart(fPart.substring(2));
     }
   }, [chain?.id, tokenAddress, address, data, isLoading]);
+  const [tokenPrice, setTokenPrice] = useState("");
+  useEffect(() => {
+    let response = null;
+
+    new Promise(async (resolve, reject) => {
+      try {
+        response = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ignore-fud&vs_currencies=usd"
+        );
+      } catch (ex) {
+        response = null;
+        // error
+        console.log(ex);
+        reject(ex);
+      }
+      if (response) {
+        // success
+        const json = response.data;
+        setTokenPrice(json["ignore-fud"]["usd"]);
+        resolve(json);
+      }
+    });
+  }, []);
 
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
       <p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
-        $ 0.<span className="text-sm font-semibold">00</span>
+        $ {Number(tokenPrice) * Number(tokenbalanceFrom.enterAmount)}
       </p>
       <button
         data-testid="undefined-balance-button"

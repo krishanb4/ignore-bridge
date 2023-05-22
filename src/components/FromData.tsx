@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { setBalance } from "@/redux/actions";
 import * as types from "@/redux/actionConstants";
+import axios from "axios";
 interface ReceiverComponentProps {
   onDataReceived: (tokenbalance: string) => void; // Define the callback function prop
 }
@@ -209,10 +210,33 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     });
   };
 
+  const [tokenPrice, setTokenPrice] = useState("");
+  useEffect(() => {
+    let response = null;
+
+    new Promise(async (resolve, reject) => {
+      try {
+        response = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ignore-fud&vs_currencies=usd"
+        );
+      } catch (ex) {
+        response = null;
+        // error
+        console.log(ex);
+        reject(ex);
+      }
+      if (response) {
+        // success
+        const json = response.data;
+        setTokenPrice(json["ignore-fud"]["usd"]);
+        resolve(json);
+      }
+    });
+  }, []);
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
       <p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
-        $ 0.<span className="text-sm font-semibold">00</span>
+        $ {Number(tokenPrice) * Number(tokenbalanceFrom.enterAmount)}
       </p>
       <button
         onClick={() => handleDataInput()}
