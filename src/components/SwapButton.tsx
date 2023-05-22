@@ -658,7 +658,7 @@ function SwapButton() {
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } 
           ${
-            usernativeBalance <= requiredFee
+            approveBalance > 40000 && usernativeBalance <= requiredFee
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           }  text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
