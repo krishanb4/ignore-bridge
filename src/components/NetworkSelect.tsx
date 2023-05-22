@@ -282,7 +282,7 @@ function NetworkSelect() {
             <div className="flex flex-col">
               <h1 className="flex gap-1.5 items-center font-semibold text-gray-900 dark:text-slate-50">
                 <span className="flex gap-1.5 items-center bg-gradient-to-r from-blue to-pink text-[#0cb34d] bg-clip-text">
-                  Cross Chain
+                  Cross Chain{" (V1.1)"}
                 </span>
                 <div className="flex justify-center" data-headlessui-state="">
                   <button
