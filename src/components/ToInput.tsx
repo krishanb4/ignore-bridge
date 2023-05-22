@@ -2,14 +2,24 @@ import React, { useEffect, useState } from "react";
 import ToData from "./ToData";
 import Image from "next/image";
 import { MyContext } from "./context";
+import { useSelector } from "react-redux";
+
+interface AppState {
+  tokenbalance: {
+    corebalance: number;
+    bscbalance: number;
+    ethbalance: number;
+    enterAmount: string;
+  };
+}
 
 function ToInput() {
-  const context = React.useContext(MyContext);
+  const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const [inputValue, setInputValue] = useState("");
   useEffect(() => {
-    setInputValue(context.data);
+    setInputValue(tokenbalance.enterAmount);
     // console.log(inputValue);
-  }, [inputValue, context.data]);
+  }, [tokenbalance.enterAmount]);
   return (
     <>
       <div className="relative flex items-center gap-4">
