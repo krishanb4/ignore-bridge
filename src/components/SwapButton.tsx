@@ -397,12 +397,12 @@ function SwapButton() {
     watch: true,
     args: Object.values(gasArgs),
   });
-  const gas = Number(gasData.data?.nativeFee);
-  if (gas) {
-    const truncatedNumber = Math.floor(gas * 1000) / 1000;
-    console.log(Number(truncatedNumber) / 10 ** 18);
-    console.log(((truncatedNumber / 10 ** 18 / 100) * 105).toFixed(6));
-  }
+  // const gas = Number(gasData.data?.nativeFee);
+  // if (gas) {
+  //   const truncatedNumber = Math.floor(gas * 1000) / 1000;
+  //   console.log(Number(truncatedNumber) / 10 ** 18);
+  //   console.log(((truncatedNumber / 10 ** 18 / 100) * 105).toFixed(6));
+  // }
 
   // console.log((gasFixed / 10 ** 18 / 100) * 105);
   // console.log(gasFixed / 10 ** 18);
