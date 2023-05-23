@@ -1,7 +1,5 @@
-[
-    {
-        "inputs": [
-            {
+[{
+        "inputs": [{
                 "internalType": "address",
                 "name": "localToken",
                 "type": "address"
@@ -27,8 +25,7 @@
                 "type": "bool"
             },
             {
-                "components": [
-                    {
+                "components": [{
                         "internalType": "address payable",
                         "name": "refundAddress",
                         "type": "address"
@@ -52,6 +49,49 @@
         "name": "bridge",
         "outputs": [],
         "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "developer",
+        "outputs": [{
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+        }],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [{
+                "internalType": "uint16",
+                "name": "remoteChainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "bool",
+                "name": "useZro",
+                "type": "bool"
+            },
+            {
+                "internalType": "bytes",
+                "name": "adapterParams",
+                "type": "bytes"
+            }
+        ],
+        "name": "estimateBridgeFee",
+        "outputs": [{
+                "internalType": "uint256",
+                "name": "nativeFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "zroFee",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     }
 ]

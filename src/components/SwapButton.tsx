@@ -8,6 +8,7 @@ import {
   usePrepareContractWrite,
   useContractWrite,
   useBalance,
+  useContractRead,
 } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { toast } from "react-toastify";
@@ -99,8 +100,8 @@ function SwapButton() {
   const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const chaindetails = useSelector((state: AppState) => state.chains);
   const [bridgeRoute, setBridgeRoute] = useState({
-    from: "ETH",
-    to: "BSC",
+    from: "BSC",
+    to: "ETH",
   });
 
   const [tokenBalanceList, setTokenBalanceList] = useState<TokenBalanceList>({
@@ -164,6 +165,12 @@ function SwapButton() {
     callParams: {};
     adapterParams: string;
     gassData: {};
+  };
+
+  type GasArgs = {
+    remoteChainId?: number;
+    useZro: boolean;
+    adapterParams: string;
   };
 
   useEffect(() => {
@@ -260,16 +267,18 @@ function SwapButton() {
             Number(chain?.id)
           );
           setapproveBalance(Number(approveBalance) / 10 ** 18);
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         // nothing
       }
     }
     checkApproveBalance();
   }, [chain?.id, userAddress, routeTokenAddress, routeContractAddress]);
-  console.log(approveBalance);
 
   const [args, setArgs] = useState({} as SwapArgs);
+  const [gasArgs, setGasArgs] = useState({} as GasArgs);
   // const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
   // const [contractAddressSwap, setContractAddressSwap] =
   //   useState<`0x${string}`>();
@@ -282,36 +291,116 @@ function SwapButton() {
   const [swaping, setSwaping] = useState(false);
   const [requiredFee, setRequiredFee] = useState(0);
 
+  // useEffect(() => {
+  //   if (chaindetails.firstChain.id == 56 && chaindetails.secondChain.id == 1) {
+  //     setRequiredFee(0.15);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1116 &&
+  //     chaindetails.secondChain.id == 1
+  //   ) {
+  //     setRequiredFee(70);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1 &&
+  //     chaindetails.secondChain.id == 56
+  //   ) {
+  //     setRequiredFee(0.01);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1116 &&
+  //     chaindetails.secondChain.id == 56
+  //   ) {
+  //     setRequiredFee(3);
+  //   } else if (
+  //     chaindetails.firstChain.id == 56 &&
+  //     chaindetails.secondChain.id == 1116
+  //   ) {
+  //     setRequiredFee(0.003);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1 &&
+  //     chaindetails.secondChain.id == 1116
+  //   ) {
+  //     setRequiredFee(0.01);
+  //   }
+  // }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
+  const [contractABI, setContractABI] = useState([] as any);
+
   useEffect(() => {
     if (chaindetails.firstChain.id == 56 && chaindetails.secondChain.id == 1) {
-      setRequiredFee(0.15);
+      setContractABI(bscethABI);
     } else if (
       chaindetails.firstChain.id == 1116 &&
       chaindetails.secondChain.id == 1
     ) {
-      setRequiredFee(70);
+      setContractABI(coreethABI);
     } else if (
       chaindetails.firstChain.id == 1 &&
       chaindetails.secondChain.id == 56
     ) {
-      setRequiredFee(0.01);
+      setContractABI(ethbscABI);
     } else if (
       chaindetails.firstChain.id == 1116 &&
       chaindetails.secondChain.id == 56
     ) {
-      setRequiredFee(3);
+      setContractABI(corebscABI);
     } else if (
       chaindetails.firstChain.id == 56 &&
       chaindetails.secondChain.id == 1116
     ) {
-      setRequiredFee(0.003);
+      setContractABI(bsccoreABI);
     } else if (
       chaindetails.firstChain.id == 1 &&
       chaindetails.secondChain.id == 1116
     ) {
-      setRequiredFee(0.01);
+      setContractABI(ethcoreABI);
     }
   }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
+  useEffect(() => {
+    if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+      setGasArgs({
+        remoteChainId: 102,
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+      setGasArgs({
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
+      setGasArgs({
+        remoteChainId: 153,
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
+      setGasArgs({
+        remoteChainId: 153,
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
+      setGasArgs({
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
+      setGasArgs({
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    }
+  }, [adapterParams, bridgeRoute.from, bridgeRoute.to]);
+
+  const gasData = useContractRead({
+    address: routeContractAddress,
+    abi: contractABI,
+    functionName: "estimateBridgeFee",
+    watch: true,
+    args: Object.values(gasArgs),
+  });
+  // console.log((Number(gasData.data?.nativeFee) / 10 ** 18).toFixed(5));
+  useEffect(() => {
+    setRequiredFee(Number(gasData.data?.nativeFee) / 10 ** 18);
+  }, [gasData.data?.nativeFee]);
 
   useEffect(() => {
     const callParams = {
@@ -340,7 +429,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.01"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
         } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
@@ -352,7 +441,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.26"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
         } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
@@ -368,7 +457,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.003"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
         } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
@@ -382,7 +471,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.01"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
         } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
@@ -406,7 +495,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("3"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
         }
@@ -421,6 +510,7 @@ function SwapButton() {
     adapterParams,
     bridgeRoute.from,
     bridgeRoute.to,
+    requiredFee,
   ]);
 
   const HanddleFunctions = () => {
@@ -521,47 +611,6 @@ function SwapButton() {
     usernativeBalance,
     requiredFee,
   ]);
-
-  const [contractABI, setContractABI] = useState<Array<any>>([]);
-
-  useEffect(() => {
-    function getContract() {
-      if (
-        chaindetails.firstChain.id == 56 &&
-        chaindetails.secondChain.id == 1
-      ) {
-        setContractABI((prevState) => [...prevState, ...bscethABI]);
-      } else if (
-        chaindetails.firstChain.id == 1116 &&
-        chaindetails.secondChain.id == 1
-      ) {
-        setContractABI((prevState) => [...prevState, ...coreethABI]);
-      } else if (
-        chaindetails.firstChain.id == 1 &&
-        chaindetails.secondChain.id == 56
-      ) {
-        setContractABI((prevState) => [...prevState, ...ethbscABI]);
-      } else if (
-        chaindetails.firstChain.id == 1116 &&
-        chaindetails.secondChain.id == 56
-      ) {
-        setContractABI((prevState) => [...prevState, ...corebscABI]);
-      } else if (
-        chaindetails.firstChain.id == 56 &&
-        chaindetails.secondChain.id == 1116
-      ) {
-        setContractABI((prevState) => [...prevState, ...bsccoreABI]);
-      } else if (
-        chaindetails.firstChain.id == 1 &&
-        chaindetails.secondChain.id == 1116
-      ) {
-        setContractABI((prevState) => [...prevState, ...ethcoreABI]);
-      }
-    }
-    getContract();
-  }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
-
-  // console.log(args);
 
   const { config, error } = usePrepareContractWrite({
     address: routeContractAddress,
