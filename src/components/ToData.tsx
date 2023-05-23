@@ -74,24 +74,30 @@ function ToData() {
   useEffect(() => {
     let response = null;
 
-    new Promise(async (resolve, reject) => {
+    const fetchData = async () => {
       try {
         response = await axios.get(
-          "https://api.coingecko.com/api/v3/simple/price?ids=ignore-fud&vs_currencies=usd"
+          "https://api.coingecko.com/api/v3/simple/price?ids=ignore-fud&vs_currencies=usd",
+          {
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers":
+                "Origin, X-Requested-With, Content-Type, Accept",
+            },
+          }
         );
       } catch (ex) {
         response = null;
         // error
         console.log(ex);
-        reject(ex);
       }
       if (response) {
         // success
         const json = response.data;
         setTokenPrice(json["ignore-fud"]["usd"]);
-        resolve(json);
       }
-    });
+    };
+    fetchData();
   }, []);
 
   return (
