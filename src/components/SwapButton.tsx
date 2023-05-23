@@ -289,7 +289,7 @@ function SwapButton() {
     [1, 900000]
   );
   const [swaping, setSwaping] = useState(false);
-  const [requiredFee, setRequiredFee] = useState(0);
+  const [requiredFee, setRequiredFee] = useState("");
 
   // useEffect(() => {
   //   if (chaindetails.firstChain.id == 56 && chaindetails.secondChain.id == 1) {
@@ -397,9 +397,22 @@ function SwapButton() {
     watch: true,
     args: Object.values(gasArgs),
   });
-  console.log((Number(gasData.data?.nativeFee) / 10 ** 18 / 100) * 105);
+  const gas = Number(gasData.data?.nativeFee);
+  if (gas) {
+    const truncatedNumber = Math.floor(gas * 1000) / 1000;
+    console.log(Number(truncatedNumber) / 10 ** 18);
+    console.log(((truncatedNumber / 10 ** 18 / 100) * 105).toFixed(6));
+  }
+
+  // console.log((gasFixed / 10 ** 18 / 100) * 105);
+  // console.log(gasFixed / 10 ** 18);
   useEffect(() => {
-    setRequiredFee((Number(gasData.data?.nativeFee) / 10 ** 18 / 100) * 105);
+    const gas = Number(gasData.data?.nativeFee);
+    if (gas) {
+      const truncatedNumber = Math.floor(gas * 1000) / 1000;
+
+      setRequiredFee(((truncatedNumber / 10 ** 18 / 100) * 105).toFixed(6));
+    }
   }, [gasData.data?.nativeFee]);
 
   useEffect(() => {
@@ -517,7 +530,7 @@ function SwapButton() {
     if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
       if (isConnected) {
         if (approveBalance >= 40000) {
-          if (usernativeBalance >= requiredFee) {
+          if (usernativeBalance >= Number(requiredFee)) {
             if (Number(dummyData) <= 0 || !dummyData) {
               return;
             } else {
@@ -554,7 +567,7 @@ function SwapButton() {
     if (isConnected) {
       if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
         if (approveBalance >= 40000) {
-          if (usernativeBalance >= requiredFee) {
+          if (usernativeBalance >= Number(requiredFee)) {
             if (
               Number(dummyData) <= 0 ||
               !dummyData ||
@@ -707,7 +720,7 @@ function SwapButton() {
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } 
           ${
-            approveBalance > 40000 && usernativeBalance <= requiredFee
+            approveBalance > 40000 && usernativeBalance <= Number(requiredFee)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           }  text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
