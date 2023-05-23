@@ -152,8 +152,8 @@ const Instructions = () => {
           <li>Minimum Crosschain Amount is 40,000 4TOKEN</li>
           <li>
             LayerZero {bridgeRoute.from} to {bridgeRoute.to} bridge fee is{" "}
-            {requiredFee.toFixed(5)} {bridgeRoute.from} + {bridgeRoute.from} gas
-            fee
+            {((requiredFee / 100) * 105).toFixed(5)} {bridgeRoute.from} +{" "}
+            {bridgeRoute.from} gas fee
           </li>
           <li>Estimated Time of Crosschain Arrival is 4-10 min</li>
           <li>

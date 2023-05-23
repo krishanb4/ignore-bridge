@@ -397,9 +397,9 @@ function SwapButton() {
     watch: true,
     args: Object.values(gasArgs),
   });
-  // console.log((Number(gasData.data?.nativeFee) / 10 ** 18).toFixed(5));
+  console.log((Number(gasData.data?.nativeFee) / 10 ** 18 / 100) * 105);
   useEffect(() => {
-    setRequiredFee(Number(gasData.data?.nativeFee) / 10 ** 18);
+    setRequiredFee((Number(gasData.data?.nativeFee) / 10 ** 18 / 100) * 105);
   }, [gasData.data?.nativeFee]);
 
   useEffect(() => {
