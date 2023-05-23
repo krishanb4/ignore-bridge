@@ -483,7 +483,7 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("70"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
         } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
