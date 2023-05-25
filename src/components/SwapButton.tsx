@@ -694,15 +694,15 @@ function SwapButton() {
 
   async function Swap() {
     if (routeContractAddress && toAddress) {
-      if (
-        (chaindetails.firstChain.id == 56 &&
-          chaindetails.secondChain.id == 1) ||
-        (chaindetails.firstChain.id == 1116 && chaindetails.secondChain.id == 1)
-      ) {
-        toast.error("BSC to ETH bridging suspended");
-      } else {
-        write?.();
-      }
+      // if (
+      //   (chaindetails.firstChain.id == 56 &&
+      //     chaindetails.secondChain.id == 1) ||
+      //   (chaindetails.firstChain.id == 1116 && chaindetails.secondChain.id == 1)
+      // ) {
+      // toast.error("BSC to ETH bridging suspended");
+      // } else {
+      write?.();
+      // }
       setSwaping(true);
     } else {
       console.log("data not ready yet...");
