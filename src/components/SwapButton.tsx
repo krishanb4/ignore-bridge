@@ -150,7 +150,7 @@ function SwapButton() {
   }, [chaindetails.firstChain.symbol, chaindetails.secondChain.symbol]);
 
   useEffect(() => {
-    if (account && account.address) {
+    if (account?.address) {
       const erc20Address = ethers.utils.getAddress(account.address);
       setUserAddress(erc20Address);
     }
@@ -229,7 +229,7 @@ function SwapButton() {
           success: "Tokens approved successfully 👌",
           error: "Failed to approve tokens",
         });
-        checkApproveBalance();
+        checkApproveBalance().catch((error) => console.log(error));
         setApproving(false);
       }
     } catch (error) {
@@ -274,7 +274,7 @@ function SwapButton() {
         // nothing
       }
     }
-    checkApproveBalance();
+    checkApproveBalance().catch((error) => console.log(error));
   }, [chain?.id, userAddress, routeTokenAddress, routeContractAddress]);
 
   const [args, setArgs] = useState({} as SwapArgs);
@@ -397,15 +397,7 @@ function SwapButton() {
     watch: true,
     args: Object.values(gasArgs),
   });
-  // const gas = Number(gasData.data?.nativeFee);
-  // if (gas) {
-  //   const truncatedNumber = Math.floor(gas * 1000) / 1000;
-  //   console.log(Number(truncatedNumber) / 10 ** 18);
-  //   console.log(((truncatedNumber / 10 ** 18 / 100) * 105).toFixed(6));
-  // }
 
-  // console.log((gasFixed / 10 ** 18 / 100) * 105);
-  // console.log(gasFixed / 10 ** 18);
   useEffect(() => {
     const gas = Number(gasData.data?.nativeFee);
     if (gas) {
@@ -551,7 +543,7 @@ function SwapButton() {
           if (approving) {
             return;
           } else {
-            approveTokens();
+            approveTokens().catch((error) => console.log(error));
           }
         }
       } else {
