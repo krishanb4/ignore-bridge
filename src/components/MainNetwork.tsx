@@ -111,7 +111,7 @@ function MainNetwork() {
                   </button>
                 </button>
                 <button
-                  onClick={() => switchNetwork?.(84531)}
+                  onClick={() => switchNetwork?.(8453)}
                   className="w-full group hover:bg-gray-100 hover:dark:bg-slate-700 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]"
                 >
                   <div className="flex items-center gap-2.5">

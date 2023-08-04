@@ -12,7 +12,12 @@ export default function Home() {
     useSwitchNetwork();
 
   useEffect(() => {
-    if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
+    if (
+      chain?.id == 1 ||
+      chain?.id == 56 ||
+      chain?.id == 1116 ||
+      chain?.id == 8453
+    ) {
       return;
     } else {
       console.log(chain?.id);
