@@ -117,6 +117,22 @@ function MobileNetworks() {
                       </p>
                     </div>
                   </button>
+                  <button
+                    onClick={() => switchNetwork?.(8453)}
+                    className="w-full group hover:bg-white hover:dark:bg-slate-800 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src="/images/base.png"
+                        alt="core logo"
+                        width="20"
+                        height="30"
+                      />
+                      <p className="font-medium text-gray-500 text-sm group-hover:text-gray-900 dark:text-slate-300 group-hover:dark:text-slate-50">
+                        Base Chain
+                      </p>
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>

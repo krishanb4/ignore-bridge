@@ -10,6 +10,7 @@ function MainNetwork() {
   const [buttonClassNameBSC, setbuttonClassNameBSC] = useState("");
   const [buttonClassNameCORE, setbuttonClassNameCORE] = useState("");
   const [buttonClassNameETH, setbuttonClassNameETH] = useState("");
+  const [buttonClassNameBase, setbuttonClassNameBase] = useState("");
   useEffect(() => {
     if (chain?.id === 1) {
       setCurrentNetwork("Ethereum");
@@ -21,9 +22,10 @@ function MainNetwork() {
       setbuttonClassNameBSC("font-bold");
       setbuttonClassNameCORE("text-gray-500");
       setbuttonClassNameETH("text-gray-500");
-    } else if (chain?.id === 1116) {
-      setCurrentNetwork("Core Chain");
-      setbuttonClassNameCORE("font-bold");
+    } else if (chain?.id === 8453) {
+      setCurrentNetwork("Base Chain");
+      setbuttonClassNameBase("font-bold");
+      setbuttonClassNameCORE("text-gray-500");
       setbuttonClassNameBSC("text-gray-500");
       setbuttonClassNameETH("text-gray-500");
     }
@@ -107,8 +109,26 @@ function MainNetwork() {
                       Core Chain
                     </p>
                   </button>
-                  <div className="w-2 h-2 mr-1 rounded-full bg-green"></div>
                 </button>
+                <button
+                  onClick={() => switchNetwork?.(84531)}
+                  className="w-full group hover:bg-gray-100 hover:dark:bg-slate-700 px-2.5 flex rounded-lg justify-between gap-2 items-center cursor-pointer transform-all h-[40px]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Image
+                      src="/images/base.png"
+                      alt="core logo"
+                      width="20"
+                      height="30"
+                    />
+                    <p
+                      className={`${buttonClassNameBase} font-medium  text-sm group-hover:text-gray-900 dark:text-slate-300 dark:group-hover:text-slate-50`}
+                    >
+                      Base Chain
+                    </p>
+                  </div>
+                </button>
+                <div className="w-2 h-2 mr-1 rounded-full bg-green"></div>
               </div>
             </div>
           </div>

@@ -43,6 +43,9 @@ const Header: React.FC = () => {
     } else if (chain?.id === 1116) {
       setCurrentNetwork("Core Chain");
       setCurrentNetworkImage("core");
+    } else if (chain?.id === 8453) {
+      setCurrentNetwork("Base Chain");
+      setCurrentNetworkImage("base");
     } else {
       setCurrentNetworkImage("error");
       setCurrentNetwork("");

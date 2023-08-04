@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { Modal, Button } from "flowbite-react";
-import { EthLogo, BscLogo, CoreLogo } from "./NetworkLogo";
+import { EthLogo, BscLogo, CoreLogo, BaseLogo } from "./NetworkLogo";
 import { useDispatch } from "react-redux";
 import * as types from "@/redux/actionConstants";
 
@@ -31,6 +31,12 @@ function NetworkSelect() {
       name: "Core Chain",
       logo: <CoreLogo />,
     },
+    {
+      id: 8453,
+      symbol: "base",
+      name: "Base Chain",
+      logo: <BaseLogo />,
+    },
   ];
   const SecondNetworkList = [
     {
@@ -50,6 +56,12 @@ function NetworkSelect() {
       symbol: "core",
       name: "Core Chain",
       logo: <CoreLogo />,
+    },
+    {
+      id: 8453,
+      symbol: "base",
+      name: "Base Chain",
+      logo: <BaseLogo />,
     },
   ];
 
@@ -75,8 +87,11 @@ function NetworkSelect() {
     } else if (chain?.id == 1116) {
       setCurrentChain(NetworkList[2]);
       setSecondChain(NetworkList[0]);
+    } else if (chain?.id == 8453) {
+      setCurrentChain(NetworkList[3]);
+      setSecondChain(NetworkList[0]);
     }
-  }, []);
+  }, [chain?.id]);
   const [currentNetwork, setCurrentNetwork] = useState(0);
   const [secondtNetwork, setSecondtNetwork] = useState(0);
   useEffect(() => {

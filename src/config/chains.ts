@@ -49,4 +49,28 @@ export const chainlist = {
       // },
     },
   } as const,
+  baseChain: {
+    id: 8453,
+    name: "BASE",
+    network: "base",
+    nativeCurrency: {
+      decimals: 18,
+      name: "Base Chain",
+      symbol: "ETH",
+    },
+    rpcUrls: {
+      public: { http: ["https://mainnet.base.org"] },
+      default: { http: ["https://mainnet.base.org"] },
+    },
+    blockExplorers: {
+      etherscan: { name: "BaseScan", url: "https://basescan.org" },
+      default: { name: "BaseScan", url: "https://basescan.org" },
+    },
+    contracts: {
+      // multicall3: {
+      //   address: "0xca11bde05977b3631167028862be2a173976ca11",
+      //   blockCreated: 11_907_934,
+      // },
+    },
+  } as const,
 } as { [key: string]: Chain };
