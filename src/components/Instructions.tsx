@@ -10,6 +10,9 @@ import ethcoreABI from "@/config/abi/eth-coreABI.json";
 import ethbscABI from "@/config/abi/eth-bscABI.json";
 import corebscABI from "@/config/abi/core-bscABI.json";
 import coreethABI from "@/config/abi/core-ethABI.json";
+import bscbaseABI from "@/config/abi/bsc-baseABI.json";
+import basebscABI from "@/config/abi/base-bscABI.json";
+
 import { ethers } from "ethers";
 
 type GasArgs = {
@@ -88,39 +91,52 @@ const Instructions = () => {
       chaindetails.secondChain.id == 1116
     ) {
       setContractABI(ethcoreABI);
+    } else if (
+      chaindetails.firstChain.id == 8453 &&
+      chaindetails.secondChain.id == 1116
+    ) {
+      setContractABI(basebscABI);
+    } else if (
+      chaindetails.firstChain.id == 1116 &&
+      chaindetails.secondChain.id == 8453
+    ) {
+      setContractABI(bscbaseABI);
     }
   }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
   useEffect(() => {
-    if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+    if (
+      (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") ||
+      (bridgeRoute.from == "BASE" && bridgeRoute.to == "BSC")
+    ) {
       setGasArgs({
         remoteChainId: 102,
         useZro: false,
         adapterParams: adapterParams,
       });
-    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+    } else if (
+      (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") ||
+      (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") ||
+      (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH")
+    ) {
       setGasArgs({
         useZro: false,
         adapterParams: adapterParams,
       });
-    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
+    } else if (
+      (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") ||
+      (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE")
+    ) {
       setGasArgs({
         remoteChainId: 153,
         useZro: false,
         adapterParams: adapterParams,
       });
-    } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
+    } else if (
+      (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") ||
+      (bridgeRoute.from == "BSC" && bridgeRoute.to == "BASE")
+    ) {
       setGasArgs({
-        remoteChainId: 153,
-        useZro: false,
-        adapterParams: adapterParams,
-      });
-    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
-      setGasArgs({
-        useZro: false,
-        adapterParams: adapterParams,
-      });
-    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
-      setGasArgs({
+        //remoteChainId: 184,
         useZro: false,
         adapterParams: adapterParams,
       });
@@ -131,7 +147,6 @@ const Instructions = () => {
 
     const route_address = AddressRoute(From_To);
     setRouteContractAddress(route_address);
-    console.log(route_address);
   }, [bridgeRoute.from, bridgeRoute.to]);
 
   const gasData = useContractRead({
@@ -141,7 +156,7 @@ const Instructions = () => {
     watch: true,
     args: Object.values(gasArgs),
   });
-  //console.log(gasData.data);
+  // console.log(gasArgs);
   useEffect(() => {
     setRequiredFee(Number(gasData.data?.nativeFee) / 10 ** 18);
   }, [bridgeRoute.from, gasData.data?.nativeFee]);

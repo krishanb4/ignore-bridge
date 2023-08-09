@@ -9,6 +9,8 @@ export const ETH_BSC = "0x8C0479c5173DdD98A22d283233f86189CCb7C027";
 export const ETH_CORE = "0x8C0479c5173DdD98A22d283233f86189CCb7C027";
 export const CORE_ETH = "0xe22F35405d260715E03f7C99693130489f100A08";
 export const BSC_ETH = "0x8Ae6f48338688636F57e22086c87809436b516AE";
+export const BSC_BASE = "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213";
+export const BASE_BSC = "0xf953f9FfA5c1f9F55fD8408C24D23850F1a35213";
 
 type Tokens = {
   USDT: {
@@ -19,6 +21,7 @@ type Tokens = {
     eth: string;
     bsc: string;
     core: string;
+    base: string;
   };
 };
 
@@ -31,9 +34,11 @@ export const tokens: Tokens = {
     eth: "0x8dB4beACcd1698892821a9a0Dc367792c0cB9940",
     bsc: "0x61B83eDF87Ea662C695439A807c386455c9E797C",
     core: "0x98564E70c7fCC6d947fFE6d9EfeD5ba68b306F2E",
+    base: "0x96d0bf146119bC7395F8B59E32215d11D4D2b986",
   },
 };
 
 export const ETH = "0x8dB4beACcd1698892821a9a0Dc367792c0cB9940";
 export const BSC = "0x61B83eDF87Ea662C695439A807c386455c9E797C";
 export const CORE = "0x98564E70c7fCC6d947fFE6d9EfeD5ba68b306F2E";
+export const BASE = "0x96d0bf146119bC7395F8B59E32215d11D4D2b986";

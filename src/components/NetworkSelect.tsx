@@ -91,7 +91,7 @@ function NetworkSelect() {
       setCurrentChain(NetworkList[3]);
       setSecondChain(NetworkList[0]);
     }
-  }, [chain?.id]);
+  }, []);
   const [currentNetwork, setCurrentNetwork] = useState(0);
   const [secondtNetwork, setSecondtNetwork] = useState(0);
   useEffect(() => {
@@ -122,18 +122,26 @@ function NetworkSelect() {
     if (secondChain.id === id) {
       return;
     } else {
-      setModalOpen(false);
-      setCurrentNetwork(id);
-      setCurrentChain({
-        id: id,
-        symbol: symbol,
-        name: name,
-        logo: logo,
-      });
-      if (chain?.id == id) {
+      if (
+        (secondChain.id == 8453 && id == 1) ||
+        (secondChain.id == 8453 && id == 1116) ||
+        (secondChain.id == 8453 && id == 1)
+      ) {
         return;
       } else {
-        switchNetwork?.(id);
+        setModalOpen(false);
+        setCurrentNetwork(id);
+        setCurrentChain({
+          id: id,
+          symbol: symbol,
+          name: name,
+          logo: logo,
+        });
+        if (chain?.id == id) {
+          return;
+        } else {
+          switchNetwork?.(id);
+        }
       }
     }
   }
@@ -146,14 +154,22 @@ function NetworkSelect() {
     if (currentChain.id === id) {
       return;
     } else {
-      setSecondtNetwork(id);
-      setSecondModalOpen(false);
-      setSecondChain({
-        id: id,
-        symbol: symbol,
-        name: name,
-        logo: logo,
-      });
+      if (
+        (currentChain.id == 8453 && id == 1) ||
+        (currentChain.id == 8453 && id == 1116) ||
+        (currentChain.id == 8453 && id == 1)
+      ) {
+        return;
+      } else {
+        setSecondtNetwork(id);
+        setSecondModalOpen(false);
+        setSecondChain({
+          id: id,
+          symbol: symbol,
+          name: name,
+          logo: logo,
+        });
+      }
     }
   }
 
@@ -200,6 +216,11 @@ function NetworkSelect() {
                     currentChain.id == network.id
                       ? "✅"
                       : ""}
+                    {(secondChain.id == 8453 && network.id == 1) ||
+                    (secondChain.id == 8453 && network.id == 1116) ||
+                    (secondChain.id == 8453 && network.id == 1)
+                      ? "❌"
+                      : ""}
                   </span>
                 </a>
               </li>
@@ -240,6 +261,11 @@ function NetworkSelect() {
                     {secondtNetwork == network.id ||
                     secondChain.id == network.id
                       ? "✅"
+                      : ""}
+                    {(currentChain.id == 8453 && network.id == 1) ||
+                    (currentChain.id == 8453 && network.id == 1116) ||
+                    (currentChain.id == 8453 && network.id == 1)
+                      ? "❌"
                       : ""}
                   </span>
                 </a>

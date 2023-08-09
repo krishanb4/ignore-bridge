@@ -13,6 +13,7 @@ interface AppState {
     corebalance: number;
     bscbalance: number;
     ethbalance: number;
+    basebalance: number;
     enterAmount: string;
   };
 }
@@ -36,6 +37,7 @@ function FromInput() {
           corebalance: tokenbalance.corebalance,
           bscbalance: tokenbalance.bscbalance,
           ethbalance: tokenbalance.ethbalance,
+          basebalance: tokenbalance.basebalance,
           enterAmount: value,
         },
       });

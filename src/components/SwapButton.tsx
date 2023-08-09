@@ -24,6 +24,8 @@ import ethcoreABI from "@/config/abi/eth-coreABI.json";
 import ethbscABI from "@/config/abi/eth-bscABI.json";
 import corebscABI from "@/config/abi/core-bscABI.json";
 import coreethABI from "@/config/abi/core-ethABI.json";
+import bscbaseABI from "@/config/abi/bsc-baseABI.json";
+import basebscABI from "@/config/abi/base-bscABI.json";
 import TokenABI from "@/config/abi/tokenABI.json";
 import AddressRoute, {
   TokenAddressRoute,
@@ -351,39 +353,52 @@ function SwapButton() {
       chaindetails.secondChain.id == 1116
     ) {
       setContractABI(ethcoreABI);
+    } else if (
+      chaindetails.firstChain.id == 8453 &&
+      chaindetails.secondChain.id == 56
+    ) {
+      setContractABI(basebscABI);
+    } else if (
+      chaindetails.firstChain.id == 56 &&
+      chaindetails.secondChain.id == 8453
+    ) {
+      setContractABI(bscbaseABI);
     }
   }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
   useEffect(() => {
-    if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+    if (
+      (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") ||
+      (bridgeRoute.from == "BASE" && bridgeRoute.to == "BSC")
+    ) {
       setGasArgs({
         remoteChainId: 102,
         useZro: false,
         adapterParams: adapterParams,
       });
-    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+    } else if (
+      (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") ||
+      (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") ||
+      (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH")
+    ) {
       setGasArgs({
         useZro: false,
         adapterParams: adapterParams,
       });
-    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
+    } else if (
+      (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") ||
+      (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE")
+    ) {
       setGasArgs({
         remoteChainId: 153,
         useZro: false,
         adapterParams: adapterParams,
       });
-    } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
+    } else if (
+      (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") ||
+      (bridgeRoute.from == "BSC" && bridgeRoute.to == "BASE")
+    ) {
       setGasArgs({
-        remoteChainId: 153,
-        useZro: false,
-        adapterParams: adapterParams,
-      });
-    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
-      setGasArgs({
-        useZro: false,
-        adapterParams: adapterParams,
-      });
-    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
-      setGasArgs({
+        //remoteChainId: 184,
         useZro: false,
         adapterParams: adapterParams,
       });
@@ -423,7 +438,10 @@ function SwapButton() {
       console.log(`tokenaddressswap: ${routeTokenAddress}`);
       console.log(`toAddress: ${toAddress}`);
       if (routeTokenAddress && toAddress) {
-        if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+        if (
+          (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") ||
+          (bridgeRoute.from == "BASE" && bridgeRoute.to == "BSC")
+        ) {
           setArgs({
             localToken: routeTokenAddress,
             remoteChainId: 102,
@@ -437,7 +455,12 @@ function SwapButton() {
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
-        } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+        } else if (
+          (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") ||
+          (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") ||
+          (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") ||
+          (bridgeRoute.from == "BSC" && bridgeRoute.to == "BASE")
+        ) {
           setArgs({
             token: routeTokenAddress,
             amountLD: BigNumber.from(numberEntered),
@@ -479,30 +502,6 @@ function SwapButton() {
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
-        } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
-          setArgs({
-            token: routeTokenAddress,
-            amountLD: BigNumber.from(numberEntered),
-            to: toAddress,
-            callParams: callParams,
-            adapterParams: adapterParams,
-            gassData: {
-              gasLimit: 900000,
-              value: ethers.utils.parseEther(requiredFee.toString()),
-            },
-          });
-        } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
-          setArgs({
-            token: routeTokenAddress,
-            amountLD: BigNumber.from(numberEntered),
-            to: toAddress,
-            callParams: callParams,
-            adapterParams: adapterParams,
-            gassData: {
-              gasLimit: 900000,
-              value: ethers.utils.parseEther(requiredFee.toString()),
-            },
-          });
         }
       }
     }
@@ -519,7 +518,12 @@ function SwapButton() {
   ]);
 
   const HanddleFunctions = () => {
-    if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
+    if (
+      chain?.id == 1 ||
+      chain?.id == 56 ||
+      chain?.id == 1116 ||
+      chain?.id == 8453
+    ) {
       if (isConnected) {
         if (approveBalance >= 40000) {
           if (usernativeBalance >= Number(requiredFee)) {
@@ -557,7 +561,12 @@ function SwapButton() {
 
   useEffect(() => {
     if (isConnected) {
-      if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
+      if (
+        chain?.id === 1 ||
+        chain?.id === 56 ||
+        chain?.id === 1116 ||
+        chain?.id === 8453
+      ) {
         if (approveBalance >= 40000) {
           if (usernativeBalance >= Number(requiredFee)) {
             if (

@@ -12,6 +12,7 @@ interface AppState {
     corebalance: number;
     bscbalance: number;
     ethbalance: number;
+    basebalance: number;
     enterAmount: string;
   };
   chains: {
@@ -45,6 +46,8 @@ function ToData() {
   const tokenbalanceFrom = useSelector((state: AppState) => state.tokenbalance);
   const token_address = TokenAddressRoute(chainsdata.secondChain.symbol);
 
+  console.log(TokenAddressRoute(chainsdata.secondChain.symbol));
+
   const { data, isError, isLoading } = useBalance({
     address: address,
     token: token_address,
@@ -58,13 +61,14 @@ function ToData() {
     },
   });
 
+  // console.log("data", data);
+
   useEffect(() => {
     if (!isLoading) {
       const tokenB = data?.formatted || "";
       setTokenBalanceLocal(tokenB);
       const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
       const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
-
       setIntegerPart(integerPart.toString());
       const fPart = fractionalPart.toString();
       setFractionalPart(fPart.substring(2));

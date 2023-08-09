@@ -73,11 +73,25 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
       console.log("Error", error);
     },
   });
+
+  const tokendataBase = useBalance({
+    address: address,
+    token: ethers.utils.getAddress(tokenData.BASE),
+    chainId: 8453,
+    watch: true,
+    onSuccess(data) {
+      // console.log("Success", data);
+    },
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
   interface AppState {
     tokenbalance: {
       corebalance: number;
       bscbalance: number;
       ethbalance: number;
+      basebalance: number;
       enterAmount: string;
     };
     chains: {
@@ -104,6 +118,8 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
       setChainID(1116);
     } else if (chain?.id == 1116) {
       setChainID(56);
+    } else if (chain?.id == 8453) {
+      setChainID(8453);
     }
   }, [chain?.id]);
   useEffect(() => {
@@ -123,6 +139,9 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     } else if (chain?.id == 1116) {
       const erc20AddressOther = ethers.utils.getAddress(tokens.IGNORE.bsc);
       setTokenAddressOther(erc20AddressOther);
+    } else if (chain?.id == 8453) {
+      const erc20AddressOther = ethers.utils.getAddress(tokens.IGNORE.base);
+      setTokenAddressOther(erc20AddressOther);
     }
   }, [chain?.id]);
   useEffect(() => {
@@ -137,6 +156,9 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     } else if (chain?.id == 1116) {
       const erc20Address = ethers.utils.getAddress(tokens.IGNORE.core);
       setTokenAddress(erc20Address);
+    } else if (chain?.id == 8453) {
+      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.base);
+      setTokenAddress(erc20Address);
     }
   }, [chain?.id]);
   useEffect(() => {
@@ -146,6 +168,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
         corebalance: Number(tokendataCore.data?.formatted),
         bscbalance: Number(tokendataBsc.data?.formatted),
         ethbalance: Number(tokendataEth.data?.formatted),
+        basebalance: Number(tokendataBase.data?.formatted),
         enterAmount: "",
       },
     });
@@ -154,6 +177,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     tokendataEth.data?.formatted,
     tokendataBsc.data?.formatted,
     tokendataCore.data?.formatted,
+    tokendataBase.data?.formatted,
   ]);
   useEffect(() => {
     if (!isLoading) {
@@ -183,6 +207,15 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
         setIntegerPart(integerPart.toString());
         const fPart = fractionalPart.toString();
         setFractionalPart(fPart.substring(2));
+      } else if (chain?.id == 8453) {
+        const integerPart = Math.floor(Number(tokenbalanceFrom.basebalance)); // Extract the integer part
+        const fractionalPart = (
+          Number(tokenbalanceFrom.basebalance) - integerPart
+        ).toFixed(6);
+
+        setIntegerPart(integerPart.toString());
+        const fPart = fractionalPart.toString();
+        setFractionalPart(fPart.substring(2));
       }
     }
   }, [
@@ -205,6 +238,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
         corebalance: tokenbalanceFrom.corebalance,
         bscbalance: tokenbalanceFrom.bscbalance,
         ethbalance: tokenbalanceFrom.ethbalance,
+        basebalance: tokenbalanceFrom.basebalance,
         enterAmount: decimalValue,
       },
     });

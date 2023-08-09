@@ -5,6 +5,7 @@ interface SetBalanceAction {
     corebalance: number;
     bscbalance: number;
     ethbalance: number;
+    basebalance: number;
     enterAmount: string;
   };
 }
@@ -15,6 +16,7 @@ export const setBalance = (balance: {
   corebalance: number;
   bscbalance: number;
   ethbalance: number;
+  basebalance: number;
   enterAmount: string;
 }): SetBalanceAction => ({
   type: types.SET_BALANCE,

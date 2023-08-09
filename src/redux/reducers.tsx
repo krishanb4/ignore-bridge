@@ -5,6 +5,7 @@ export interface BalanceState {
   corebalance: number;
   bscbalance: number;
   ethbalance: number;
+  basebalance: number;
   enterAmount: string;
 }
 
@@ -12,6 +13,7 @@ const initialState: BalanceState = {
   corebalance: 0,
   bscbalance: 0,
   ethbalance: 0,
+  basebalance: 0,
   enterAmount: "",
 };
 
@@ -33,6 +35,7 @@ const balanceReducer: Reducer<BalanceState, BalanceAction | AnyAction> = (
         corebalance: action.payload.corebalance,
         bscbalance: action.payload.bscbalance,
         ethbalance: action.payload.ethbalance,
+        basebalance: action.payload.basebalance,
         enterAmount: action.payload.enterAmount,
       };
     default:

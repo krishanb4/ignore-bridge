@@ -23,8 +23,13 @@ export default function AddressRoute(
     case "BSC_ETH":
       param1 = routes.BSC_ETH;
       break;
+    case "BSC_BASE":
+      param1 = routes.BSC_BASE;
+      break;
+    case "BASE_BSC":
+      param1 = routes.BASE_BSC;
+      break;
     default:
-      // Handle default case if needed
       break;
   }
   return param1;
@@ -41,6 +46,9 @@ export function TokenAddressRoute(From: string): `0x${string}` | undefined {
       break;
     case "CORE":
       param1 = routes.CORE;
+      break;
+    case "BASE":
+      param1 = routes.BASE;
       break;
     default:
       // Handle default case if needed
