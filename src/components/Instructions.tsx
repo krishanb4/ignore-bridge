@@ -93,11 +93,11 @@ const Instructions = () => {
       setContractABI(ethcoreABI);
     } else if (
       chaindetails.firstChain.id == 8453 &&
-      chaindetails.secondChain.id == 1116
+      chaindetails.secondChain.id == 56
     ) {
       setContractABI(basebscABI);
     } else if (
-      chaindetails.firstChain.id == 1116 &&
+      chaindetails.firstChain.id == 56 &&
       chaindetails.secondChain.id == 8453
     ) {
       setContractABI(bscbaseABI);
@@ -167,7 +167,8 @@ const Instructions = () => {
           <li>Minimum Crosschain Amount is 40,000 4TOKEN</li>
           <li>
             LayerZero {bridgeRoute.from} to {bridgeRoute.to} bridge fee is{" "}
-            {((requiredFee / 100) * 105).toFixed(5)} {bridgeRoute.from} +{" "}
+            {((requiredFee / 100) * 105).toFixed(5)}{" "}
+            {bridgeRoute.from == "BASE" ? "ETH" : bridgeRoute.from} +{" "}
             {bridgeRoute.from} gas fee
           </li>
           <li>Estimated Time of Crosschain Arrival is 4-10 min</li>

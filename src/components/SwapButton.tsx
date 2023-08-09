@@ -54,6 +54,7 @@ interface AppState {
     corebalance: number;
     enterAmount: string;
     ethbalance: number;
+    basebalance: number;
   };
   chains: {
     firstChain: {
@@ -110,6 +111,7 @@ function SwapButton() {
     ETH: 0,
     BSC: 0,
     CORE: 0,
+    BASE: 0,
   });
   const [routeContractAddress, setRouteContractAddress] =
     useState<`0x${string}`>();
@@ -126,10 +128,12 @@ function SwapButton() {
     const eth_balance = tokenbalance.ethbalance;
     const bsc_balance = tokenbalance.bscbalance;
     const core_balance = tokenbalance.corebalance;
+    const base_balance = tokenbalance.basebalance;
     setTokenBalanceList({
       ETH: eth_balance,
       BSC: bsc_balance,
       CORE: core_balance,
+      BASE: base_balance,
     });
   }, [tokenbalance, chaindetails]);
 
@@ -533,6 +537,7 @@ function SwapButton() {
               if (!swaping) {
                 if (Number(dummyData) >= 40000) {
                   if (Number(dummyData) <= Number(tokenBalance)) {
+                    console.log(dummyData);
                     console.log("swaping");
 
                     Swap();
