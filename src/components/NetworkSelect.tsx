@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { Modal, Button } from "flowbite-react";
-import { EthLogo, BscLogo, CoreLogo, BaseLogo } from "./NetworkLogo";
+import { EthLogo, BscLogo, CoreLogo, BaseLogo, EmptyLogo } from "./NetworkLogo";
 import { useDispatch } from "react-redux";
 import * as types from "@/redux/actionConstants";
 
@@ -72,26 +72,38 @@ function NetworkSelect() {
     logo: <EthLogo />,
   });
   const [secondChain, setSecondChain] = useState({
-    id: 56,
-    symbol: "bsc",
-    name: "Binance Smart Chain",
-    logo: <BscLogo />,
+    id: 0,
+    symbol: "empty",
+    name: "Select a Network",
+    logo: <EmptyLogo />,
   });
   useEffect(() => {
     if (chain?.id == 1) {
       setCurrentChain(NetworkList[0]);
-      setSecondChain(NetworkList[1]);
+      // setSecondChain(NetworkList[1]);
     } else if (chain?.id == 56) {
       setCurrentChain(NetworkList[1]);
-      setSecondChain(NetworkList[0]);
+      // setSecondChain(NetworkList[0]);
     } else if (chain?.id == 1116) {
       setCurrentChain(NetworkList[2]);
-      setSecondChain(NetworkList[0]);
+      // setSecondChain(NetworkList[0]);
     } else if (chain?.id == 8453) {
       setCurrentChain(NetworkList[3]);
-      setSecondChain(NetworkList[0]);
+      // setSecondChain(NetworkList[0]);
     }
   }, []);
+
+  useEffect(() => {
+    if (secondChain.id == 8453) {
+      setCurrentChain({
+        id: 0,
+        symbol: "empty",
+        name: "Select a Network",
+        logo: <EmptyLogo />,
+      });
+    }
+  }, [secondChain]);
+
   const [currentNetwork, setCurrentNetwork] = useState(0);
   const [secondtNetwork, setSecondtNetwork] = useState(0);
   useEffect(() => {
@@ -180,6 +192,26 @@ function NetworkSelect() {
     setCurrentChain(secondChain);
   }
 
+  const filteredSecondNetworkList = SecondNetworkList.filter((network) => {
+    if (currentChain.symbol === "base") {
+      return network.symbol === "bsc";
+    }
+    if (currentChain.id === 1 || currentChain.id === 1116) {
+      return network.symbol !== "base";
+    }
+    return true; // Keep all other networks
+  });
+
+  const filteredFirstNetworkList = NetworkList.filter((network) => {
+    if (secondChain.symbol === "base") {
+      return network.symbol === "bsc";
+    }
+    if (secondChain.id === 1 || secondChain.id === 1116) {
+      return network.symbol !== "base";
+    }
+    return true; // Keep all other networks
+  });
+
   return (
     <>
       <Modal
@@ -191,7 +223,7 @@ function NetworkSelect() {
         <Modal.Header>Network List</Modal.Header>
         <Modal.Body className="p-6 ">
           <ul className="my-4 space-y-3">
-            {NetworkList.map((network, index) => (
+            {filteredFirstNetworkList.map((network, index) => (
               <li
                 key={index}
                 onClick={() =>
@@ -216,11 +248,6 @@ function NetworkSelect() {
                     currentChain.id == network.id
                       ? "✅"
                       : ""}
-                    {(secondChain.id == 8453 && network.id == 1) ||
-                    (secondChain.id == 8453 && network.id == 1116) ||
-                    (secondChain.id == 8453 && network.id == 1)
-                      ? "❌"
-                      : ""}
                   </span>
                 </a>
               </li>
@@ -237,7 +264,7 @@ function NetworkSelect() {
         <Modal.Header>Network List</Modal.Header>
         <Modal.Body className="p-6 ">
           <ul className="my-4 space-y-3">
-            {SecondNetworkList.map((network, index) => (
+            {filteredSecondNetworkList.map((network, index) => (
               <li
                 key={index}
                 onClick={() =>
@@ -261,11 +288,6 @@ function NetworkSelect() {
                     {secondtNetwork == network.id ||
                     secondChain.id == network.id
                       ? "✅"
-                      : ""}
-                    {(currentChain.id == 8453 && network.id == 1) ||
-                    (currentChain.id == 8453 && network.id == 1116) ||
-                    (currentChain.id == 8453 && network.id == 1)
-                      ? "❌"
                       : ""}
                   </span>
                 </a>
