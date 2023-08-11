@@ -94,7 +94,7 @@ function NetworkSelect() {
   }, []);
 
   useEffect(() => {
-    if (secondChain.id == 8453) {
+    if (secondChain.id == 8453 && currentChain.id != 56) {
       setCurrentChain({
         id: 0,
         symbol: "empty",
@@ -102,7 +102,7 @@ function NetworkSelect() {
         logo: <EmptyLogo />,
       });
     }
-  }, [secondChain]);
+  }, [secondChain, currentChain]);
 
   const [currentNetwork, setCurrentNetwork] = useState(0);
   const [secondtNetwork, setSecondtNetwork] = useState(0);
