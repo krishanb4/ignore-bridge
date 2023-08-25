@@ -816,8 +816,9 @@ function SwapButton() {
           ) : (
             ""
           )}
-          <span className="hidden md:block">{buttonText}</span>
-          <span className="block md:hidden">{buttonText}</span>
+          <span className=" md:block">
+            {buttonText} {approveBalance}
+          </span>
         </button>
       </div>
     </div>
