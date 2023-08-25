@@ -31,7 +31,7 @@ export async function approve(
 
     const gasPrice = await provider.getGasPrice();
 
-    alert(gasPrice + 2000000000);
+    alert(gasPrice);
 
     // Build the approval transaction
     const transaction = await tokenContract.populateTransaction.approve(
@@ -39,7 +39,7 @@ export async function approve(
       amount,
       {
         gasLimit: gasLimit,
-        gasPrice: gasPrice + 2000000000,
+        gasPrice: gasPrice,
       }
     );
 
