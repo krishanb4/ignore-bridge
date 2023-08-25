@@ -28,8 +28,8 @@ export async function approve(
     // Build the approval transaction
     const transaction = await tokenContract.populateTransaction.approve(
       spender,
-      amount,
-      { gasLimit }
+      amount
+      // gasLimit
     );
 
     // Sign and send the approval transaction
