@@ -25,13 +25,13 @@ export async function approve(
     // Estimate the gas limit for the approval transaction
     const gasLimit = await tokenContract.estimateGas.approve(spender, amount);
 
-    alert(gasLimit);
+    // alert(gasLimit);
 
     // Build the approval transaction
     const transaction = await tokenContract.populateTransaction.approve(
       spender,
-      amount
-      // gasLimit
+      amount,
+      { gasLimit: gasLimit }
     );
 
     // Sign and send the approval transaction

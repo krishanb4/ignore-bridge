@@ -553,7 +553,11 @@ function SwapButton() {
           if (approving) {
             return;
           } else {
-            approveTokens().catch((error) => console.log(error));
+            approveTokens()
+              .then((result) => {
+                console.log("Approval Result:", result);
+              })
+              .catch((error) => console.log(error));
           }
         }
       } else {
