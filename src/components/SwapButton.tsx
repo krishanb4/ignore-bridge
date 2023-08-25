@@ -257,7 +257,7 @@ function SwapButton() {
   }
   const [approveBalance, setapproveBalance] = useState(0);
   useEffect(() => {
-    async function checkApproveBalance() {
+    const intervalId = setInterval(async () => {
       if (
         routeTokenAddress &&
         routeContractAddress &&
@@ -279,8 +279,9 @@ function SwapButton() {
       } else {
         // nothing
       }
-    }
-    checkApproveBalance().catch((error) => console.log(error));
+    }, 1000);
+    return () => clearInterval(intervalId);
+    // checkApproveBalance().catch((error) => console.log(error));
   }, [chain?.id, userAddress, routeTokenAddress, routeContractAddress]);
 
   const [args, setArgs] = useState({} as SwapArgs);
