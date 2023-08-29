@@ -293,7 +293,7 @@ function SwapButton() {
   const toAddress = address;
   const adapterParams = ethers.utils.solidityPack(
     ["uint16", "uint256"],
-    [1, 1000000]
+    [1, 900000]
   );
   const [swaping, setSwaping] = useState(false);
   const [requiredFee, setRequiredFee] = useState("");
@@ -456,7 +456,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 1000000,
+              gasLimit: 900000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -473,7 +473,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 1000000,
+              gasLimit: 900000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -489,7 +489,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 1000000,
+              gasLimit: 900000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -503,7 +503,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 1000000,
+              gasLimit: 900000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -821,9 +821,7 @@ function SwapButton() {
           ) : (
             ""
           )}
-          <span className=" md:block">
-            {buttonText} {approveBalance}
-          </span>
+          <span className=" md:block">{buttonText}</span>
         </button>
       </div>
     </div>

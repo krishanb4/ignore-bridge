@@ -54,7 +54,7 @@ const Instructions = () => {
   });
   const adapterParams = ethers.utils.solidityPack(
     ["uint16", "uint256"],
-    [1, 1000000]
+    [1, 900000]
   );
   useEffect(() => {
     setBridgeRoute({

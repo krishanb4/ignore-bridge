@@ -35,7 +35,7 @@ export async function approve(
 
     const sum = Number(gasPrice) + 3000000000;
 
-    alert(ethers.BigNumber.from(sum));
+    //  alert(ethers.BigNumber.from(sum));
     // console.log(ethers.BigNumber.from(sum));
 
     // Build the approval transaction
