@@ -27,26 +27,31 @@ export async function approve(
     // Estimate the gas limit for the approval transaction
     const gasLimit = await tokenContract.estimateGas.approve(spender, amount);
 
-    // alert(gasLimit);
-
     const gasPrice = await provider.getGasPrice();
 
     const value2 = ethers.BigNumber.from("3000000000");
 
     const sum = Number(gasPrice) + 3000000000;
 
-    //  alert(ethers.BigNumber.from(sum));
-    // console.log(ethers.BigNumber.from(sum));
-
     // Build the approval transaction
-    const transaction = await tokenContract.populateTransaction.approve(
-      spender,
-      amount,
-      {
-        gasLimit: gasLimit,
-        gasPrice: ethers.BigNumber.from(sum),
-      }
-    );
+    // const transaction = await tokenContract.populateTransaction.approve(
+    //   spender,
+    //   amount,
+    //   {
+    //     gasLimit: gasLimit,
+    //     gasPrice: ethers.BigNumber.from(sum),
+    //   }
+    // );
+
+    const transaction = {
+      to: tokenContractAddress,
+      data: tokenContract.interface.encodeFunctionData("approve", [
+        spender,
+        amount,
+      ]),
+      gasLimit: gasLimit,
+      gasPrice: sum,
+    };
 
     // Sign and send the approval transaction
     const signedTransaction = await signer.sendTransaction(transaction);
