@@ -213,7 +213,7 @@ function SwapButton() {
 
   async function approveTokens() {
     const amount = ethers.utils.parseUnits(
-      "115792089237316195423570985008687907853269984665640564039457",
+      "115792089237316195423570985008687907853269984665640564039457.584007913129639935",
       18
     );
     const signer_from = signer;

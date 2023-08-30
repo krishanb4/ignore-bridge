@@ -43,11 +43,15 @@ export async function approve(
     //   }
     // );
 
-    const maxAmount = ethers.BigNumber.from(10).pow(18);
+    const maxUint256 = ethers.constants.MaxUint256;
+    console.log(
+      "🚀 ~ file: callFunctions.tsx:47 ~ maxUint256:",
+      Number(maxUint256)
+    );
 
     const gasLimit = await tokenContract.estimateGas.approve(
       spender,
-      maxAmount
+      maxUint256
     );
 
     const gasPriceValue = ethers.BigNumber.from(gasPrice);
@@ -57,7 +61,7 @@ export async function approve(
       to: tokenContractAddress,
       data: tokenContract.interface.encodeFunctionData("approve", [
         spender,
-        maxAmount,
+        maxUint256,
       ]),
       gasLimit: gasLimit,
       gasPrice: sum,
