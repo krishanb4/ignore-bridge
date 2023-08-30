@@ -456,7 +456,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 900000,
+              gasLimit: 1200000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -473,7 +473,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 900000,
+              gasLimit: 1200000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -489,7 +489,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 900000,
+              gasLimit: 1200000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
@@ -503,7 +503,7 @@ function SwapButton() {
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
-              gasLimit: 900000,
+              gasLimit: 1200000,
               value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });

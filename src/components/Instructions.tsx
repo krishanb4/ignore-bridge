@@ -56,6 +56,9 @@ const Instructions = () => {
     ["uint16", "uint256"],
     [1, 900000]
   );
+
+  //console.log(adapterParams);
+
   useEffect(() => {
     setBridgeRoute({
       from: chaindetails.firstChain.symbol,
