@@ -25,13 +25,13 @@ export async function approve(
     const provider = signer.provider;
 
     // Estimate the gas limit for the approval transaction
-    const gasLimit = await tokenContract.estimateGas.approve(spender, amount);
+    // const gasLimit = await tokenContract.estimateGas.approve(spender, amount);
 
     const gasPrice = await provider.getGasPrice();
 
     const value2 = ethers.BigNumber.from("3000000000");
 
-    const sum = Number(gasPrice) + 3000000000;
+    // const sum = Number(gasPrice) + 3000000000;
 
     // Build the approval transaction
     // const transaction = await tokenContract.populateTransaction.approve(
@@ -43,11 +43,21 @@ export async function approve(
     //   }
     // );
 
+    const maxAmount = ethers.BigNumber.from(10).pow(18);
+
+    const gasLimit = await tokenContract.estimateGas.approve(
+      spender,
+      maxAmount
+    );
+
+    const gasPriceValue = ethers.BigNumber.from(gasPrice);
+    const sum = gasPriceValue.add(ethers.BigNumber.from("3000000000"));
+
     const transaction = {
       to: tokenContractAddress,
       data: tokenContract.interface.encodeFunctionData("approve", [
         spender,
-        amount,
+        maxAmount,
       ]),
       gasLimit: gasLimit,
       gasPrice: sum,
