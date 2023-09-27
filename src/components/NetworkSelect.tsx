@@ -39,12 +39,12 @@ function NetworkSelect() {
       name: "Ethereum",
       logo: <EthLogo />,
     },
-    {
-      id: 56,
-      symbol: "bsc",
-      name: "Binance Smart Chain",
-      logo: <BscLogo />,
-    },
+    // {
+    //   id: 56,
+    //   symbol: "bsc",
+    //   name: "Binance Smart Chain",
+    //   logo: <BscLogo />,
+    // },
     {
       id: 1116,
       symbol: "core",
@@ -68,7 +68,7 @@ function NetworkSelect() {
   useEffect(() => {
     if (chain?.id == 1) {
       setCurrentChain(NetworkList[0]);
-      setSecondChain(NetworkList[1]);
+      setSecondChain(NetworkList[2]);
     } else if (chain?.id == 56) {
       setCurrentChain(NetworkList[1]);
       setSecondChain(NetworkList[0]);
@@ -77,6 +77,7 @@ function NetworkSelect() {
       setSecondChain(NetworkList[0]);
     }
   }, []);
+
   const [currentNetwork, setCurrentNetwork] = useState(0);
   const [secondtNetwork, setSecondtNetwork] = useState(0);
   useEffect(() => {
