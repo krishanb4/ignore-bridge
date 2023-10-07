@@ -39,12 +39,12 @@ function NetworkSelect() {
       name: "Ethereum",
       logo: <EthLogo />,
     },
-    // {
-    //   id: 56,
-    //   symbol: "bsc",
-    //   name: "Binance Smart Chain",
-    //   logo: <BscLogo />,
-    // },
+    {
+      id: 56,
+      symbol: "bsc",
+      name: "Binance Smart Chain",
+      logo: <BscLogo />,
+    },
     {
       id: 1116,
       symbol: "core",
@@ -60,10 +60,10 @@ function NetworkSelect() {
     logo: <EthLogo />,
   });
   const [secondChain, setSecondChain] = useState({
-    id: 1116,
-    symbol: "core",
-    name: "Core Chain",
-    logo: <CoreLogo />,
+    id: 56,
+    symbol: "bsc",
+    name: "Binance Smart Chain",
+    logo: <BscLogo />,
   });
   useEffect(() => {
     if (chain?.id == 1) {
