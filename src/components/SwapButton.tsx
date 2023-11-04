@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useAccount,
   useConnect,
@@ -8,6 +8,8 @@ import {
   usePrepareContractWrite,
   useContractWrite,
   useBalance,
+  useContractRead,
+
 } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { toast } from "react-toastify";
@@ -17,18 +19,20 @@ import {
   ApprovalResult,
   checkApprovedBalance,
 } from "../utils/callFunctions";
-import TokenABI from "@/config/abi/bscUSDT.json";
-import bridgeABI from "@/config/abi/bridgeABI.json";
-import bscbridgeABI from "@/config/abi/bscbridgeABI.json";
-import {
-  tokens,
-  bscContractAddress,
-  coreContractAddress,
-} from "@/config/constants/addresses";
+import bsccoreABI from "@/config/abi/bsc-coreABI.json";
+import bscethABI from "@/config/abi/bsc-ethABI.json";
+import ethcoreABI from "@/config/abi/eth-coreABI.json";
+import ethbscABI from "@/config/abi/eth-bscABI.json";
+import corebscABI from "@/config/abi/core-bscABI.json";
+import coreethABI from "@/config/abi/core-ethABI.json";
+import TokenABI from "@/config/abi/tokenABI.json";
+import AddressRoute, {
+  TokenAddressRoute,
+} from "@/config/constants/bridgeRoute";
 import { ethers, BigNumber } from "ethers";
 import { getAccount } from "@wagmi/core";
 import { MyContext } from "./context";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { createClient } from "@layerzerolabs/scan-client";
 import moment from "moment";
 
@@ -38,13 +42,48 @@ interface Transaction {
   tx: string;
 }
 
-interface AppState {
-  tokenbalance: string;
+interface ChainRoute {
+  to: string;
+  from: string;
 }
 
+interface AppState {
+  tokenbalance: {
+    bscbalance: number;
+    corebalance: number;
+    enterAmount: string;
+    ethbalance: number;
+  };
+  chains: {
+    firstChain: {
+      id: number;
+      name: string;
+      symbol: string;
+    };
+    secondChain: {
+      id: number;
+      name: string;
+      symbol: string;
+    };
+  };
+}
+interface ChainTypes {
+  firstChain: {
+    id: number;
+    name: string;
+    symbol: string;
+  };
+  secondChain: {
+    id: number;
+    name: string;
+    symbol: string;
+  };
+}
+type TokenBalanceList = {
+  [key: string]: number;
+};
+
 function SwapButton() {
-  const client = createClient("mainnet");
-  const context = React.useContext(MyContext);
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { data: signer } = useSigner();
@@ -53,17 +92,29 @@ function SwapButton() {
     connector: new InjectedConnector(),
   });
   const [approving, setApproving] = useState(false);
-  const [tokenAddress, setTokenAddress] = useState("");
-  const [tokenSpender, settokenSpender] = useState("");
   const [userAddress, setUserAddress] = useState<`0x${string}` | string>("");
-  const [tokenBalance, setTokenBalance] = useState("");
+
   const account = getAccount();
   const [dummyData, setDummyData] = useState("");
+  // v1.1
+  const [tokenBalance, setTokenBalance] = useState(0);
   const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
+
+  const chaindetails = useSelector((state: AppState) => state.chains);
+  const [bridgeRoute, setBridgeRoute] = useState({
+    from: "BSC",
+    to: "ETH",
+  });
+
+  const [tokenBalanceList, setTokenBalanceList] = useState<TokenBalanceList>({
+    ETH: 0,
+    BSC: 0,
+    CORE: 0,
+  });
+  const [routeContractAddress, setRouteContractAddress] =
+    useState<`0x${string}`>();
+  const [routeTokenAddress, setRouteTokenAddress] = useState<`0x${string}`>();
   const [usernativeBalance, setUsernativeBalance] = useState(0);
-  const [MIN_NATIVE_BALANCE, setMinNativeBalace] = useState(0);
-  const NATIVE_BALANCE_BNB = 0.003;
-  const NATIVE_BALANCE_CORE = 3;
 
   const native_balance = useBalance({
     address: address,
@@ -71,139 +122,134 @@ function SwapButton() {
   });
 
   useEffect(() => {
-    setDummyData(Object.values(tokenbalance)[2]);
-  }, [tokenbalance]);
-
-  useEffect(() => {
     setUsernativeBalance(Number(native_balance.data?.formatted));
   }, [native_balance.data?.formatted]);
   useEffect(() => {
-    if (chain?.id == 56) {
-      setMinNativeBalace(NATIVE_BALANCE_BNB);
-    } else if (chain?.id == 1116) {
-      setMinNativeBalace(NATIVE_BALANCE_CORE);
-    }
-  }, [chain?.id]);
+    const eth_balance = tokenbalance.ethbalance;
+    const bsc_balance = tokenbalance.bscbalance;
+    const core_balance = tokenbalance.corebalance;
+    setTokenBalanceList({
+      ETH: eth_balance,
+      BSC: bsc_balance,
+      CORE: core_balance,
+    });
+  }, [tokenbalance, chaindetails]);
+
 
   useEffect(() => {
-    if (chain?.id == 56) {
-      const tokenBalanceFrom = Object.values(tokenbalance)[1];
-      setTokenBalance(tokenBalanceFrom);
-    } else if (chain?.id == 1116) {
-      const tokenBalanceFrom = Object.values(tokenbalance)[0];
-      setTokenBalance(tokenBalanceFrom);
-    }
-  }, [chain?.id, tokenbalance]);
+    const balance = tokenbalance.enterAmount;
+    const balan_to = balance;
+    setDummyData(balan_to);
+  }, [tokenbalance]);
   useEffect(() => {
-    if (account && account.address) {
+    const balance = tokenBalanceList[bridgeRoute.from];
+    const balan_to = balance;
+    setTokenBalance(balan_to);
+  }, [tokenBalanceList, bridgeRoute.from]);
+
+  useEffect(() => {
+
+    setBridgeRoute({
+      from: chaindetails.firstChain.symbol,
+      to: chaindetails.secondChain.symbol,
+    });
+  }, [chaindetails.firstChain.symbol, chaindetails.secondChain.symbol]);
+
+  useEffect(() => {
+    if (account?.address) {
       const erc20Address = ethers.utils.getAddress(account.address);
       setUserAddress(erc20Address);
     }
   }, [account]);
   type SwapArgs = {
-    localToken: string;
-    remoteChainId: number;
+    localToken?: string;
+    token?: string;
+    remoteChainId?: number;
     amountLD: BigNumber;
     to: string;
+    unwrapWeth?: boolean;
     callParams: {};
-    unwrapWeth: boolean;
+
     adapterParams: string;
     gassData: {};
   };
 
-  type SwapArgsCore = {
-    token: string;
-    amountLD: BigNumber;
-    to: string;
-    callParams: {};
+
+  type GasArgs = {
+    remoteChainId?: number;
+    useZro: boolean;
     adapterParams: string;
-    gassData: {};
+
   };
+
+  useEffect(() => {
+    const From_To = bridgeRoute.from + "_" + bridgeRoute.to;
+
+    const route_address = AddressRoute(From_To);
+    setRouteContractAddress(route_address);
+    console.log(route_address);
+  }, [bridgeRoute.from, bridgeRoute.to]);
+  useEffect(() => {
+    const From = bridgeRoute.from;
+    const token_address = TokenAddressRoute(From);
+    setRouteTokenAddress(token_address);
+    console.log(token_address);
+  }, [bridgeRoute.from]);
   async function checkApproveBalance() {
-    if (chain?.id === 56) {
-      setTokenAddress(tokens.IGNORE.bsc);
-      settokenSpender(bscContractAddress);
-    } else if (chain?.id === 1116) {
-      setTokenAddress(tokens.IGNORE.core);
-      settokenSpender(coreContractAddress);
-    }
-    const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
-    const spender = tokenSpender; // Replace with the spender's address
-    // console.log({ tokenContractAddress, spender, userAddress, TokenABI });
-
-    if (tokenContractAddress && spender && userAddress && chain?.id) {
+    if (routeTokenAddress && routeContractAddress && userAddress && chain?.id) {
       try {
         const approveBalance = await checkApprovedBalance(
-          tokenContractAddress,
-          spender,
+          routeTokenAddress,
+          routeContractAddress,
           userAddress,
           TokenABI,
           Number(chain?.id)
         );
         setapproveBalance(Number(approveBalance) / 10 ** 18);
-        // console.log(`approve balance ${Number(approveBalance) / 10 ** 18}`);
       } catch (error) {
-        // console.log(error);
+        console.log(error);
       }
     } else {
-      // console.log("loading data .....");
+      console.log("data not available yet...");
     }
   }
 
   async function approveTokens() {
-    if (chain?.id === 56) {
-      setTokenAddress(tokens.IGNORE.bsc);
-      settokenSpender(bscContractAddress);
-    } else if (chain?.id === 1116) {
-      setTokenAddress(tokens.IGNORE.core);
-      settokenSpender(coreContractAddress);
-    }
-    const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
-    const spender = tokenSpender; // Replace with the spender's address
     const amount = ethers.utils.parseUnits(
-      "115792089237316195423570985008687907853269984665640564039457.584007913129639935",
+      "115792089237316195423570985008687907853269984665640564039457",
       18
-    ); // Replace with the desired approval amount
-    const signer_from = signer; // Replace with a valid signer object, e.g. ethers.Wallet or ethers.providers.JsonRpcSigner
-
+    );
+    const signer_from = signer;
     try {
       setApproving(true);
-      // console.log(tokenAddress);
-
-      const approvalResult: ApprovalResult = await approve(
-        tokenContractAddress,
-        spender,
-        TokenABI,
-        amount,
-        signer_from
-      );
-
-      // console.log(`Transaction hash: ${approvalResult.txHash}`);
-      // console.log(`Transaction status: ${approvalResult.status}`);
-      if (approvalResult.status == "mined") {
+      if (routeTokenAddress && routeContractAddress) {
+        const approvalResult: ApprovalResult = await approve(
+          routeTokenAddress,
+          routeContractAddress,
+          TokenABI,
+          amount,
+          signer_from
+        );
+        if (approvalResult.status == "mined") {
+          setApproving(false);
+        }
+        await toast.promise(Promise.resolve(), {
+          pending: "Approving tokens...",
+          success: "Tokens approved successfully 👌",
+          error: "Failed to approve tokens",
+        });
+        checkApproveBalance().catch((error) => console.log(error));
         setApproving(false);
       }
-
-      await toast.promise(Promise.resolve(), {
-        pending: "Approving tokens...",
-        success: "Tokens approved successfully 👌",
-        error: "Failed to approve tokens",
-      });
-
-      checkApproveBalance();
-      setApproving(false);
     } catch (error) {
       const theme = document.documentElement.classList.contains("dark")
         ? "dark"
         : "default";
       if (theme === "default") {
-        // console.log("light");
-
         toast.error("Failed to approve tokens: " + error, {
           theme: "light",
         });
       } else {
-        // console.log("dark");
         toast.error("Failed to approve tokens: " + error, {
           theme: "dark",
         });
@@ -215,45 +261,160 @@ function SwapButton() {
   const [approveBalance, setapproveBalance] = useState(0);
   useEffect(() => {
     async function checkApproveBalance() {
-      if (chain?.id === 56) {
-        setTokenAddress(tokens.IGNORE.bsc);
-        settokenSpender(bscContractAddress);
-      } else if (chain?.id === 1116) {
-        setTokenAddress(tokens.IGNORE.core);
-        settokenSpender(coreContractAddress);
-      }
-      const tokenContractAddress = tokenAddress; // Replace with the actual token contract address
-      const spender = tokenSpender; // Replace with the spender's address
-
-      if (tokenContractAddress && spender && userAddress && chain?.id) {
+      if (
+        routeTokenAddress &&
+        routeContractAddress &&
+        userAddress &&
+        chain?.id
+      ) {
         try {
           const approveBalance = await checkApprovedBalance(
-            tokenContractAddress,
-            spender,
+            routeTokenAddress,
+            routeContractAddress,
             userAddress,
             TokenABI,
             Number(chain?.id)
           );
           setapproveBalance(Number(approveBalance) / 10 ** 18);
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         // nothing
       }
     }
-    checkApproveBalance();
-  }, [chain?.id, tokenAddress, tokenSpender, userAddress]);
+    checkApproveBalance().catch((error) => console.log(error));
+  }, [chain?.id, userAddress, routeTokenAddress, routeContractAddress]);
 
   const [args, setArgs] = useState({} as SwapArgs);
-  const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
-  const [contractAddressSwap, setContractAddressSwap] =
-    useState<`0x${string}`>();
-  const [tokenAddressSwap, setTokenAddressSwap] = useState("");
+  const [gasArgs, setGasArgs] = useState({} as GasArgs);
+  // const [argsCore, setArgsCore] = useState({} as SwapArgsCore);
+  // const [contractAddressSwap, setContractAddressSwap] =
+  //   useState<`0x${string}`>();
+  // const [tokenAddressSwap, setTokenAddressSwap] = useState("");
   const toAddress = address;
   const adapterParams = ethers.utils.solidityPack(
     ["uint16", "uint256"],
     [1, 900000]
   );
   const [swaping, setSwaping] = useState(false);
+  const [requiredFee, setRequiredFee] = useState("");
+
+  // useEffect(() => {
+  //   if (chaindetails.firstChain.id == 56 && chaindetails.secondChain.id == 1) {
+  //     setRequiredFee(0.15);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1116 &&
+  //     chaindetails.secondChain.id == 1
+  //   ) {
+  //     setRequiredFee(70);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1 &&
+  //     chaindetails.secondChain.id == 56
+  //   ) {
+  //     setRequiredFee(0.01);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1116 &&
+  //     chaindetails.secondChain.id == 56
+  //   ) {
+  //     setRequiredFee(3);
+  //   } else if (
+  //     chaindetails.firstChain.id == 56 &&
+  //     chaindetails.secondChain.id == 1116
+  //   ) {
+  //     setRequiredFee(0.003);
+  //   } else if (
+  //     chaindetails.firstChain.id == 1 &&
+  //     chaindetails.secondChain.id == 1116
+  //   ) {
+  //     setRequiredFee(0.01);
+  //   }
+  // }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
+  const [contractABI, setContractABI] = useState([] as any);
+
+  useEffect(() => {
+    if (chaindetails.firstChain.id == 56 && chaindetails.secondChain.id == 1) {
+      setContractABI(bscethABI);
+    } else if (
+      chaindetails.firstChain.id == 1116 &&
+      chaindetails.secondChain.id == 1
+    ) {
+      setContractABI(coreethABI);
+    } else if (
+      chaindetails.firstChain.id == 1 &&
+      chaindetails.secondChain.id == 56
+    ) {
+      setContractABI(ethbscABI);
+    } else if (
+      chaindetails.firstChain.id == 1116 &&
+      chaindetails.secondChain.id == 56
+    ) {
+      setContractABI(corebscABI);
+    } else if (
+      chaindetails.firstChain.id == 56 &&
+      chaindetails.secondChain.id == 1116
+    ) {
+      setContractABI(bsccoreABI);
+    } else if (
+      chaindetails.firstChain.id == 1 &&
+      chaindetails.secondChain.id == 1116
+    ) {
+      setContractABI(ethcoreABI);
+    }
+  }, [chaindetails.firstChain.id, chaindetails.secondChain.id]);
+  useEffect(() => {
+    if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+      setGasArgs({
+        remoteChainId: 102,
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+      setGasArgs({
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
+      setGasArgs({
+        remoteChainId: 153,
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
+      setGasArgs({
+        remoteChainId: 153,
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
+      setGasArgs({
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
+      setGasArgs({
+        useZro: false,
+        adapterParams: adapterParams,
+      });
+    }
+  }, [adapterParams, bridgeRoute.from, bridgeRoute.to]);
+
+  const gasData = useContractRead({
+    address: routeContractAddress,
+    abi: contractABI,
+    functionName: "estimateBridgeFee",
+    watch: true,
+    args: Object.values(gasArgs),
+  });
+
+  useEffect(() => {
+    const gas = Number(gasData.data?.nativeFee);
+    if (gas) {
+      const truncatedNumber = Math.floor(gas * 1000) / 1000;
+
+      setRequiredFee(((truncatedNumber / 10 ** 18 / 100) * 105).toFixed(6));
+    }
+  }, [gasData.data?.nativeFee]);
 
   useEffect(() => {
     const callParams = {
@@ -263,13 +424,47 @@ function SwapButton() {
 
     const decimals = 18;
     if (dummyData) {
-      const numberEntered = ethers.utils.parseUnits(dummyData, decimals);
-      // console.log(`entered ${numberEntered}`);
 
-      if (tokenAddressSwap && toAddress) {
-        if (chain?.id == 56) {
+      const numberEntered = ethers.utils.parseUnits(
+        dummyData.toString(),
+        decimals
+      );
+      console.log(`entered ${numberEntered}`);
+      console.log(`tokenaddressswap: ${routeTokenAddress}`);
+      console.log(`toAddress: ${toAddress}`);
+      if (routeTokenAddress && toAddress) {
+        if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+
           setArgs({
-            localToken: tokenAddressSwap,
+            localToken: routeTokenAddress,
+            remoteChainId: 102,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            unwrapWeth: true,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther(requiredFee.toString()),
+            },
+          });
+        } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "ETH") {
+          setArgs({
+            token: routeTokenAddress,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther(requiredFee.toString()),
+            },
+          });
+        } else if (bridgeRoute.from == "BSC" && bridgeRoute.to == "CORE") {
+          console.log("here bsc to core");
+          console.log(routeTokenAddress);
+          setArgs({
+            localToken: routeTokenAddress,
             remoteChainId: 153,
             amountLD: BigNumber.from(numberEntered),
             to: toAddress,
@@ -278,37 +473,79 @@ function SwapButton() {
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("0.003"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
             },
           });
-        } else if (chain?.id == 1116) {
-          setArgsCore({
-            token: tokenAddressSwap,
+        } else if (bridgeRoute.from == "ETH" && bridgeRoute.to == "CORE") {
+          setArgs({
+            token: routeTokenAddress,
+            remoteChainId: 153,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            unwrapWeth: true,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther(requiredFee.toString()),
+
+            },
+          });
+        } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
+          setArgs({
+            token: routeTokenAddress,
             amountLD: BigNumber.from(numberEntered),
             to: toAddress,
             callParams: callParams,
             adapterParams: adapterParams,
             gassData: {
               gasLimit: 900000,
-              value: ethers.utils.parseEther("3"),
+              value: ethers.utils.parseEther(requiredFee.toString()),
+            },
+          });
+        } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "BSC") {
+          setArgs({
+            token: routeTokenAddress,
+            amountLD: BigNumber.from(numberEntered),
+            to: toAddress,
+            callParams: callParams,
+            adapterParams: adapterParams,
+            gassData: {
+              gasLimit: 900000,
+              value: ethers.utils.parseEther(requiredFee.toString()),
+
             },
           });
         }
       }
     }
-  }, [tokenAddressSwap, address, toAddress, chain?.id, dummyData]);
+  }, [
+    routeTokenAddress,
+    address,
+    toAddress,
+    chain?.id,
+    dummyData,
+    adapterParams,
+    bridgeRoute.from,
+    bridgeRoute.to,
+    requiredFee,
+  ]);
 
   const HanddleFunctions = () => {
-    if (chain?.id === 56 || chain?.id === 1116) {
+    if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
       if (isConnected) {
         if (approveBalance >= 40000) {
-          if (usernativeBalance >= MIN_NATIVE_BALANCE) {
+          if (usernativeBalance >= Number(requiredFee)) {
+
             if (Number(dummyData) <= 0 || !dummyData) {
               return;
             } else {
               if (!swaping) {
                 if (Number(dummyData) >= 40000) {
                   if (Number(dummyData) <= Number(tokenBalance)) {
+                    console.log("swaping");
+
+
                     Swap();
                   }
                 }
@@ -321,61 +558,66 @@ function SwapButton() {
           if (approving) {
             return;
           } else {
-            approveTokens();
+            approveTokens().catch((error) => console.log(error));
           }
         }
       } else {
         connect();
       }
     } else {
-      switchNetwork?.(56);
+      switchNetwork?.(1);
     }
   };
   const [buttonText, setButtonText] = useState("");
 
   useEffect(() => {
-    if (chain?.id === 56 || chain?.id === 1116) {
-      if (approveBalance >= 40000) {
-        if (usernativeBalance >= MIN_NATIVE_BALANCE) {
-          if (
-            Number(dummyData) <= 0 ||
-            !dummyData ||
-            Number(dummyData) > Number(tokenBalance)
-          ) {
-            if (Number(dummyData) > Number(tokenBalance)) {
-              setButtonText("Enter Correct Amount");
-            } else {
-              if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
-                setButtonText("Minimum bridge amount is 40000 4TOKEN");
+    if (isConnected) {
+      if (chain?.id === 1 || chain?.id === 56 || chain?.id === 1116) {
+        if (approveBalance >= 40000) {
+          if (usernativeBalance >= Number(requiredFee)) {
+            if (
+              Number(dummyData) <= 0 ||
+              !dummyData ||
+              Number(dummyData) > Number(tokenBalance)
+            ) {
+              if (Number(dummyData) > Number(tokenBalance)) {
+                setButtonText("Enter Correct Amount");
               } else {
-                setButtonText("Enter Amount");
+                if (Number(dummyData) < 40000 && Number(dummyData) > 0) {
+                  setButtonText("Minimum bridge amount is 40000 4TOKEN");
+                } else {
+                  setButtonText("Enter Amount");
+                }
+              }
+            } else {
+              if (swaping) {
+                setButtonText("Bridging");
+              } else {
+                if (Number(dummyData) < 40000) {
+                  setButtonText("Minimum bridge amount is 40000 4TOKEN");
+                } else {
+                  setButtonText("Bridge");
+                }
               }
             }
           } else {
-            if (swaping) {
-              setButtonText("Bridging");
-            } else {
-              if (Number(dummyData) < 40000) {
-                setButtonText("Minimum bridge amount is 40000 4TOKEN");
-              } else {
-                setButtonText("Bridge");
-              }
-            }
+            setButtonText("Not Enough Native for gas fee");
           }
         } else {
-          setButtonText("Not Enough Gas Fee");
+          if (approving) {
+            setButtonText("Approving");
+          } else if (isConnected) {
+            setButtonText("Approve");
+          } else {
+            setButtonText("Connect Wallet");
+          } // Extracted into an independent statement
+
         }
       } else {
-        if (approving) {
-          setButtonText("Approving");
-        } else if (isConnected) {
-          setButtonText("Approve");
-        } else {
-          setButtonText("Connect Wallet");
-        } // Extracted into an independent statement
+        setButtonText("Switch Network");
       }
     } else {
-      setButtonText("Switch Network");
+      setButtonText("Connect Wallet");
     }
   }, [
     approving,
@@ -388,60 +630,23 @@ function SwapButton() {
     tokenbalance,
     tokenBalance,
     usernativeBalance,
-    MIN_NATIVE_BALANCE,
+
+    requiredFee,
+
   ]);
-  const [prepareContract, setPrepareContract] = useState("");
-  const [contractABI, setContractABI] = useState<Array<any>>([]);
-  // console.log(`contract ${tokenSpender}`);
-  useEffect(() => {
-    function getContract() {
-      if (chain?.id === 56) {
-        setPrepareContract(tokens.IGNORE.bsc);
-        setContractABI((prevState) => [...prevState, ...bscbridgeABI]);
-      } else if (chain?.id === 1116) {
-        setPrepareContract(tokens.IGNORE.core);
-        setContractABI((prevState) => [...prevState, ...bridgeABI]);
-      }
-    }
-    getContract();
-  }, [chain?.id]);
 
   const { config, error } = usePrepareContractWrite({
-    address: contractAddressSwap,
+    address: routeContractAddress,
     abi: contractABI,
     functionName: "bridge",
-    args: Object.values(
-      chain?.id === 1116 ? argsCore : chain?.id === 56 ? args : ""
-    ),
+    args: Object.values(args),
   });
-  // useEffect(() => {
-  //   if (swaping && error) {
-  //     // console.log(error);
 
-  //     const theme = document.documentElement.classList.contains("dark")
-  //       ? "dark"
-  //       : "default";
-  //     if (theme === "default") {
-  //       toast.error("Failed to send tokens: ", {
-  //         theme: "light",
-  //       });
-  //     } else {
-  //       // console.log("dark");
-  //       toast.error("Failed to send tokens: ", {
-  //         theme: "dark",
-  //       });
-  //     }
-  //     setSwaping(false);
-  //   }
-  // }, [error, swaping]);
-  // // console.log(error);
+  // console.log(args);
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
     ...config,
     onError(error) {
-      // console.log("Error", error);
-      // // console.log("swaping error ");
-
       const theme = document.documentElement.classList.contains("dark")
         ? "dark"
         : "default";
@@ -450,7 +655,6 @@ function SwapButton() {
           theme: "light",
         });
       } else {
-        // console.log("dark");
         toast.error("Failed to send tokens: " + error, {
           theme: "dark",
         });
@@ -462,6 +666,8 @@ function SwapButton() {
       toast.success("Transaction successfully sent 👌");
     },
   });
+  //console.log(data);
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   useEffect(() => {
     const storedTransactions = localStorage.getItem("transactions");
@@ -473,72 +679,43 @@ function SwapButton() {
   if (isSuccess) {
     if (data?.hash) {
       const hash = data.hash.toString();
+      const from = bridgeRoute.from;
+      const to = bridgeRoute.to;
+      const newTransaction = {
+        to: to,
+        from: from,
+        tx: hash,
+        time: moment().format("DD-MM-YYYY hh:mm:ss"),
+      };
+      // console.log(transactions);
 
-      if (chain?.id == 56) {
-        const from = "BSC";
-        const to = "CORE";
-        const newTransaction = {
-          to: to,
-          from: from,
-          tx: hash,
-          time: moment().format("DD-MM-YYYY hh:mm:ss"),
-        };
+      const txExists = transactions.filter(
+        (transaction) => transaction.tx === newTransaction.tx
+      );
 
-        // const exists = transactions.some(
-        //   (transaction) => transaction.tx === newTransaction.tx
-        // );
-
-        const txExists = transactions.filter(
-          (transaction) => transaction.tx === newTransaction.tx
-        );
-
-        if (txExists.length > 0) {
-          // console.log("Transaction already exists!");
-        } else {
-          transactions.push(newTransaction);
-          localStorage.setItem("transactions", JSON.stringify(transactions));
-        }
-      } else if (chain?.id == 1116) {
-        // console.log("core to bsc");
-        const from = "CORE";
-        const to = "BSC";
-        const newTransaction = {
-          to: to,
-          from: from,
-          tx: hash,
-          time: moment().format("DD-MM-YYYY hh:mm:ss"),
-        };
-        // console.log(transactions);
-
-        const txExists = transactions.filter(
-          (transaction) => transaction.tx === newTransaction.tx
-        );
-
-        if (txExists.length > 0) {
-          // console.log("Transaction already exists!");
-        } else {
-          transactions.push(newTransaction);
-          localStorage.setItem("transactions", JSON.stringify(transactions));
-        }
+      if (txExists.length > 0) {
+        // console.log("Transaction already exists!");
+      } else {
+        transactions.push(newTransaction);
+        localStorage.setItem("transactions", JSON.stringify(transactions));
       }
     }
   }
-  useEffect(() => {
-    if (chain?.id === 56) {
-      setTokenAddressSwap(tokens.IGNORE.bsc);
-      setContractAddressSwap(bscContractAddress);
-    } else if (chain?.id === 1116) {
-      setTokenAddressSwap(tokens.IGNORE.core);
-      setContractAddressSwap(coreContractAddress);
-    }
-  }, [chain?.id]);
 
   async function Swap() {
-    if (tokenAddressSwap && toAddress) {
+    if (routeContractAddress && toAddress) {
+      // if (
+      //   (chaindetails.firstChain.id == 56 &&
+      //     chaindetails.secondChain.id == 1) ||
+      //   (chaindetails.firstChain.id == 1116 && chaindetails.secondChain.id == 1)
+      // ) {
+      // toast.error("BSC to ETH bridging suspended");
+      // } else {
       write?.();
+      // }
       setSwaping(true);
     } else {
-      // nothing
+      console.log("data not ready yet...");
     }
   }
   return (
@@ -561,11 +738,11 @@ function SwapButton() {
               : "hover:bg-[#187c18] active:bg-[#082908]"
           } 
           ${
-            usernativeBalance <= MIN_NATIVE_BALANCE
+            approveBalance > 40000 && usernativeBalance <= Number(requiredFee)
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
-          }
-            text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
+          }  text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
+
           aria-expanded="false"
           data-headlessui-state=""
           disabled={swaping || approving}

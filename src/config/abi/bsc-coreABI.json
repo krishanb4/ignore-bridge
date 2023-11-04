@@ -1,0 +1,97 @@
+[{
+        "inputs": [{
+                "internalType": "address",
+                "name": "localToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint16",
+                "name": "remoteChainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "unwrapWeth",
+                "type": "bool"
+            },
+            {
+                "components": [{
+                        "internalType": "address payable",
+                        "name": "refundAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "zroPaymentAddress",
+                        "type": "address"
+                    }
+                ],
+                "internalType": "struct LzLib.CallParams",
+                "name": "callParams",
+                "type": "tuple"
+            },
+            {
+                "internalType": "bytes",
+                "name": "adapterParams",
+                "type": "bytes"
+            }
+        ],
+        "name": "bridge",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "developer",
+        "outputs": [{
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+        }],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [{
+                "internalType": "uint16",
+                "name": "remoteChainId",
+                "type": "uint16"
+            },
+            {
+                "internalType": "bool",
+                "name": "useZro",
+                "type": "bool"
+            },
+            {
+                "internalType": "bytes",
+                "name": "adapterParams",
+                "type": "bytes"
+            }
+        ],
+        "name": "estimateBridgeFee",
+        "outputs": [{
+                "internalType": "uint256",
+                "name": "nativeFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "zroFee",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

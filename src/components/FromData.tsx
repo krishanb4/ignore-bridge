@@ -2,12 +2,14 @@ import React, { useEffect, useState, useContext } from "react";
 import Image from "next/image";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { tokens } from "@/config/constants/addresses";
+import * as tokenData from "@/config/constants/addresses";
 import { ethers } from "ethers";
 import { MyContext } from "./context";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { setBalance } from "@/redux/actions";
 import * as types from "@/redux/actionConstants";
+import axios from "axios";
 interface ReceiverComponentProps {
   onDataReceived: (tokenbalance: string) => void; // Define the callback function prop
 }
@@ -18,7 +20,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   const { address, isConnected } = useAccount();
   const [integerPart, setIntegerPart] = useState("0");
   const [fractionalPart, setFractionalPart] = useState("00");
-  const [tokenbalance, setTokenBalance] = useState("");
+  const [tokenbalance, setTokenBalance] = useState<string>("");
   const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
     undefined
   );
@@ -34,32 +36,90 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
       // console.log("Error", error);
     },
   });
-
-  const tokendata = useBalance({
+  const tokendataEth = useBalance({
     address: address,
-    token: tokenAddressOther,
-    chainId: chainID,
+    token: ethers.utils.getAddress(tokenData.ETH),
+    chainId: 1,
     watch: true,
     onSuccess(data) {
       // console.log("Success", data);
     },
     onError(error) {
-      // console.log("Error", error);
+      console.log("Error", error);
+    },
+  });
+
+  const tokendataBsc = useBalance({
+    address: address,
+    token: ethers.utils.getAddress(tokenData.BSC),
+    chainId: 56,
+    watch: true,
+    onSuccess(data) {
+      //console.log("Success", data);
+    },
+    onError(error) {
+      console.log("Error", error);
+    },
+  });
+  const tokendataCore = useBalance({
+    address: address,
+
+    token: ethers.utils.getAddress(tokenData.CORE),
+    chainId: 1116,
+
+    watch: true,
+    onSuccess(data) {
+      // console.log("Success", data);
+    },
+    onError(error) {
+      console.log("Error", error);
     },
   });
   interface AppState {
-    tokenbalance: string;
+    tokenbalance: {
+      corebalance: number;
+      bscbalance: number;
+      ethbalance: number;
+      enterAmount: string;
+    };
+    chains: {
+      firstChain: {
+        id: number;
+        name: string;
+        symbol: string;
+      };
+      secondChain: {
+        id: number;
+        name: string;
+        symbol: string;
+      };
+    };
   }
   const tokenbalanceFrom = useSelector((state: AppState) => state.tokenbalance);
+  const chainsdata = useSelector((state: AppState) => state.chains);
+  // console.log(chainsdata);
+
   useEffect(() => {
-    if (chain?.id == 56) {
+    if (chain?.id == 1) {
+      setChainID(1);
+    } else if (chain?.id == 56) {
       setChainID(1116);
     } else if (chain?.id == 1116) {
       setChainID(56);
     }
   }, [chain?.id]);
   useEffect(() => {
-    if (chain?.id == 56) {
+    if (!isLoading) {
+      if (data?.formatted) {
+        setTokenBalance(data?.formatted?.toString());
+      }
+    }
+  }, [data?.formatted, isLoading]);
+  useEffect(() => {
+    if (chain?.id == 1) {
+      const erc20AddressOther = ethers.utils.getAddress(tokens.IGNORE.eth);
+      setTokenAddressOther(erc20AddressOther);
+    } else if (chain?.id == 56) {
       const erc20AddressOther = ethers.utils.getAddress(tokens.IGNORE.core);
       setTokenAddressOther(erc20AddressOther);
     } else if (chain?.id == 1116) {
@@ -68,7 +128,11 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     }
   }, [chain?.id]);
   useEffect(() => {
-    if (chain?.id == 56) {
+    if (chain?.id == 1) {
+      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.eth);
+
+      setTokenAddress(erc20Address);
+    } else if (chain?.id == 56) {
       const erc20Address = ethers.utils.getAddress(tokens.IGNORE.bsc);
 
       setTokenAddress(erc20Address);
@@ -78,61 +142,44 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     }
   }, [chain?.id]);
   useEffect(() => {
-    if (!isLoading) {
-      const tokenB = data?.formatted || "";
-      setTokenBalance(tokenB);
-      // console.log(tokenAddressOther);
-
-      // console.log(tokendata.data?.formatted);
-    }
+    dispatch({
+      type: types.SET_BALANCE,
+      payload: {
+        corebalance: Number(tokendataCore.data?.formatted),
+        bscbalance: Number(tokendataBsc.data?.formatted),
+        ethbalance: Number(tokendataEth.data?.formatted),
+        enterAmount: "",
+      },
+    });
   }, [
-    data?.formatted,
-    isLoading,
-    tokenAddressOther,
-    tokendata.data?.formatted,
+    dispatch,
+    tokendataEth.data?.formatted,
+    tokendataBsc.data?.formatted,
+    tokendataCore.data?.formatted,
   ]);
   useEffect(() => {
-    if (chain?.id == 56) {
-      dispatch({
-        type: types.SET_BALANCE,
-        payload: {
-          corebalance: Number(tokendata.data?.formatted),
-          bscbalance: Number(tokenbalance),
-          enterAmount: "",
-        },
-      });
-    } else if (chain?.id == 1116) {
-      dispatch({
-        type: types.SET_BALANCE,
-        payload: {
-          corebalance: Number(tokenbalance),
-          bscbalance: Number(tokendata.data?.formatted),
-          enterAmount: "",
-        },
-      });
-    }
-  }, [chain?.id, dispatch, tokenbalance, tokendata.data?.formatted]);
-  useEffect(() => {
     if (!isLoading) {
-      // dispatch(setBalance(Number(tokenB)));
-
-      if (chain?.id == 56) {
-        const integerPart = Math.floor(
-          Number(Object.values(tokenbalanceFrom)[1])
-        ); // Extract the integer part
+      if (chain?.id == 1) {
+        const integerPart = Math.floor(Number(tokenbalanceFrom.ethbalance)); // Extract the integer part
         const fractionalPart = (
-          Number(Object.values(tokenbalanceFrom)[1]) - integerPart
+          Number(tokenbalanceFrom.ethbalance) - integerPart
+        ).toFixed(6);
+
+        setIntegerPart(integerPart.toString());
+        const fPart = fractionalPart.toString();
+      } else if (chain?.id == 56) {
+        const integerPart = Math.floor(Number(tokenbalanceFrom.bscbalance)); // Extract the integer part
+        const fractionalPart = (
+          Number(tokenbalanceFrom.bscbalance) - integerPart
         ).toFixed(6);
 
         setIntegerPart(integerPart.toString());
         const fPart = fractionalPart.toString();
         setFractionalPart(fPart.substring(2));
       } else if (chain?.id == 1116) {
-        const integerPart = Math.floor(
-          Number(Object.values(tokenbalanceFrom)[0])
-        ); // Extract the integer part
+        const integerPart = Math.floor(Number(tokenbalanceFrom.corebalance)); // Extract the integer part
         const fractionalPart = (
-          Number(Object.values(tokenbalanceFrom)[0]) - integerPart
+          Number(tokenbalanceFrom.corebalance) - integerPart
         ).toFixed(6);
 
         setIntegerPart(integerPart.toString());
@@ -144,46 +191,62 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
     chain?.id,
     tokenAddress,
     address,
-    data,
     isLoading,
     dispatch,
     tokenbalance,
     tokenAddressOther,
-    tokendata.data?.formatted,
     tokenbalanceFrom,
   ]);
-  const context = useContext(MyContext);
   const decimals = 18;
   const handleDataInput = () => {
-    // console.log(tokenbalance);
     const bigNumberValue = ethers.utils.parseUnits(tokenbalance, decimals);
     const decimalValue = ethers.utils.formatUnits(bigNumberValue, decimals);
-    context.setData(decimalValue);
-    onDataReceived(decimalValue);
-    if (chain?.id == 56) {
-      dispatch({
-        type: types.SET_BALANCE,
-        payload: {
-          corebalance: Number(tokendata.data?.formatted),
-          bscbalance: Number(tokenbalance),
-          enterAmount: decimalValue,
-        },
-      });
-    } else if (chain?.id == 1116) {
-      dispatch({
-        type: types.SET_BALANCE,
-        payload: {
-          corebalance: Number(tokenbalance),
-          bscbalance: Number(tokendata.data?.formatted),
-          enterAmount: decimalValue,
-        },
-      });
-    }
+
+    dispatch({
+      type: types.SET_BALANCE,
+      payload: {
+        corebalance: tokenbalanceFrom.corebalance,
+        bscbalance: tokenbalanceFrom.bscbalance,
+        ethbalance: tokenbalanceFrom.ethbalance,
+        enterAmount: decimalValue,
+      },
+    });
+
   };
+
+  const [tokenPrice, setTokenPrice] = useState("");
+  useEffect(() => {
+    let response = null;
+
+    const fetchData = async () => {
+      try {
+        response = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ignore-fud&vs_currencies=usd",
+          {
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers":
+                "Origin, X-Requested-With, Content-Type, Accept",
+            },
+          }
+        );
+      } catch (ex) {
+        response = null;
+        // error
+        console.log(ex);
+      }
+      if (response) {
+        // success
+        const json = response.data;
+        setTokenPrice(json["ignore-fud"]["usd"]);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
       <p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
-        $ 0.<span className="text-sm font-semibold">00</span>
+        $ {Number(tokenPrice) * Number(tokenbalanceFrom.enterAmount)}
       </p>
       <button
         onClick={() => handleDataInput()}

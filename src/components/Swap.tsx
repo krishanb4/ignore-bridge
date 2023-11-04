@@ -11,7 +11,7 @@ import Instructions from "@/components/Instructions";
 const SwapButton = dynamic(() => import("./SwapButton"), {
   ssr: false,
 });
-import { MyContext } from "./context";
+
 function Swap() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -39,36 +39,31 @@ function Swap() {
       darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
     };
   }, [isDarkMode]);
-  const [data, setData] = useState("");
+
   interface MyContextValue {
     data: string;
     setData: (data: string) => void;
   }
-  const contextValue: MyContextValue = {
-    data,
-    setData,
-  };
+
   return (
-    <MyContext.Provider value={contextValue}>
-      <div className="p-4 mx-auto mt-16 mb-[86px] text-black dark:text-white flex flex-col gap-4 w-full max-w-[520px]">
-        <div className="flex flex-col gap-4">
-          <div>
-            <NetworkSelect />
-            <From />
-            <SwitchArrow />
-            <To />
-            <SwapButton />
-            <Instructions />
-            <div className="text-center flex items-center justify-center m-8">
-              <p className="dark:text-white mr-[15px]">Powered By</p>
-              <a href="https://layerzero.network/" target="_blank">
-                <LayerZero />
-              </a>
-            </div>
+    <div className="p-4 mx-auto mt-16 mb-[86px] text-black dark:text-white flex flex-col gap-4 w-full max-w-[520px]">
+      <div className="flex flex-col gap-4">
+        <div>
+          <NetworkSelect />
+          <From />
+          <SwitchArrow />
+          <To />
+          <SwapButton />
+          <Instructions />
+          <div className="text-center flex items-center justify-center m-8">
+            <p className="dark:text-white mr-[15px]">Powered By</p>
+            <a href="https://layerzero.network/" target="_blank">
+              <LayerZero />
+            </a>
           </div>
         </div>
       </div>
-    </MyContext.Provider>
+    </div>
   );
 }
 

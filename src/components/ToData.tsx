@@ -3,6 +3,33 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance, useNetwork } from "wagmi";
 import { AppDispatch } from "@/redux/store";
+import { useSelector } from "react-redux";
+import * as addresses from "@/config/constants/addresses";
+import { TokenAddressRoute } from "@/config/constants/bridgeRoute";
+import axios from "axios";
+interface AppState {
+  tokenbalance: {
+    corebalance: number;
+    bscbalance: number;
+    ethbalance: number;
+    enterAmount: string;
+  };
+  chains: {
+    firstChain: {
+      id: number;
+      name: string;
+      symbol: string;
+    };
+    secondChain: {
+      id: number;
+      name: string;
+      symbol: string;
+    };
+  };
+}
+interface AddressObject {
+  [key: string]: string;
+}
 function ToData() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
@@ -13,33 +40,29 @@ function ToData() {
   const [tokenAddress, setTokenAddress] = useState<`0x${string}` | undefined>(
     undefined
   );
+
+  const chainsdata = useSelector((state: AppState) => state.chains);
+  const tokenbalanceFrom = useSelector((state: AppState) => state.tokenbalance);
+  const token_address = TokenAddressRoute(chainsdata.secondChain.symbol);
+
   const { data, isError, isLoading } = useBalance({
     address: address,
-    token: tokenAddress,
-    chainId: chainID,
+    token: token_address,
     watch: true,
+    chainId: chainsdata.secondChain.id,
+    onSuccess(data) {
+      // console.log("Success", data);
+    },
+
     onError(error) {
-      // console.log("Error", error);
+      console.log("Error", error);
     },
   });
 
   useEffect(() => {
-    if (chain?.id == 1116) {
-      setChainID(56);
-      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.bsc);
-      setTokenAddress(erc20Address);
-    } else if (chain?.id == 56) {
-      setChainID(1116);
-      const erc20Address = ethers.utils.getAddress(tokens.IGNORE.core);
-      setTokenAddress(erc20Address);
-    }
-
     if (!isLoading) {
       const tokenB = data?.formatted || "";
       setTokenBalanceLocal(tokenB);
-
-      // console.log(tokenB);
-
       const integerPart = Math.floor(Number(data?.formatted)); // Extract the integer part
       const fractionalPart = (Number(data?.formatted) - integerPart).toFixed(6);
 
@@ -48,11 +71,40 @@ function ToData() {
       setFractionalPart(fPart.substring(2));
     }
   }, [chain?.id, tokenAddress, address, data, isLoading]);
+  const [tokenPrice, setTokenPrice] = useState("");
+  useEffect(() => {
+    let response = null;
+
+    const fetchData = async () => {
+      try {
+        response = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ignore-fud&vs_currencies=usd",
+          {
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers":
+                "Origin, X-Requested-With, Content-Type, Accept",
+            },
+          }
+        );
+      } catch (ex) {
+        response = null;
+        // error
+        console.log(ex);
+      }
+      if (response) {
+        // success
+        const json = response.data;
+        setTokenPrice(json["ignore-fud"]["usd"]);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-row items-center justify-between h-[36px]">
       <p className="font-medium text-lg flex items-baseline select-none text-gray-500 dark:text-slate-400">
-        $ 0.<span className="text-sm font-semibold">00</span>
+        $ {Number(tokenPrice) * Number(tokenbalanceFrom.enterAmount)}
       </p>
       <button
         data-testid="undefined-balance-button"

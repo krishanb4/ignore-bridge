@@ -1,13 +1,37 @@
+import { useSelector } from "react-redux";
 import { useNetwork, useSwitchNetwork } from "wagmi";
+
+interface AppState {
+  tokenbalance: {
+    bscbalance: number;
+    corebalance: number;
+    enterAmount: string;
+    ethbalance: number;
+  };
+  chains: {
+    firstChain: {
+      id: number;
+      name: string;
+      symbol: string;
+    };
+    secondChain: {
+      id: number;
+      name: string;
+      symbol: string;
+    };
+  };
+}
 
 function SwitchArrow() {
   const { switchNetwork } = useSwitchNetwork();
   const { chain } = useNetwork();
 
+  const chaindetails = useSelector((state: AppState) => state.chains);
+
   return (
     <div className="left-0 right-0 mt-[-9px] mb-[-9px] flex items-center justify-center">
       <button
-        onClick={() => switchNetwork?.(chain?.id == 56 ? 1116 : 56)}
+        onClick={() => switchNetwork?.(chaindetails.secondChain.id)}
         type="button"
         className=" group bg-gray-100 hover:bg-gray-200 hover:dark:bg-slate-700 dark:bg-slate-900 p-2 border-white transition-all rounded-full cursor-pointer"
       >

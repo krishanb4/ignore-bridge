@@ -7,27 +7,19 @@ import { useEffect } from "react";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 export default function Home() {
-  // const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const { chains, error, isLoading, pendingChainId, switchNetwork } =
     useSwitchNetwork();
 
   useEffect(() => {
-    if (chain?.id == 56 || chain?.id == 1116) {
+    if (chain?.id == 1 || chain?.id == 56 || chain?.id == 1116) {
       return;
     } else {
-      switchNetwork?.(1116);
+      console.log(chain?.id);
+
+      switchNetwork?.(1);
     }
   }, [chain?.id, switchNetwork]);
-
-  // const { connect } = useConnect({
-  //   connector: new InjectedConnector(),
-  // });
-  // useEffect(() => {
-  //   if (!isConnected) {
-  //     connect();
-  //   }
-  // }, [isConnected, connect]);
 
   return (
     <>

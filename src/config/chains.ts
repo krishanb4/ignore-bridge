@@ -1,10 +1,9 @@
 import { Chain } from "@wagmi/core";
 
 export const chainlist = {
-
   coreDAO: {
     id: 1116,
-    name: "Core DAO",
+    name: "CORE",
     network: "coredao",
     nativeCurrency: {
       decimals: 18,
@@ -28,7 +27,7 @@ export const chainlist = {
   } as const,
   bscChain: {
     id: 56,
-    name: "BSC Chain",
+    name: "BSC",
     network: "bsc",
     nativeCurrency: {
       decimals: 18,
@@ -37,7 +36,7 @@ export const chainlist = {
     },
     rpcUrls: {
       public: { http: ["https://bsc-dataseed1.binance.org/"] },
-      default: { http: ["https://rpc.coredao.org"] },
+      default: { http: ["https://bsc-dataseed2.binance.org/"] },
     },
     blockExplorers: {
       etherscan: { name: "BscScan", url: "https://bscscan.com" },

@@ -9,18 +9,19 @@ import * as types from "@/redux/actionConstants";
 import { useDispatch, useSelector } from "react-redux";
 
 interface AppState {
-  tokenbalance: string;
+  tokenbalance: {
+    corebalance: number;
+    bscbalance: number;
+    ethbalance: number;
+    enterAmount: string;
+  };
 }
 
 function FromInput() {
   const dispatch = useDispatch();
-  const context = useContext(MyContext);
   const [inputValue, setInputValue] = useState("");
   const handleDataReceived = (data: string) => {
     setInputValue(data);
-    // console.log(data);
-    // Update state with received data
-    context.setData(inputValue);
   };
   const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,8 +33,9 @@ function FromInput() {
       dispatch({
         type: types.SET_BALANCE,
         payload: {
-          corebalance: Object.values(tokenbalance)[0],
-          bscbalance: Object.values(tokenbalance)[1],
+          corebalance: tokenbalance.corebalance,
+          bscbalance: tokenbalance.bscbalance,
+          ethbalance: tokenbalance.ethbalance,
           enterAmount: value,
         },
       });
@@ -41,8 +43,9 @@ function FromInput() {
   };
 
   useEffect(() => {
-    context.setData(inputValue);
-  }, [inputValue, context]);
+    setInputValue(tokenbalance.enterAmount);
+  }, [setInputValue, tokenbalance.enterAmount]);
+
   return (
     <>
       <div className="relative flex items-center gap-4">
