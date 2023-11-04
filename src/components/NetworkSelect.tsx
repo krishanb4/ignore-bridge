@@ -321,6 +321,7 @@ function NetworkSelect() {
             <div className="relative">
               <div className="absolute inset-0 flex items-center justify-center">
                 <button
+                  disabled
                   onClick={() => SwitchChains()}
                   type="button"
                   className="z-10 group hover:bg-white/30 hover:dark:bg-white/[0.16] p-2 border-white transition-all rounded-full cursor-pointer"
