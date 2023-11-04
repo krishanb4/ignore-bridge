@@ -9,6 +9,7 @@ import {
   useContractWrite,
   useBalance,
   useContractRead,
+
 } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { toast } from "react-toastify";
@@ -98,6 +99,7 @@ function SwapButton() {
   // v1.1
   const [tokenBalance, setTokenBalance] = useState(0);
   const tokenbalance = useSelector((state: AppState) => state.tokenbalance);
+
   const chaindetails = useSelector((state: AppState) => state.chains);
   const [bridgeRoute, setBridgeRoute] = useState({
     from: "BSC",
@@ -113,10 +115,12 @@ function SwapButton() {
     useState<`0x${string}`>();
   const [routeTokenAddress, setRouteTokenAddress] = useState<`0x${string}`>();
   const [usernativeBalance, setUsernativeBalance] = useState(0);
+
   const native_balance = useBalance({
     address: address,
     watch: true,
   });
+
   useEffect(() => {
     setUsernativeBalance(Number(native_balance.data?.formatted));
   }, [native_balance.data?.formatted]);
@@ -131,6 +135,7 @@ function SwapButton() {
     });
   }, [tokenbalance, chaindetails]);
 
+
   useEffect(() => {
     const balance = tokenbalance.enterAmount;
     const balan_to = balance;
@@ -143,6 +148,7 @@ function SwapButton() {
   }, [tokenBalanceList, bridgeRoute.from]);
 
   useEffect(() => {
+
     setBridgeRoute({
       from: chaindetails.firstChain.symbol,
       to: chaindetails.secondChain.symbol,
@@ -163,14 +169,17 @@ function SwapButton() {
     to: string;
     unwrapWeth?: boolean;
     callParams: {};
+
     adapterParams: string;
     gassData: {};
   };
+
 
   type GasArgs = {
     remoteChainId?: number;
     useZro: boolean;
     adapterParams: string;
+
   };
 
   useEffect(() => {
@@ -415,6 +424,7 @@ function SwapButton() {
 
     const decimals = 18;
     if (dummyData) {
+
       const numberEntered = ethers.utils.parseUnits(
         dummyData.toString(),
         decimals
@@ -424,6 +434,7 @@ function SwapButton() {
       console.log(`toAddress: ${toAddress}`);
       if (routeTokenAddress && toAddress) {
         if (bridgeRoute.from == "ETH" && bridgeRoute.to == "BSC") {
+
           setArgs({
             localToken: routeTokenAddress,
             remoteChainId: 102,
@@ -477,6 +488,7 @@ function SwapButton() {
             gassData: {
               gasLimit: 900000,
               value: ethers.utils.parseEther(requiredFee.toString()),
+
             },
           });
         } else if (bridgeRoute.from == "CORE" && bridgeRoute.to == "ETH") {
@@ -501,6 +513,7 @@ function SwapButton() {
             gassData: {
               gasLimit: 900000,
               value: ethers.utils.parseEther(requiredFee.toString()),
+
             },
           });
         }
@@ -523,6 +536,7 @@ function SwapButton() {
       if (isConnected) {
         if (approveBalance >= 40000) {
           if (usernativeBalance >= Number(requiredFee)) {
+
             if (Number(dummyData) <= 0 || !dummyData) {
               return;
             } else {
@@ -530,6 +544,7 @@ function SwapButton() {
                 if (Number(dummyData) >= 40000) {
                   if (Number(dummyData) <= Number(tokenBalance)) {
                     console.log("swaping");
+
 
                     Swap();
                   }
@@ -596,6 +611,7 @@ function SwapButton() {
           } else {
             setButtonText("Connect Wallet");
           } // Extracted into an independent statement
+
         }
       } else {
         setButtonText("Switch Network");
@@ -614,7 +630,9 @@ function SwapButton() {
     tokenbalance,
     tokenBalance,
     usernativeBalance,
+
     requiredFee,
+
   ]);
 
   const { config, error } = usePrepareContractWrite({
@@ -724,6 +742,7 @@ function SwapButton() {
               ? "opacity-40 overflow-hidden cursor-pointer"
               : "hover:bg-[#187c18] active:bg-[#082908]"
           }  text-white px-6 h-[52px] rounded-xl text-base font-semibold`}
+
           aria-expanded="false"
           data-headlessui-state=""
           disabled={swaping || approving}

@@ -63,8 +63,10 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   });
   const tokendataCore = useBalance({
     address: address,
+
     token: ethers.utils.getAddress(tokenData.CORE),
     chainId: 1116,
+
     watch: true,
     onSuccess(data) {
       // console.log("Success", data);
@@ -199,6 +201,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
   const handleDataInput = () => {
     const bigNumberValue = ethers.utils.parseUnits(tokenbalance, decimals);
     const decimalValue = ethers.utils.formatUnits(bigNumberValue, decimals);
+
     dispatch({
       type: types.SET_BALANCE,
       payload: {
@@ -208,6 +211,7 @@ const FromData: React.FC<ReceiverComponentProps> = ({ onDataReceived }) => {
         enterAmount: decimalValue,
       },
     });
+
   };
 
   const [tokenPrice, setTokenPrice] = useState("");

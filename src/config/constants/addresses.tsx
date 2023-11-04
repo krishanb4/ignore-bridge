@@ -3,6 +3,7 @@ export const bscContractAddress = "0xB1F15630B6938e47728878A9f7b8B2E2520F387a";
 export const coreContractAddress = "0xB1F15630B6938e47728878A9f7b8B2E2520F387a";
 export const ethContractAddress = "0x2348520cba8e3b918676e94523077c12a1ed4126";
 
+
 export const BSC_CORE = "0xB1F15630B6938e47728878A9f7b8B2E2520F387a";
 export const CORE_BSC = "0xB1F15630B6938e47728878A9f7b8B2E2520F387a";
 export const ETH_BSC = "0x8C0479c5173DdD98A22d283233f86189CCb7C027";
@@ -30,6 +31,7 @@ export const tokens: Tokens = {
   IGNORE: {
     eth: "0x8dB4beACcd1698892821a9a0Dc367792c0cB9940",
     bsc: "0xB2CdD9F28F1A216547d23A3022A2d83693d10DED",
+
     core: "0x98564E70c7fCC6d947fFE6d9EfeD5ba68b306F2E",
   },
 };

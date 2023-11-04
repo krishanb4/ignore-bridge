@@ -31,7 +31,7 @@ const Transactions = (props: any) => {
 
     const rawResults = await Promise.all(promises);
     const results = rawResults.filter((res) => res.messages.length > 0);
-    console.log(results);
+    // console.log(results);
     const newTxs = transactions.map((transaction) => {
       transaction.status =
         results.filter((res) => res.messages[0].srcTxHash === transaction.tx)[0]
@@ -141,6 +141,7 @@ const Transactions = (props: any) => {
                           >
                             {transaction.status || ""}
                           </div>
+
                         </div>
                       </div>
                     ))
