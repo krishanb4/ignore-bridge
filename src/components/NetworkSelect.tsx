@@ -60,10 +60,10 @@ function NetworkSelect() {
     logo: <EthLogo />,
   });
   const [secondChain, setSecondChain] = useState({
-    id: 56,
-    symbol: "bsc",
-    name: "Binance Smart Chain",
-    logo: <BscLogo />,
+    id: 1116,
+    symbol: "core",
+    name: "Core Chain",
+    logo: <CoreLogo />,
   });
   useEffect(() => {
     if (chain?.id == 1) {
